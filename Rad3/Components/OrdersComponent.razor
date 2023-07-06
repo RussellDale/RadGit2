@@ -1,0 +1,148 @@
+@page "/orderscomponent"
+
+@using GridMvc.Demo.Resources
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridShared
+@using GridShared.Sorting
+@using GridShared.Utility
+@using System
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using Rad3.Models.Domian
+@using Rad3.Services
+
+@inject IOrdersService ordersService
+@inject IOrderDetailsService orderDetailsService
+@inject IEmployeesService employeesService
+@inject ICustomersService customersService
+@inject IProductsService productsService
+@inject IShippersService shippersService
+
+@if (_task.IsCompleted)
+{
+    <div class="font-italic small">
+        <div class="col-sm-12 table-sm">
+            <GridComponent T="Orders" Grid="@_grid"></GridComponent>
+        </div>
+    </div>
+}
+else
+{
+    <p><em>Loading...</em></p>
+}
+@code
+{
+    private CGrid<Orders> _grid;
+    private Task _task;
+    Func<object[], Task<ICGrid>> subEx;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Action<IGridColumnCollection<Orders>> ordersColumns = c =>
+        {
+            c.Add(o => o.OrderId, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.OrderDetails.Count, false).Titled("Details").SetCrudHidden(true);
+            c.Add(o => o.OrderDate, false).Format("{0:yyyy-MM-dd}");
+            c.Add(o => o.RequiredDate, false).Format("{0:yyyy-MM-dd}");
+            c.Add(o => o.CustomerId, false).Titled("Customer")
+                  .SetWidth(250).RenderValueAs(o => o.CustomerId == null ? "" : o.Customer.CompanyName)
+                  .SetSelectField(true, o => o.CustomerId == null ? "" : o.CustomerId.ToString() + " - " + o.Customer.CompanyName,
+                                   customersService.GetAllCustomers)
+                  .SetListFilter(customersService.GetAllCustomers(), true, true);
+            c.Add(o => o.EmployeeId, false).Titled("Employee")
+                  .SetWidth(250).RenderValueAs(o => o.EmployeeId == null ? "" : o.Employee.FirstName + " " + o.Employee.LastName)
+                  .SetSelectField(true, o => o.EmployeeId == null ? "" : o.EmployeeId.ToString() + " - " +
+                                   o.Employee.FirstName + " " + o.Employee.LastName,
+                                   employeesService.GetAllEmployees)
+                  .SetListFilter(employeesService.GetAllEmployees(), true, true);
+            c.Add(o => o.ShippedDate, false).Format("{0:yyyy-MM-dd}"); 
+            c.Add(o => o.ShipVia, false).Titled("Ship Via")
+                  .SetWidth(250).RenderValueAs(o => o.ShipVia == null ? "" : o.ShipViaNavigation.CompanyName)
+                  .SetSelectField(true, o => o.ShipVia == null ? "" : o.ShipVia.ToString() + " - " + o.ShipViaNavigation.CompanyName,
+                                   shippersService.GetAllShippers)
+                  .SetListFilter(shippersService.GetAllShippers(), true, true);
+            c.Add(o => o.Freight, false);
+            c.Add(o => o.ShipName, false);
+            c.Add(o => o.ShipAddress, false);
+            c.Add(o => o.ShipCity, false);
+            c.Add(o => o.ShipRegion, false);
+            c.Add(o => o.ShipPostalCode, false);
+            c.Add(o => o.ShipCountry, false);
+        };
+
+        Action<IGridColumnCollection<OrderDetails>> orderDetailsColumns = c =>
+        {
+            c.Add(o => o.OrderId, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.ProductId, false).SetPrimaryKey(true, false).SetCrudHidden(false, true, true, true)
+                  .Titled("Product").SetWidth(250)
+                  .RenderValueAs(o => o.Product.ProductName)
+                  .SetSelectField(true, o => o.ProductId.ToString() + " - " + o.Product.ProductName,
+                                  productsService.GetAllProducts)
+                  .SetListFilter(productsService.GetAllProducts(), true, true);
+            c.Add(o => o.UnitPrice, false);
+            c.Add(o => o.Quantity, false);
+            c.Add(o => o.Discount, false);
+        };
+
+        var locale = CultureInfo.CurrentCulture;
+        SharedResource.Culture = locale;
+        var query = new QueryDictionary<StringValues>();
+
+        Func<object[], Task<ICGrid>> subGrids = async keys =>
+        {
+           int orderId = Int32.Parse(keys[0].ToString());
+
+           var subGridClient = new GridClient<OrderDetails>(q => orderDetailsService.GetOrderDetailsGridRow(orderDetailsColumns, query, orderId),
+              query, false, "orderDetailsGrid", orderDetailsColumns, locale)
+           .Sortable()
+           .Filterable()
+           .SetKeyboard(true)
+           .SetStriped(true)
+           .WithMultipleFilters()
+           .Searchable(true, false)
+           .WithGridItemsCount()
+           .ChangePageSize(true)
+           .Selectable(true)
+           .SetHeaderCrudButtons(true)
+           .Crud(true, false, true, true, orderDetailsService)
+           ;
+
+           await subGridClient.UpdateGrid();
+           return subGridClient.Grid;
+        };
+
+        subEx = subGrids;
+
+        var client = GridClient(ordersColumns, query, locale);
+
+        _grid = client.Grid;
+        _task = client.UpdateGrid();
+        await _task;
+    }
+
+    IGridClient<Orders> GridClient(Action<IGridColumnCollection<Orders>> ordersColumns, 
+                                   QueryDictionary<StringValues> query,
+                                   CultureInfo locale)
+    {
+        IGridClient<Orders> subGridClient = new GridClient<Orders>(q => ordersService.GetOrdersGridRow(ordersColumns, query),
+              query, false, "ordersGrid", ordersColumns, locale)
+           .Sortable()
+           .Filterable()
+           .SetKeyboard(true)
+           .Groupable(true)
+           .SetStriped(true)
+           .WithMultipleFilters()
+           .Searchable(true, false)
+           .WithGridItemsCount()
+           .ChangePageSize(true)
+           .Selectable(true)
+           .SetHeaderCrudButtons(true)
+           .Crud(true, false, true, true, ordersService)
+           .SubGrid(subEx, ("OrderId", "OrderId"))
+           ;
+
+        return subGridClient;
+    }
+}

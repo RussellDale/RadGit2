@@ -1,0 +1,93 @@
+@page "/productscomponent"
+
+@using GridMvc.Demo.Resources
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridShared
+@using GridShared.Sorting
+@using GridShared.Utility
+@using System
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using Rad3.Models.Domian
+@using Rad3.Services
+
+@inject IProductsService productsService
+@inject ICategoriesService categoriesService
+@inject ISuppliersService suppliersService
+
+@if (_task.IsCompleted)
+{
+    <div class="font-italic small">
+        <div class="col-sm-12 table-sm">
+            <GridComponent T="Products" Grid="@_grid"></GridComponent>
+        </div>
+    </div>
+}
+else
+{
+    <p><em>Loading...</em></p>
+}
+@code
+{
+    private CGrid<Products> _grid;
+    private Task _task;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Action<IGridColumnCollection<Products>> productsColumns = c =>
+        {
+            c.Add(o => o.ProductId, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.ProductName, false);
+            c.Add(o => o.SupplierId, false).Titled("Supplier")
+                  .SetWidth(250).RenderValueAs(o => o.SupplierId == null ? "" : o.Supplier.CompanyName)
+                  .SetSelectField(true, o => o.SupplierId == null ? "" : o.SupplierId.ToString() + " - " + o.Supplier.CompanyName,
+                                   suppliersService.GetAllSuppliers)
+                  .SetListFilter(suppliersService.GetAllSuppliers(), true, true);
+            c.Add(o => o.CategoryId, false).Titled("Category")
+                  .SetWidth(250).RenderValueAs(o => o.CategoryId == null ? "" : o.Category.CategoryName)
+                  .SetSelectField(true, o => o.CategoryId == null ? "" : o.CategoryId.ToString() + " - " + o.Category.CategoryName,
+                                   categoriesService.GetAllCategories)
+                  .SetListFilter(categoriesService.GetAllCategories(), true, true);
+            c.Add(o => o.QuantityPerUnit, false);
+            c.Add(o => o.UnitPrice, false);
+            c.Add(o => o.UnitsInStock, false);        
+            c.Add(o => o.UnitsOnOrder, false);
+            c.Add(o => o.ReorderLevel, false);
+            c.Add(o => o.Discontinued, false);
+       };
+
+        var locale = CultureInfo.CurrentCulture;
+        SharedResource.Culture = locale;
+        var query = new QueryDictionary<StringValues>();
+
+        var client = GridClient(productsColumns, query, locale);
+
+        _grid = client.Grid;
+        _task = client.UpdateGrid();
+        await _task;
+    }
+
+    IGridClient<Products> GridClient(Action<IGridColumnCollection<Products>> productsColumns, 
+                                       QueryDictionary<StringValues> query,
+                                       CultureInfo locale)
+    {
+        IGridClient<Products> subGridClient = new GridClient<Products>(q => productsService.GetProductsGridRow(productsColumns, query),
+        query, false, "productsGrid", productsColumns, locale)
+           .Sortable()
+           .Filterable()
+           .SetKeyboard(true)
+           .SetStriped(true)
+           .WithMultipleFilters()
+           .Searchable(true, false)
+           .WithGridItemsCount()
+           .ChangePageSize(true)
+           .Selectable(true)
+           .SetHeaderCrudButtons(true)
+           .Crud(true, false, true, true, productsService)
+           ;
+
+        return subGridClient;
+    }
+}

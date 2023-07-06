@@ -1,0 +1,124 @@
+@page "/territoriescomponent"
+
+@using GridMvc.Demo.Resources
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridShared
+@using GridShared.Sorting
+@using GridShared.Utility
+@using System
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using Rad3.Models.Domian
+@using Rad3.Services
+
+@inject IEmployeesService employeesService
+@inject IEmployeeTerritoriesService employeeTerritoriesService
+@inject ITerritoriesService territoriesService
+@inject IRegionsService regionsService
+
+@if (_task.IsCompleted)
+{
+    <div class="font-italic small">
+        <div class="col-sm-12 table-sm">
+            <GridComponent T="Territories" Grid="@_grid"></GridComponent>
+        </div>
+    </div>
+}
+else
+{
+    <p><em>Loading...</em></p>
+}
+@code
+{
+    private CGrid<Territories> _grid;
+    private Task _task;
+    Func<object[], Task<ICGrid>> subEx;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Action<IGridColumnCollection<EmployeeTerritories>> employeeTerritoriesColumns = c =>
+        {
+            c.Add(o => o.EmployeeId, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(false, false, false, false)
+                  .Titled("Employee")
+                  .RenderValueAs(o => o.Employee.FirstName + " " + o.Employee.LastName)
+                  .SetSelectField(true, o => o.EmployeeId.ToString() + " - " + o.Employee.FirstName + " " + o.Employee.LastName,
+                                  employeesService.GetAllEmployees)
+                  .SetListFilter(employeesService.GetAllEmployees(), true, true);
+            c.Add(o => o.TerritoryId, true).SetPrimaryKey(true, false).SetCrudHidden(true);
+            c.Add().Titled("Employee")
+                  .RenderValueAs(o => o.Employee.FirstName + " " + o.Employee.LastName);
+        };
+
+        Action<IGridColumnCollection<Territories>> territoriesColumns = c =>
+        {
+            c.Add(o => o.TerritoryId, false).SetPrimaryKey(true, false);
+            c.Add(o => o.TerritoryDescription, false);
+            c.Add(o => o.RegionId, false).Titled("Region")
+                  .SetWidth(250).RenderValueAs(o => o.Region.RegionDescription)
+                  .SetSelectField(true, o => o.RegionId.ToString() + " - " + o.Region.RegionDescription,
+                                   regionsService.GetAllRegions)
+                  .SetListFilter(regionsService.GetAllRegions(), true, true);
+        };
+
+        var locale = CultureInfo.CurrentCulture;
+        SharedResource.Culture = locale;
+        var query = new QueryDictionary<StringValues>();
+
+        Func<object[], Task<ICGrid>> subGrids = async keys =>
+        {
+            string territoryId = keys[0].ToString();
+
+            var subGridClient = new GridClient<EmployeeTerritories>(q =>
+                   employeeTerritoriesService.GetEmployeeGridRowId(employeeTerritoriesColumns, query, territoryId),
+                   query, false, "employeeGridId", employeeTerritoriesColumns, locale)
+                .Sortable()
+                .Filterable()
+                .SetKeyboard(true)
+                .SetStriped(true)
+                .WithMultipleFilters()
+                .Searchable(true, false)
+                .WithGridItemsCount()
+                .ChangePageSize(true)
+                .Selectable(true)
+                .SetHeaderCrudButtons(true)
+                .Crud(true, false, false, true, employeeTerritoriesService)
+                ;
+
+            await subGridClient.UpdateGrid();
+            return subGridClient.Grid;
+        };
+
+        subEx = subGrids;
+
+        var client = GridClient(territoriesColumns, query, locale);
+
+        _grid = client.Grid;
+        _task = client.UpdateGrid();
+        await _task;
+    }
+
+    IGridClient<Territories> GridClient(Action<IGridColumnCollection<Territories>> territoriesColumns, 
+                                        QueryDictionary<StringValues> query,
+                                        CultureInfo locale)
+    {
+        IGridClient<Territories> subGridClient = new GridClient<Territories>(q => territoriesService.GetTerritoriesGridRow(territoriesColumns, query),
+        query, false, "territoriesGrid", territoriesColumns, locale)
+           .Sortable()
+           .Filterable()
+           .SetKeyboard(true)
+           .SetStriped(true)
+           .WithMultipleFilters()
+           .Searchable(true, false)
+           .WithGridItemsCount()
+           .ChangePageSize(true)
+           .Selectable(true)
+           .SetHeaderCrudButtons(true)
+           .Crud(true, false, true, true, territoriesService)
+           .SubGrid(subEx, ("TerritoryId", "TerritoryId"))
+           ;
+
+        return subGridClient;
+    }
+}

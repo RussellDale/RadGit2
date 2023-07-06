@@ -1,0 +1,10 @@
+run = "dotnet watch run --project /home/runner/Rad/Rad2 --framework net6.0 run --urls=http://0.0.0.0:8080"
+
+[packager]
+language = "dotnet"
+
+[packager.features]
+packageSearch = true
+
+[nix]
+channel = "stable-21_11"

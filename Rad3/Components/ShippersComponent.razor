@@ -1,0 +1,76 @@
+@page "/shipperscomponent"
+
+@using GridMvc.Demo.Resources
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridShared
+@using GridShared.Sorting
+@using GridShared.Utility
+@using System
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using Rad3.Models.Domian
+@using Rad3.Services
+
+@inject IShippersService shippersService
+
+@if (_task.IsCompleted)
+{
+    <div class="font-italic small">
+        <div class="col-sm-12 table-sm">
+            <GridComponent T="Shippers" Grid="@_grid"></GridComponent>
+        </div>
+    </div>
+}
+else
+{
+    <p><em>Loading...</em></p>
+}
+@code
+{
+    private CGrid<Shippers> _grid;
+    private Task _task;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Action<IGridColumnCollection<Shippers>> shippersColumns = c =>
+        {
+            c.Add(o => o.ShipperId, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.CompanyName, false);
+            c.Add(o => o.Phone, false);
+        };
+
+        var locale = CultureInfo.CurrentCulture;
+        SharedResource.Culture = locale;
+        var query = new QueryDictionary<StringValues>();
+
+        var client = GridClient(shippersColumns, query, locale);
+
+        _grid = client.Grid;
+        _task = client.UpdateGrid();
+        await _task;
+    }
+
+    IGridClient<Shippers> GridClient(Action<IGridColumnCollection<Shippers>> shippersColumns, 
+                                       QueryDictionary<StringValues> query,
+                                       CultureInfo locale)
+    {
+        IGridClient<Shippers> subGridClient = new GridClient<Shippers>(q => shippersService.GetShippersGridRow(shippersColumns, query),
+        query, false, "shippersGrid", shippersColumns, locale)
+           .Sortable()
+           .Filterable()
+           .SetKeyboard(true)
+           .SetStriped(true)
+           .WithMultipleFilters()
+           .Searchable(true, false)
+           .WithGridItemsCount()
+           .ChangePageSize(true)
+           .Selectable(true)
+           .SetHeaderCrudButtons(true)
+           .Crud(true, false, true, true, shippersService)
+           ;
+
+        return subGridClient;
+    }
+}

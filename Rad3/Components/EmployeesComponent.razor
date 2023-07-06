@@ -1,0 +1,286 @@
+@page "/employeescomponent"
+
+@using GridMvc.Demo.Resources
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridShared
+@using GridShared.Sorting
+@using GridShared.Utility
+@using System
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using Rad3.Models.Domian
+@using Rad3.Services
+
+@inject IEmployeesService employeesService
+@inject IEmployeeTerritoriesService employeeTerritoriesService
+@inject ITerritoriesService territoriesService
+@inject IOrdersService ordersService
+@inject IOrderDetailsService orderDetailsService
+@inject ICustomersService customersService
+@inject IShippersService shippersService
+@inject IProductsService productsService
+
+@if (_task.IsCompleted)
+{
+    <div class="font-italic small">
+        <div class="col-sm-12 table-sm">
+            <GridComponent T="Employees" Grid="@_grid"></GridComponent>
+        </div>
+    </div>
+}
+else
+{
+    <p><em>Loading...</em></p>
+}
+@code
+{
+    private CGrid<Employees> _grid;
+    private Task _task;
+    Func<object[], Task<ICGrid>> subEx;
+    Func<object[], Task<ICGrid>> subEx1;
+    Func<object[], Task<ICGrid>> subEx2;
+    Func<object[], Task<ICGrid>> subEx3;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Action<IGridColumnCollection<Employees>> employeesIdColumns = c =>
+        {
+            c.Add().Titled("").RenderValueAs(o => o.EmployeeTerritories == null ? "Orders" : "Orders");
+        };
+
+        Action<IGridColumnCollection<Employees>> employeesId1Columns = c =>
+        {
+            c.Add().Titled("").RenderValueAs(o => o.EmployeeTerritories == null ? "Territories" : "Territories");
+        };
+
+        Action<IGridColumnCollection<Orders>> ordersColumns = c =>
+        {
+            c.Add(o => o.OrderId, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.OrderDetails.Count, false).Titled("Details").SetCrudHidden(true);
+            c.Add(o => o.OrderDate, false).Format("{0:yyyy-MM-dd}");
+            c.Add(o => o.RequiredDate, false).Format("{0:yyyy-MM-dd}");     
+            c.Add(o => o.CustomerId, false).Titled("Customer")
+                  .SetWidth(250).RenderValueAs(o => o.CustomerId == null ? "" : o.Customer.CompanyName)
+                  .SetSelectField(true, o => o.CustomerId == null ? "" : o.CustomerId.ToString() + " - " + o.Customer.CompanyName,
+                                  customersService.GetAllCustomers)
+                 .SetListFilter(customersService.GetAllCustomers(), true, true);
+            c.Add(o => o.EmployeeId, false).Titled("Employee")
+                 .SetWidth(250).RenderValueAs(o => o.EmployeeId == null ? "" : o.Employee.FirstName + " " + o.Employee.LastName)
+                 .SetSelectField(true, o => o.EmployeeId == null ? "" : o.EmployeeId.ToString() + " - " +
+                                 o.Employee.FirstName + " " + o.Employee.LastName,
+                                 employeesService.GetAllEmployees)
+                 .SetListFilter(employeesService.GetAllEmployees(), true, true);
+            c.Add(o => o.ShippedDate, false).Format("{0:yyyy-MM-dd}");
+            c.Add(o => o.ShipVia, false).Titled("Ship Via")
+                  .SetWidth(250).RenderValueAs(o => o.ShipVia == null ? "" : o.ShipViaNavigation.CompanyName)
+                  .SetSelectField(true, o => o.ShipVia == null ? "" : o.ShipVia.ToString() + " - " + o.ShipViaNavigation.CompanyName,
+                                  shippersService.GetAllShippers)
+            .SetListFilter(shippersService.GetAllShippers(), true, true);
+            c.Add(o => o.Freight, false);
+            c.Add(o => o.ShipName, false);
+            c.Add(o => o.ShipAddress, false);
+            c.Add(o => o.ShipCity, false);
+            c.Add(o => o.ShipRegion, false);
+            c.Add(o => o.ShipPostalCode, false);
+            c.Add(o => o.ShipCountry, false);
+        };
+
+        Action<IGridColumnCollection<OrderDetails>> orderDetailsColumns = c =>
+        {
+            c.Add(o => o.OrderId, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.ProductId, false).SetPrimaryKey(true, false).SetCrudHidden(false, true, true, true)
+                  .Titled("Product").SetWidth(250)
+                  .RenderValueAs(o => o.Product.ProductName)
+                  .SetSelectField(true, o => o.ProductId.ToString() + " - " + o.Product.ProductName,
+                                  productsService.GetAllProducts)
+                  .SetListFilter(productsService.GetAllProducts(), true, true);
+            c.Add(o => o.UnitPrice, false);
+            c.Add(o => o.Quantity, false);
+            c.Add(o => o.Discount, false);
+        };
+
+        Action<IGridColumnCollection<EmployeeTerritories>> employeeTerritoriesColumns = c =>
+        {
+            c.Add(o => o.EmployeeId, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.TerritoryId, true).SetPrimaryKey(true).SetCrudHidden(false, true, true, false)
+                  .Titled("Territory").SetWidth(250)
+                  .RenderValueAs(o => o.Territory.TerritoryDescription)
+                  .SetSelectField(true, o => o.TerritoryId.ToString() + " - " + o.Territory.Region.RegionDescription
+                                  + " - " + o.Territory.TerritoryDescription,
+                                  territoriesService.GetAllTerritories)
+                  .SetListFilter(territoriesService.GetAllTerritories(), true, true);
+            c.Add().Titled("Territory")
+                  .RenderValueAs(o => o.TerritoryId + " - " + o.Territory.Region.RegionDescription + " - " + 
+                                 o.Territory.TerritoryDescription);
+        };
+
+        Action<IGridColumnCollection<Employees>> employeesColumns = c =>
+        {
+            c.Add(o => o.EmployeeId, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.FirstName, false);
+            c.Add(o => o.LastName, false);
+            c.Add(o => o.Title, false);
+            c.Add(o => o.TitleOfCourtesy, false);
+            c.Add(o => o.BirthDate, false).Format("{0:yyyy-MM-dd}");
+            c.Add(o => o.HireDate, false).Format("{0:yyyy-MM-dd}");
+            c.Add(o => o.Address, false);
+            c.Add(o => o.City, false);
+            c.Add(o => o.Region, false);
+            c.Add(o => o.PostalCode, false);
+            c.Add(o => o.Country, false);
+            c.Add(o => o.HomePhone, false);
+            c.Add(o => o.Extension, false);
+            c.Add(o => o.Photo, false);
+            c.Add(o => o.Notes.Length, false);
+            c.Add(o => o.ReportsTo, false)
+                  .SetWidth(250).RenderValueAs(o => o.ReportsToNavigation == null ? "" : 
+                                                    o.ReportsToNavigation.FirstName + " " + o.ReportsToNavigation.LastName)
+                  .SetSelectField(true, o => o.ReportsTo == null ? "" : o.ReportsTo.ToString() + " - " +
+                                   o.FirstName + " " + o.LastName,
+                                   employeesService.GetAllEmployees)
+                  .SetListFilter(employeesService.GetAllEmployees(), true, true)
+            ;
+
+            c.Add(o => o.PhotoPath, false);
+        };
+
+        var locale = CultureInfo.CurrentCulture;
+        SharedResource.Culture = locale;
+        var query = new QueryDictionary<StringValues>();
+
+        Func<object[], Task<ICGrid>> subGrids2 = async keys =>
+        {
+            int employeeId = Int32.Parse(keys[0].ToString());
+
+            var subGridClient = new GridClient<EmployeeTerritories>(q => 
+                   employeeTerritoriesService.GetTerritoriesGridRowId(employeeTerritoriesColumns, query, employeeId),
+                   query, false, "employeeTerritoriesGrid", employeeTerritoriesColumns, locale)
+                .Sortable()
+                .Filterable()
+                .SetKeyboard(true)
+                .SetStriped(true)
+                .WithMultipleFilters()
+                .Searchable(true, false)
+                .WithGridItemsCount()
+                .ChangePageSize(true)
+                .Selectable(true)
+                .SetHeaderCrudButtons(true)
+                .Crud(true, false, false, true, employeeTerritoriesService)
+                ;
+
+            await subGridClient.UpdateGrid();
+            return subGridClient.Grid;
+        };
+
+        Func<object[], Task<ICGrid>> subGrids3 = async keys =>
+        {
+            int orderId = Int32.Parse(keys[0].ToString());
+
+            var subGridClient = new GridClient<OrderDetails>(q => orderDetailsService.GetOrderDetailsGridRow(orderDetailsColumns, query, orderId),
+                                                             query, false, "orderDetailsGrid", orderDetailsColumns, locale)
+               .Sortable()
+              .Filterable()
+              .SetKeyboard(true)
+              .SetStriped(true)
+              .WithMultipleFilters()
+              .Searchable(true, false)
+              .WithGridItemsCount()
+              .ChangePageSize(true)
+              .Selectable(true)
+              .SetHeaderCrudButtons(true)
+              .Crud(true, false, true, true, orderDetailsService)
+              ;
+
+            await subGridClient.UpdateGrid();
+            return subGridClient.Grid;
+        };
+
+        Func<object[], Task<ICGrid>> subGrids1 = async keys =>
+        {
+            int employeeId = Int32.Parse(keys[0].ToString());
+
+            var subGridClient = new GridClient<Orders>(q =>
+                   ordersService.GetOrdersEGridRow(ordersColumns, query, employeeId),
+                   query, false, "ordersGrid", ordersColumns, locale)
+                .Sortable()
+                .Filterable()
+                .SetKeyboard(true)
+                .SetStriped(true)
+                .WithMultipleFilters()
+                .Searchable(true, false)
+                .WithGridItemsCount()
+                .ChangePageSize(true)
+                .Selectable(true)
+                .SetHeaderCrudButtons(true)
+                .Crud(true, false, false, true, ordersService)
+                .SubGrid(subEx3, ("OrderId", "OrderId"))
+                ;
+
+            await subGridClient.UpdateGrid();
+            return subGridClient.Grid;
+        };
+
+        subEx1 = subGrids1;
+        subEx2 = subGrids2;
+        subEx3 = subGrids3;
+
+        IGridClient<Employees> subGridClient;
+        IGridClient<Employees> subGridClient1;
+
+
+        Func<object[], Task<ICGrid>> subGrids = async keys =>
+        {
+            int employeeId = Int32.Parse(keys[0].ToString());
+
+            subGridClient = EmployeesIdGrid(employeeId, subEx1, employeesIdColumns, query, locale);
+            subGridClient1 = EmployeesIdGrid(employeeId, subEx2, employeesId1Columns, query, locale);
+
+            return subGridClient.Grid;
+        };
+
+        subEx = subGrids;
+
+        var client = GridClient(employeesColumns, query, locale);
+
+        _grid = client.Grid;
+        _task = client.UpdateGrid();
+        await _task;
+    }
+
+    IGridClient<Employees> EmployeesIdGrid(int Id, Func<object[], Task<ICGrid>> sub,
+                                           Action<IGridColumnCollection<Employees>> employeesIdColumns,
+                                           QueryDictionary<StringValues> query, CultureInfo locale)
+    {
+        IGridClient<Employees> subGridClient = new GridClient<Employees>(q => employeesService.GetEmployeesIdGridRow(employeesIdColumns, query, Id),
+                                                       query, false, "employeesIdGrid", employeesIdColumns, locale)
+             .SubGrid(sub, ("EmployeeId", "EmployeeId"));
+
+        subGridClient.UpdateGrid();
+        return subGridClient;
+    }
+
+    IGridClient<Employees> GridClient(Action<IGridColumnCollection<Employees>> employeesColumns, 
+                                       QueryDictionary<StringValues> query,
+                                       CultureInfo locale)
+    {
+        IGridClient<Employees> subGridClient = new GridClient<Employees>(q => employeesService.GetEmployeesGridRow(employeesColumns, query),
+                                                                         query, false, "employeesGrid", employeesColumns, locale)
+           .Sortable()
+           .Filterable()
+           .SetKeyboard(true)
+           .SetStriped(true)
+           .WithMultipleFilters()
+           .Searchable(true, false)
+           .WithGridItemsCount()
+           .ChangePageSize(true)
+           .Selectable(true)
+           .SetHeaderCrudButtons(true)
+           .Crud(true, false, true, true, employeesService)
+           .SubGrid(subEx, ("EmployeeId", "EmployeeId"))
+           ;
+
+        return subGridClient;
+    }
+}

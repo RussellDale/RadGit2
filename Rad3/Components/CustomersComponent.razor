@@ -1,0 +1,84 @@
+@page "/customerscomponent"
+
+@using GridMvc.Demo.Resources
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridShared
+@using GridShared.Sorting
+@using GridShared.Utility
+@using System
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using Rad3.Models.Domian
+@using Rad3.Services
+
+@inject ICustomersService customersService
+
+@if (_task.IsCompleted)
+{
+    <div class="font-italic small">
+        <div class="col-sm-12 table-sm">
+            <GridComponent T="Customers" Grid="@_grid"></GridComponent>
+        </div>
+    </div>
+}
+else
+{
+    <p><em>Loading...</em></p>
+}
+@code
+{
+    private CGrid<Customers> _grid;
+    private Task _task;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Action<IGridColumnCollection<Customers>> customersColumns = c =>
+        {
+            c.Add(o => o.CustomerId, false).SetPrimaryKey(true, false);
+            c.Add(o => o.CompanyName, false);
+            c.Add(o => o.ContactName, false);
+            c.Add(o => o.ContactTitle, false);
+            c.Add(o => o.Address, false);
+            c.Add(o => o.City, false);
+            c.Add(o => o.Region, false);
+            c.Add(o => o.PostalCode, false);
+            c.Add(o => o.Country, false);
+            c.Add(o => o.Phone, false);
+            c.Add(o => o.Fax, false);
+        };
+
+        var locale = CultureInfo.CurrentCulture;
+        SharedResource.Culture = locale;
+        var query = new QueryDictionary<StringValues>();
+
+        var client = GridClient(customersColumns, query, locale);
+
+        _grid = client.Grid;
+        _task = client.UpdateGrid();
+        await _task;
+    }
+
+    IGridClient<Customers> GridClient(Action<IGridColumnCollection<Customers>> customersColumns, 
+                                       QueryDictionary<StringValues> query,
+                                       CultureInfo locale)
+    {
+        IGridClient<Customers> subGridClient = new GridClient<Customers>(q => customersService.GetCustomersGridRow(customersColumns, query),
+             query, false, "customersGrid", customersColumns, locale)
+           .Sortable()
+           .Filterable()
+           .SetKeyboard(true)
+           .SetStriped(true)
+           .WithMultipleFilters()
+           .Searchable(true, false)
+           .WithGridItemsCount()
+           .ChangePageSize(true)
+           .Selectable(true)
+           .SetHeaderCrudButtons(true)
+           .Crud(true, false, true, true, customersService)
+           ;
+
+        return subGridClient;
+    }
+}

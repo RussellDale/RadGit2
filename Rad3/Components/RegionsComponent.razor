@@ -1,0 +1,75 @@
+@page "/regionscomponent"
+
+@using GridMvc.Demo.Resources
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridShared
+@using GridShared.Sorting
+@using GridShared.Utility
+@using System
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using Rad3.Models.Domian
+@using Rad3.Services
+
+@inject IRegionsService regionsService
+
+@if (_task.IsCompleted)
+{
+    <div class="font-italic small">
+        <div class="col-sm-12 table-sm">
+            <GridComponent T="Regions" Grid="@_grid"></GridComponent>
+        </div>
+    </div>
+}
+else
+{
+    <p><em>Loading...</em></p>
+}
+@code
+{
+    private CGrid<Regions> _grid;
+    private Task _task;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Action<IGridColumnCollection<Regions>> regionsColumns = c =>
+        {
+            c.Add(o => o.RegionId, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.RegionDescription, false);
+        };
+
+        var locale = CultureInfo.CurrentCulture;
+        SharedResource.Culture = locale;
+        var query = new QueryDictionary<StringValues>();
+
+        var client = GridClient(regionsColumns, query, locale);
+
+        _grid = client.Grid;
+        _task = client.UpdateGrid();
+        await _task;
+    }
+
+    IGridClient<Regions> GridClient(Action<IGridColumnCollection<Regions>> regionsColumns, 
+                                       QueryDictionary<StringValues> query,
+                                       CultureInfo locale)
+    {
+        IGridClient<Regions> subGridClient = new GridClient<Regions>(q => regionsService.GetRegionsGridRow(regionsColumns, query),
+        query, false, "regionsGrid", regionsColumns, locale)
+           .Sortable()
+           .Filterable()
+           .SetKeyboard(true)
+           .SetStriped(true)
+           .WithMultipleFilters()
+           .Searchable(true, false)
+           .WithGridItemsCount()
+           .ChangePageSize(true)
+           .Selectable(true)
+           .SetHeaderCrudButtons(true)
+           .Crud(true, false, true, true, regionsService)
+           ;
+
+        return subGridClient;
+    }
+}
