@@ -1,0 +1,378 @@
+﻿@using GridBlazor.Columns
+@using GridBlazor.Resources
+@using GridShared
+@using GridShared.Columns
+@using GridShared.Utility
+
+@typeparam T
+
+<div class="@GridComponent.GridCrudHeaderCssClass">@(string.IsNullOrWhiteSpace(GridComponent.Grid.CreateFormLabel) ? Strings.Add : GridComponent.Grid.CreateFormLabel)</div>
+
+<EditForm Model="@Item" OnValidSubmit="@CreateItem" @ref="Form">
+    @if (GridComponent.Grid.DataAnnotationsValidation)
+    {
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+    }
+    <p id="error" class="@GridComponent.GridErrorCssClass">@Error</p>
+    <div class="form-horizontal">
+        @foreach (var column in GridComponent.Grid.Columns)
+        {
+            if (((ICGridColumn)column).SubGrids == null && column.ComponentType == null
+                && column.CreateComponentType == null && column.ReadComponentType == null
+                && column.UpdateComponentType == null && column.DeleteComponentType == null)
+            {
+                if (column.FieldName == null)
+                {
+                    continue;
+                }
+
+                (Type type, object value) = ((IGridColumn<T>)column).GetTypeAndValue(Item);
+                if (type == null && ((IGridColumn<T>)column).InputType != InputType.File)
+                {
+                    continue;
+                }
+                <div class="form-group row" style="@(((IGridColumn<T>)column).CrudHidden(Item).HasFlag(CrudHidden.CREATE)  && !((IGridColumn<T>)column).ReadOnlyOnCreate(Item) ?"display:none;":"")">
+                    @if (!string.IsNullOrWhiteSpace(column.TooltipValue))
+                    {
+                        <div class="col-md-@column.CrudLabelWidth.ToString()">
+                            <FormTooltipComponent T="@T" Column="@column"></FormTooltipComponent>
+                        </div>
+                    }
+                    else
+                    {
+                        <label for="@column.FieldName" class="col-form-label col-md-@column.CrudLabelWidth.ToString()">@column.Title</label>
+                    }
+                    <div class="@(type == typeof(bool) && !column.ToggleSwitch ? "col-md-1" : "col-md-" + column.CrudWidth.ToString())">
+                        @if (((IGridColumn<T>)column).IsSelectField.IsSelectKey)
+                        {
+                            if (((IGridColumn<T>)column).ReadOnlyOnCreate(Item))
+                            {
+                                string text = ((IGridColumn<T>)column).GetFormatedValue(((IGridColumn<T>)column).IsSelectField.Expression, Item);
+                                <input id="@column.FieldName" name="@column.FieldName" class="form-control" readonly="readonly" value="@text" />
+                            }
+                            else
+                            {
+                                var selectedValue = column.GetFormatedValue(value);
+                                <select autocomplete="@column.CustomAutoComplete.Invoke()" id="@column.FieldName" name="@column.FieldName" class="form-control @(ColumnErrors.ContainsKey(@column.FieldName) ? "input-validation-error" : "")" value="@selectedValue" @onchange="(e) => ChangeValue(e, column)">
+                                    <option value="">@Strings.SelectItem</option>
+                                    @foreach (var selectItem in ((IGridColumn<T>)column).SelectItems)
+                                    {
+                                        if (selectItem.Value == selectedValue)
+                                        {
+                                            <option value="@selectItem.Value" selected="selected">@selectItem.Title</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@selectItem.Value">@selectItem.Title</option>
+                                        }
+                                    }
+                                </select>
+                                <span class="field-validation-error">
+                                    <span>@ColumnErrors.Get(column.FieldName)</span>
+                                </span>
+                            }
+                        }
+                        else if (((IGridColumn<T>)column).IsSelectColumn.IsSelectKey)
+                        {
+                            if (((IGridColumn<T>)column).ReadOnlyOnCreate(Item))
+                            {
+                                string text = ((IGridColumn<T>)column).GetFormatedValue(((IGridColumn<T>)column).IsSelectColumn.Expression, Item);
+                                <input id="@column.FieldName" name="@column.FieldName" class="form-control" readonly="readonly" value="@text" />
+                            }
+                            else
+                            {
+                                var selectedValue = column.GetFormatedValue(value);
+                                <select autocomplete="@column.CustomAutoComplete.Invoke()" id="@column.FieldName" name="@column.FieldName" class="form-control @(ColumnErrors.ContainsKey(@column.FieldName) ? "input-validation-error" : "")" value="@selectedValue" @onchange="(e) => ChangeValue(e, column)">
+                                    <option value="">@Strings.SelectItem</option>
+                                    @{       
+                                        var selectItems = SelectItems.Get(column.Name);
+                                        if (selectItems != null && selectItems.Count() > 0)
+                                        {
+                                            foreach (var selectItem in selectItems)
+                                            {
+                                                if (selectItem.Value == selectedValue)
+                                                {
+                                                    <option value="@selectItem.Value" selected="selected">@selectItem.Title</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@selectItem.Value">@selectItem.Title</option>
+                                                }
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <span class="field-validation-error">
+                                    <span>@ColumnErrors.Get(column.FieldName)</span>
+                                </span>
+                            }
+                        }
+                        else
+                        {
+                            if (((IGridColumn<T>)column).ReadOnlyOnCreate(Item))
+                            {
+                                if (type == typeof(bool))
+                                {
+                                    if (value != null && (bool)value == true)
+                                    {
+                                        if (column.ToggleSwitch)
+                                        {
+                                            <label class="col-form-label">@column.FalseLabel</label>
+                                            <label class="grid-switch">
+                                                <input id="@column.FieldName" name="@column.FieldName" type="checkbox" class="form-control" disabled="disabled" readonly="readonly" checked="checked" value="true" />
+                                                <span class="grid-slider round"></span>
+                                            </label>
+                                            <label class="col-form-label">@column.TrueLabel</label>
+                                        }
+                                        else
+                                        {
+                                            <input id="@column.FieldName" name="@column.FieldName" type="checkbox" class="form-check" disabled="disabled" readonly="readonly" checked="checked" value="true" />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (column.ToggleSwitch)
+                                        {
+                                            <label class="col-form-label">@column.FalseLabel</label>
+                                            <label class="grid-switch">
+                                                <input id="@column.FieldName" name="@column.FieldName" type="checkbox" class="form-control" disabled="disabled" readonly="readonly" value="false" />
+                                                <span class="grid-slider round"></span>
+                                            </label>
+                                            <label class="col-form-label">@column.TrueLabel</label>
+                                        }
+                                        else
+                                        {
+                                            <input id="@column.FieldName" name="@column.FieldName" type="checkbox" class="form-check" disabled="disabled" readonly="readonly" value="false" />
+                                        }
+                                    }
+                                }
+                                else if (type == typeof(string) && ((IGridColumn<T>)column).InputType == InputType.TextArea)
+                                {
+                                    <textarea id="@column.FieldName" name="@column.FieldName" class="form-control" rows="@column.TextAreaRows" readonly="readonly" value="@column.GetFormatedValue(value)" />
+                                }
+                                else
+                                {
+                                    <input id="@column.FieldName" name="@column.FieldName" class="form-control" readonly="readonly" value="@column.GetFormatedValue(value)" />
+                                }
+                            }
+                            else
+                            {                        
+                                if (column.IsPrimaryKey && column.IsAutoGeneratedKey)
+                                {
+                                    <input id="@column.FieldName" name="@column.FieldName" class="form-control" readonly="readonly" value="@column.GetFormatedValue(value)" />
+                                }
+                                else if (type == typeof(string) && ((IGridColumn<T>)column).InputType == InputType.TextArea)
+                                {
+                                    <textarea id="@column.FieldName" name="@column.FieldName" class="form-control @(ColumnErrors.ContainsKey(@column.FieldName) ? "input-validation-error" : "")" rows="@column.TextAreaRows" value="@column.GetFormatedValue(value)" @onchange="(e) => ChangeValue(e, column)" />
+                                }
+                                else if (((IGridColumn<T>)column).InputType == InputType.File)
+                                {
+                                    if (Files.ContainsKey(column.FieldName))
+                                    {
+                                        value = string.Join(";", Files[column.FieldName].Select(r => r.Name));
+                                    }
+                                    else
+                                    {
+                                        value = "";
+                                    }
+                                    <div class="input-group">
+                                        <input autocomplete="@column.CustomAutoComplete.Invoke()" type="text" id="@column.FieldName" name="@column.FieldName" class="form-control @(ColumnErrors.ContainsKey(@column.FieldName) ? "input-validation-error" : "")" value="@column.GetFormatedValue(value)">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-primary grid-button-input-file" @onclick="() => ButtonFileClicked(column.FieldName)">@Strings.Files</button>
+                                        </span>
+                                        @_renderFragments.Get(column.Name)
+                                    </div>
+                                }
+                                else if (type == typeof(DateTime) || type == typeof(System.DateTimeOffset))
+                                {
+                                    string typeAttr = ((IGridColumn<T>)column).InputType == InputType.None ? "date" : ((IGridColumn<T>)column).InputType.ToTypeAttr();
+                                    if (typeAttr == "week")
+                                    {
+                                        if (GridComponent.IsWeekSupported)
+                                        {
+                                            <input autocomplete="@column.CustomAutoComplete.Invoke()" id="@column.FieldName" name="@column.FieldName" type="@typeAttr" placeholder="yyyy-Www" class="form-control @(ColumnErrors.ContainsKey(@column.FieldName) ? "input-validation-error" : "")" value="@(((ICGridColumn)column).GetFormatedDateTime(value, typeAttr))" @onchange="(e) => ChangeValue(e, column, typeAttr)" />
+                                        }
+                                        else
+                                        {
+                                            <input autocomplete="@column.CustomAutoComplete.Invoke()" id="@column.FieldName" name="@column.FieldName" type="text" placeholder="yyyy-Www" class="form-control @(ColumnErrors.ContainsKey(@column.FieldName) ? "input-validation-error" : "")" value="@(((ICGridColumn)column).GetFormatedDateTime(value, typeAttr))" @onchange="(e) => ChangeValue(e, column, typeAttr)" />
+                                        }
+                                    }
+                                    else if (typeAttr == "month")
+                                    {
+                                        if (GridComponent.IsMonthSupported)
+                                        {
+                                            <input autocomplete="@column.CustomAutoComplete.Invoke()" id="@column.FieldName" name="@column.FieldName" type="@typeAttr" placeholder="yyyy-mm" class="form-control @(ColumnErrors.ContainsKey(@column.FieldName) ? "input-validation-error" : "")" value="@(((ICGridColumn)column).GetFormatedDateTime(value, typeAttr))" @onchange="(e) => ChangeValue(e, column, typeAttr)" />
+                                        }
+                                        else
+                                        {
+                                            <input autocomplete="@column.CustomAutoComplete.Invoke()" id="@column.FieldName" name="@column.FieldName" type="text" placeholder="yyyy-mm" class="form-control @(ColumnErrors.ContainsKey(@column.FieldName) ? "input-validation-error" : "")" value="@(((ICGridColumn)column).GetFormatedDateTime(value, typeAttr))" @onchange="(e) => ChangeValue(e, column, typeAttr)" />
+                                        }
+                                    }
+                                    else if (typeAttr == "datetime-local")
+                                    {
+                                        if (GridComponent.IsDateTimeLocalSupported)
+                                        {
+                                            <input autocomplete="@column.CustomAutoComplete.Invoke()" id="@column.FieldName" name="@column.FieldName" type="@typeAttr" placeholder="yyyy-mm-dd hh:mm" class="form-control @(ColumnErrors.ContainsKey(@column.FieldName) ? "input-validation-error" : "")" value="@(((ICGridColumn)column).GetFormatedDateTime(value, typeAttr))" @onchange="(e) => ChangeValue(e, column, typeAttr)" />
+                                        }
+                                        else
+                                        {
+                                            <input autocomplete="@column.CustomAutoComplete.Invoke()" id="@column.FieldName" name="@column.FieldName" type="text" placeholder="yyyy-mm-dd hh:mm" class="form-control @(ColumnErrors.ContainsKey(@column.FieldName) ? "input-validation-error" : "")" value="@(((ICGridColumn)column).GetFormatedDateTime(value, typeAttr))" @onchange="(e) => ChangeValue(e, column, typeAttr)" />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <input autocomplete="@column.CustomAutoComplete.Invoke()" id="@column.FieldName" name="@column.FieldName" type="@typeAttr" class="form-control @(ColumnErrors.ContainsKey(@column.FieldName) ? "input-validation-error" : "")" value="@(((ICGridColumn)column).GetFormatedDateTime(value, typeAttr))" @onchange="(e) => ChangeValue(e, column, typeAttr)" />
+                                    }
+                                }
+                                else if (type == typeof(System.TimeSpan))
+                                {
+                                    string typeAttr = ((IGridColumn<T>)column).InputType == InputType.None ? "time" : ((IGridColumn<T>)column).InputType.ToTypeAttr();
+                                    <input autocomplete="@column.CustomAutoComplete.Invoke()" id="@column.FieldName" name="@column.FieldName" type="@typeAttr" class="form-control @(ColumnErrors.ContainsKey(@column.FieldName) ? "input-validation-error" : "")" value="@(((ICGridColumn)column).GetFormatedDateTime(value, typeAttr))" @onchange="(e) => ChangeValue(e, column)" />
+                                }
+                                else if (type == typeof(bool))
+                                {
+                                    if (value != null && (bool)value == true)
+                                    {
+                                        if (column.ToggleSwitch)
+                                        {
+                                            <label class="col-form-label">@column.FalseLabel</label>
+                                            <label class="grid-switch">
+                                                <input autocomplete="@column.CustomAutoComplete.Invoke()" id="@column.FieldName" name="@column.FieldName" type="checkbox" class="form-control @(ColumnErrors.ContainsKey(@column.FieldName) ? "input-validation-error" : "")" checked="checked" value="true" @onchange="(e) => ChangeValue(e, column)" />
+                                                <span class="grid-slider round"></span>
+                                            </label>
+                                            <label class="col-form-label">@column.TrueLabel</label>
+                                        }
+                                        else
+                                        {
+                                            <input autocomplete="@column.CustomAutoComplete.Invoke()" id="@column.FieldName" name="@column.FieldName" type="checkbox" class="form-check @(ColumnErrors.ContainsKey(@column.FieldName) ? "input-validation-error" : "")" checked="checked" value="true" @onchange="(e) => ChangeValue(e, column)" />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (column.ToggleSwitch)
+                                        {
+                                            <label class="col-form-label">@column.FalseLabel</label>
+                                            <label class="grid-switch">
+                                                <input id="@column.FieldName" name="@column.FieldName" type="checkbox" class="form-control @(ColumnErrors.ContainsKey(@column.FieldName) ? "input-validation-error" : "")" value="false" @onchange="(e) => ChangeValue(e, column)" />
+                                                <span class="grid-slider round"></span>
+                                            </label>
+                                            <label class="col-form-label">@column.TrueLabel</label>
+                                        }
+                                        else
+                                        {
+                                            <input id="@column.FieldName" name="@column.FieldName" type="checkbox" class="form-check @(ColumnErrors.ContainsKey(@column.FieldName) ? "input-validation-error" : "")" value="false" @onchange="(e) => ChangeValue(e, column)" />
+                                        }
+                                    }
+                                }
+                                else if (((IGridColumn<T>)column).InputType == InputType.Number)
+                                {
+                                    <input autocomplete="@column.CustomAutoComplete.Invoke()" type="@(InputType.Number.ToTypeAttr())" id="@column.FieldName" name="@column.FieldName" class="form-control @(ColumnErrors.ContainsKey(@column.FieldName) ? "input-validation-error" : "")" value="@column.GetFormatedValue(value)" @onchange="(e) => ChangeValue(e, column)" />
+                                }
+                                else
+                                {
+                                    <input autocomplete="@column.CustomAutoComplete.Invoke()" id="@column.FieldName" name="@column.FieldName" class="form-control @(ColumnErrors.ContainsKey(@column.FieldName) ? "input-validation-error" : "")" value="@column.GetFormatedValue(value)" @onchange="(e) => ChangeValue(e, column)" />
+                                }
+                                <span class="field-validation-error">
+                                    <span>@ColumnErrors.Get(column.FieldName)</span>
+                                </span>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+            else if (((((ICGridColumn)column).ShowCreateSubGrids && ((ICGridColumn)column).SubGrids != null) || column.CreateComponentType != null) 
+                && string.IsNullOrWhiteSpace(column.TabGroup))
+            {
+                <div class="form-group row" style="@(((IGridColumn<T>)column).CrudHidden(Item).HasFlag(CrudHidden.CREATE) && !((IGridColumn<T>)column).ReadOnlyOnCreate(Item) ? "display:none;" : "")">
+                    @if (!string.IsNullOrWhiteSpace(column.TooltipValue))
+                    {
+                        <div class="col-md-@column.CrudLabelWidth.ToString()">
+                            <FormTooltipComponent T="@T" Column="@column"></FormTooltipComponent>
+                        </div>
+                    }
+                    else
+                    {
+                        <label class="col-form-label col-md-@column.CrudLabelWidth.ToString()">@column.Title</label>
+                    }
+                    @if (column.EnableCard)
+                    {
+                        <div class="col-md-@((12 - column.CrudLabelWidth).ToString())">
+                            <div class="card panel panel-default">
+                                <div class="card-body panel-body">@_renderFragments.Get(column.Name)</div>
+                            </div>
+                        </div>
+                     }
+                     else
+                     {
+                         <div class="col-md-@(column.CrudWidth.ToString())">
+                            @_renderFragments.Get(column.Name)
+                         </div>
+                     }
+                </div>
+            }
+        }
+
+        @if (_tabGroups != null)
+        {
+            foreach (var tabGruop in _tabGroups)
+            {
+                var columns = GridComponent.Grid.Columns
+                    .Where(r => r.TabGroup != null && r.TabGroup.Equals(tabGruop) && _renderFragments.Keys.Any(s => s.Equals(r.Name)));
+                var tabLabels = columns.Select(r => new SelectItem(r.Name, r.Title));
+                var column = columns.FirstOrDefault();
+                <div class="form-group row">
+                    <div class="col-md-offset-@(column.CrudLabelWidth.ToString()) offset-md-@(column.CrudLabelWidth.ToString()) col-md-@((12 - column.CrudLabelWidth).ToString())">
+                        <div class="card panel panel-default">
+                            <div class="card-body panel-body">
+                                <GridTabComponent TabLabels="@tabLabels" TabContent="@_renderFragments" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+
+        @if (GridComponent.Grid.CreateConfirmation)
+        {
+            <div class="form-group row">
+                <label class="col-form-label col-md-@GridComponent.Grid.CreateConfirmationLabelWidth.ToString()">@Strings.Code</label>
+                <div class="col-md-@GridComponent.Grid.CreateConfirmationWidth.ToString()">
+                    <input class="form-control" id="code" name="code" readonly="readonly" type="text" @bind="_code">
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-form-label col-md-@GridComponent.Grid.CreateConfirmationLabelWidth.ToString()">@Strings.Confirm_Code</label>
+                <div class="col-md-@GridComponent.Grid.CreateConfirmationWidth.ToString()">
+                    <input class="form-control" id="confirm_code" name="confirm_code" type="text" @bind="_confirmationCode">
+                </div>
+            </div>
+        }
+
+        <div style="display:flex;">
+            <div>
+                <button type="submit" class="btn btn-primary btn-md">@Strings.Save</button>
+                <button type="button" class="btn btn-primary btn-md" @onclick="() => BackButtonClicked()">@Strings.Back</button>
+                @if (((CGrid<T>)GridComponent.Grid).ButtonCrudComponents != null && ((CGrid<T>)GridComponent.Grid).ButtonCrudComponents.Count() > 0)
+                {
+                    @foreach (var key in ((CGrid<T>)GridComponent.Grid).ButtonCrudComponents.Keys)
+                    {
+                        var buttonCrudComponent = ((CGrid<T>)GridComponent.Grid).ButtonCrudComponents.Get(key);
+                        if (buttonCrudComponent.GridMode.HasFlag(GridMode.Create))
+                        {
+                            if (buttonCrudComponent.Content.HasValue)
+                            {
+                                <button class="btn btn-primary btn-md" type="button" title="@buttonCrudComponent.Label" @onclick="() => GridComponent.ButtonCrudComponentHandler(key)" @onclick:stopPropagation>@buttonCrudComponent.Content.Value</button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-primary btn-md" type="button" title="@buttonCrudComponent.Label" @onclick="() => GridComponent.ButtonCrudComponentHandler(key)" @onclick:stopPropagation>@buttonCrudComponent.Label</button>
+                            }
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</EditForm>
