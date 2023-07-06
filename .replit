@@ -1,4 +1,4 @@
-run = "dotnet watch run --project /home/runner/RadGit2/Rad3 --framework net6.0 run --urls=http://0.0.0.0:8080"
+run = "dotnet watch run --project /home/runner/RadGit2/Rad --framework net6.0 run --urls=http://0.0.0.0:8080"
 
 [packager]
 language = "dotnet"

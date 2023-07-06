@@ -24,8 +24,8 @@ namespace Rad2.Models.Domian
 
                 case DbProvider.Sqlite:
                 default:
-                    //                    optionsBuilder.UseSqlite(@"Data Source = /home/runner/Rad/Rad2/contoso.db;");
-                    optionsBuilder.UseSqlite(@"Data Source = \contoso.db;");
+                                        optionsBuilder.UseSqlite(@"Data Source = /home/runner/RadGit2/Rad2/contoso.db;");
+                    //optionsBuilder.UseSqlite(@"Data Source = \contoso.db;");
                     break;
             }
         }

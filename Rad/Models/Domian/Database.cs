@@ -107,8 +107,8 @@ namespace Rad.Models.Domian
 
                 case DbProvider.Sqlite:
                 default:
-//                    optionsBuilder.UseSqlite(@"Data Source = /home/runner/Rad/Rad/chinook.db;");
-                    optionsBuilder.UseSqlite(@"Data Source = \chinook.db;");
+                    optionsBuilder.UseSqlite(@"Data Source = /home/runner/RadGit2/Rad/chinook.db;");
+//                    optionsBuilder.UseSqlite(@"Data Source = \chinook.db;");
                     break;
             }
         }
