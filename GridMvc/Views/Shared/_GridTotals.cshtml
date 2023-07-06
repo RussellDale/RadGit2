@@ -1,0 +1,232 @@
+﻿@using GridCore
+@using GridCore.Resources
+@using GridShared
+@using GridShared.Columns
+@using GridShared.Totals
+@model ISGrid
+
+@if (Model == null) { return; }
+
+@{
+    var firstColumn = (ITotalsColumn)Model.Columns.FirstOrDefault();
+    bool hasSubGrid = Model.SubGridKeys != null && Model.SubGridKeys.Length > 0;
+    bool requiredTotalsColumn = firstColumn != null
+              && (firstColumn.IsSumEnabled || firstColumn.IsAverageEnabled
+                  || firstColumn.IsMaxEnabled || firstColumn.IsMinEnabled || firstColumn.IsCalculationEnabled);
+    string cssStyles = "";
+    if (Model.Direction == GridDirection.RTL)
+        cssStyles = string.Concat(cssStyles, " text-align:right;direction:rtl;").Trim();
+}
+
+@if (Model.RenderOptions.RenderRowsOnly)
+{
+    return;
+}
+else
+{
+    <tr class="grid-row"><td class="grid-cell" style="height:25px;border:none;background-color:white"></td></tr>
+    if (Model.IsSumEnabled)
+    {
+        <tr class="grid-totals-row">
+            @if (hasSubGrid)
+            {
+                <td class="grid-cell" data-name=""></td>
+            }
+            @if (requiredTotalsColumn)
+            {
+                <td class="grid-cell" style="@cssStyles"><b>@Strings.Sum</b></td>
+            }
+            @for (int i = 0; i < Model.Columns.Count(); i++)
+            {
+                var column = (ITotalsColumn)Model.Columns.ElementAt(i);
+                if (i == 0 && !column.IsSumEnabled && !column.IsAverageEnabled
+                   && !column.IsMaxEnabled && !column.IsMinEnabled && !column.IsCalculationEnabled)
+                {
+                    <td class="grid-cell" style="@cssStyles"><b>@Strings.Sum</b></td>
+                }
+                else
+                {
+                    if (column.IsSumEnabled && column.SumValue != null)
+                    {
+                        <td class="grid-cell" style="@cssStyles"><b>@column.SumValue.GetString(column.ValuePattern)</b></td>
+                    }
+                    else
+                    {
+                        if (((IGridColumn)column).Hidden)
+                        {
+                            <td class="grid-cell" style="display:none;"></td>
+                        }
+                        else
+                        {
+                            <td class="grid-cell" style="@cssStyles"></td>
+                        }
+                    }
+                }
+
+            }
+        </tr>
+    }
+    if (Model.IsAverageEnabled)
+    {
+        <tr class="grid-totals-row">
+            @if (hasSubGrid)
+            {
+                <td class="grid-cell" data-name=""></td>
+            }
+            @if (requiredTotalsColumn)
+            {
+                <td class="grid-cell" style="@cssStyles"><b>@Strings.Average</b></td>
+            }
+            @for (int i = 0; i < Model.Columns.Count(); i++)
+            {
+                var column = (ITotalsColumn)Model.Columns.ElementAt(i);
+                if (i == 0 && !column.IsSumEnabled && !column.IsAverageEnabled
+                   && !column.IsMaxEnabled && !column.IsMinEnabled && !column.IsCalculationEnabled)
+                {
+                    <td class="grid-cell" style="@cssStyles"><b>@Strings.Average</b></td>
+                }
+                else
+                {
+                    if (column.IsAverageEnabled && column.AverageValue != null)
+                    {
+                        <td class="grid-cell" style="@cssStyles"><b>@column.AverageValue.GetString(column.ValuePattern)</b></td>
+                    }
+                    else
+                    {
+                        if (((IGridColumn)column).Hidden)
+                        {
+                            <td class="grid-cell" style="display:none;"></td>
+                        }
+                        else
+                        {
+                            <td class="grid-cell" style="@cssStyles"></td>
+                        }
+                    }
+                }
+            }
+        </tr>
+    }
+    if (Model.IsMaxEnabled)
+    {
+        <tr class="grid-totals-row">
+            @if (hasSubGrid)
+            {
+                <td class="grid-cell" data-name=""></td>
+            }
+            @if (requiredTotalsColumn)
+            {
+                <td class="grid-cell" style="@cssStyles"><b>@Strings.Max</b></td>
+            }
+            @for (int i = 0; i < Model.Columns.Count(); i++)
+            {
+                var column = (ITotalsColumn)Model.Columns.ElementAt(i);
+                if (i == 0 && !column.IsSumEnabled && !column.IsAverageEnabled
+                   && !column.IsMaxEnabled && !column.IsMinEnabled && !column.IsCalculationEnabled)
+                {
+                    <td class="grid-cell" style="@cssStyles"><b>@Strings.Max</b></td>
+                }
+                else
+                {
+                    if (column.IsMaxEnabled && column.MaxValue != null)
+                    {
+                        <td class="grid-cell" style="@cssStyles"><b>@column.MaxValue.GetString(column.ValuePattern)</b></td>
+                    }
+                    else
+                    {
+                        if (((IGridColumn)column).Hidden)
+                        {
+                            <td class="grid-cell" style="display:none;"></td>
+                        }
+                        else
+                        {
+                            <td class="grid-cell" style="@cssStyles"></td>
+                        }
+                    }
+                }
+            }
+        </tr>
+    }
+    if (Model.IsMinEnabled)
+    {
+        <tr class="grid-totals-row">
+            @if (hasSubGrid)
+            {
+                <td class="grid-cell" data-name=""></td>
+            }
+            @if (requiredTotalsColumn)
+            {
+                <td class="grid-cell" style="@cssStyles"><b>@Strings.Min</b></td>
+            }
+            @for (int i = 0; i < Model.Columns.Count(); i++)
+            {
+                var column = (ITotalsColumn)Model.Columns.ElementAt(i);
+                if (i == 0 && !column.IsSumEnabled && !column.IsAverageEnabled
+                   && !column.IsMaxEnabled && !column.IsMinEnabled && !column.IsCalculationEnabled)
+                {
+                    <td class="grid-cell" style="@cssStyles"><b>@Strings.Min</b></td>
+                }
+                else
+                {
+                    if (column.IsMinEnabled && column.MinValue != null)
+                    {
+                        <td class="grid-cell" style="@cssStyles"><b>@column.MinValue.GetString(column.ValuePattern)</b></td>
+                    }
+                    else
+                    {
+                        if (((IGridColumn)column).Hidden)
+                        {
+                            <td class="grid-cell" style="display:none;"></td>
+                        }
+                        else
+                        {
+                            <td class="grid-cell" style="@cssStyles"></td>
+                        }
+                    }
+                }
+            }
+        </tr>
+    }
+    if (Model.IsCalculationEnabled)
+    {
+        foreach (var calculationName in Model.Columns.SelectMany(r => ((ITotalsColumn)r).CalculationValues.Keys).Distinct())
+        {
+            <tr class="grid-totals-row">
+                @if (hasSubGrid)
+                {
+                    <td class="grid-cell" data-name=""></td>
+                }
+                @if (requiredTotalsColumn)
+                {
+                    <td class="grid-cell" style="@cssStyles"><b>@calculationName</b></td>
+                }
+                @for (int i = 0; i < Model.Columns.Count(); i++)
+                {
+                    var column = (ITotalsColumn)Model.Columns.ElementAt(i);
+                    if (i == 0 && !column.IsSumEnabled && !column.IsAverageEnabled
+                       && !column.IsMaxEnabled && !column.IsMinEnabled && !column.IsCalculationEnabled)
+                    {
+                        <td class="grid-cell" style="@cssStyles"><b>@calculationName</b></td>
+                    }
+                    else
+                    {
+                        if (column.IsCalculationEnabled && column.CalculationValues != null && column.CalculationValues.ContainsKey(calculationName))
+                        {
+                            <td class="grid-cell" style="@cssStyles"><b>@column.CalculationValues.Get(calculationName)?.GetString(column.ValuePattern)</b></td>
+                        }
+                        else
+                        {
+                            if (((IGridColumn)column).Hidden)
+                            {
+                                <td class="grid-cell" style="display:none;"></td>
+                            }
+                            else
+                            {
+                                <td class="grid-cell" style="@cssStyles"></td>
+                            }
+                        }
+                    }
+                }
+            </tr>
+        }
+    }
+}

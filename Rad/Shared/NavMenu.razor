@@ -1,0 +1,74 @@
+﻿@inject IModalService modal
+
+<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">Rad - Chinook</a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="counter">
+                <span class="oi oi-plus" aria-hidden="true"></span> Counter
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="fetchdata">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="grid1">
+                <span class="oi oi-grid-two-up" aria-hidden="true"></span> Grid 1
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="grid2">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span> Grid 2
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="artistcomponent">
+                <span class="oi oi-grid-four-up" aria-hidden="true"></span> Artist Component
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="invoicecomponent">
+                <span class="oi oi-grid-four-up" aria-hidden="true"></span> Invoice Component
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="playlistcomponent">
+                <span class="oi oi-grid-four-up" aria-hidden="true"></span> Playlist Component
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="customercomponent">
+                <span class="oi oi-grid-four-up" aria-hidden="true"></span> Customer Component
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="employeecomponent">
+                <span class="oi oi-grid-four-up" aria-hidden="true"></span> Employee Component
+            </NavLink>
+        </li>
+    </ul>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

@@ -1,0 +1,407 @@
+﻿@page "/invoicecomponent"
+<!--
+@typeparam T
+-->
+@using GridBlazor.Resources
+@using GridMvc.Demo.Resources
+@using GridShared.Sorting
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridShared
+@using GridShared.Utility
+@using System
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using Rad.Models.Domian
+@using Rad.Services
+@using Rad.Dialogs
+
+@inject IArtistService          artistService
+@inject IAlbumService           albumService
+@inject ITrackService           trackService
+@inject IInvoiceService         invoiceService
+@inject IInvoiceLineService     invoiceLineService
+@inject ICustomerService        customerService
+
+@if (_task.IsCompleted)
+{
+    @code {
+        EditForm Form;
+        protected Boolean isMessage = false;
+
+        protected void closeModal()
+        {
+            isMessage = false;
+        }
+
+        private void MyClickHandler(MouseEventArgs e)
+        {
+            var iC = invoiceColumnsA;
+
+            Action<IGridColumnCollection<Invoice>> invoiceColumnsX = c =>
+            {
+                c.Add(o => o.CustomerId, false)
+                      .RenderValueAs(o => o.Customer == null ? "" : o.Customer.Email)
+                      .SetSelectField(true, o => o.Customer == null ? "" : o.Customer.CustomerId.ToString() + " - " + o.Customer.Email,
+                                      customerService.GetAllCustomer)
+                      .SetListFilter(customerService.GetAllCustomer(), true, true)
+                ;
+            };
+
+            isMessage = true;
+        }
+    }
+
+
+    @if (isMessage)
+    {
+        <div class="modal" tabindex="-1" style="display:block" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="form-group">
+
+                            <!--
+
+                                                        <FluentValidationValidator />
+                            -->
+
+                            <form>
+                                <EditForm Model="@isMessage" OnValidSubmit="@closeModal" @ref="Form">
+                                    <DataAnnotationsValidator />
+                                    <ValidationSummary />
+
+                                    <!--
+                                                                    <GridComponent T="@T"></GridComponent>
+                                    -->
+                                </EditForm>
+                            </form>
+                            <strong><label for="FirstName" class="control-label">Message:</label></strong>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-warning" @onclick="@closeModal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="font-italic small">
+        <div class="col-sm-12 table-sm">
+            <GridComponent @ref="_gridComponent" T="Invoice" Grid="@_grid"></GridComponent>
+        </div>
+    </div>
+}
+else
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+
+@code
+{
+
+    private CGrid<Invoice> _grid;
+    private GridComponent<Invoice> _gridComponent;
+
+
+
+    //    private CGrid<InvoiceLine> _gridInvoiceLine;
+    //    private GridComponent<InvoiceLine> _gridComponentInvoiceLine;
+
+    private Task _task;
+
+    Action<IGridColumnCollection<Invoice>> invoiceColumnsA;
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Action<IGridColumnCollection<Invoice>> invoiceColumns = c =>
+        {
+            c.Add(o => o.InvoiceId, true).SetPrimaryKey(true).Titled(SharedResource.Number).SetWidth(50).SetCrudHidden(true);
+//            c.Add().Encoded(false).Sanitized(false).RenderComponentAs<DialogComponentArtistCell>();
+            c.Add(o => o.InvoiceDate, false).Format("{0:yyyy-MM-dd}");
+            c.Add(o => o.Total, false).Format("{0:C}");
+            c.Add().Titled("Billing")
+                   .RenderValueAs(o => o.BillingAddress + ", " + o.BillingCity + " " + o.BillingState + ", " +
+                                       o.BillingCountry + " " + o.BillingPostalCode)
+                ;
+
+            c.Add(o => o.BillingAddress, true);
+            c.Add(o => o.BillingCity, true);
+            c.Add(o => o.BillingState, true);
+            c.Add(o => o.BillingCountry, true);
+            c.Add(o => o.BillingPostalCode, true);
+
+            c.Add(o => o.CustomerId, false)
+                  .RenderValueAs(o => o.Customer == null ? "" : o.Customer.Email)
+                  .SetSelectField(true, o => o.Customer == null ? "" : o.Customer.CustomerId.ToString() + " - " + o.Customer.Email,
+                                  customerService.GetAllCustomer)
+                  .SetListFilter(customerService.GetAllCustomer(), true, true)
+            ;
+
+            c.Add(o => o.InvoiceLines.Count, false).SetCrudHidden(true);
+        };
+
+
+
+        Func<object[], bool, bool, bool, bool, Task<IGrid>> subGrids2 = async (keys, create, read, update, delete) =>
+        {
+        /*
+        int invoiceId = Int32.Parse(keys[0].ToString());
+
+        var subGridClient = new GridClient<InvoiceLine>(q => invoiceLineService.GetInvoiceLineId(invoiceLineColumns, query, invoiceId),
+        query, false, "invoiceLineGrid" + invoiceId, invoiceLineColumns, locale)
+            .WithGridItemsCount()
+            .Selectable(true)
+            .SetHeaderCrudButtons(true)
+            .Crud(true, false, true, true, invoiceLineService)
+            //                .SetEditAfterInsert(true)
+        //                .SetUpdateComponent<Invoice>()
+        ;
+
+        await subGridClient.UpdateGrid();
+        return subGridClient.Grid;
+            */
+            return null;
+
+        };
+
+
+
+
+        Action<IGridColumnCollection<InvoiceLine>> invoiceLineColumns = c =>
+        {
+            c.Add(o => o.InvoiceLineId, true).SetPrimaryKey(true).SetWidth(500).SetCrudHidden(true);
+            c.Add(o => o.TrackId, true);
+
+            c.Add(false).Titled("Track")
+                   .RenderValueAs(o => o.Track.Name + " (" + o.Track.Album.Title + " - " +
+                                       o.Track.Album.Artist.Name + ")" )
+            ;
+
+            c.Add(o => o.Quantity, false);
+            c.Add(o => o.UnitPrice, false).Titled("Price").Format("{0:C}");
+            c.Add(o => o.Track.Genre.Name, false).SetCrudHidden(true);
+            c.Add(o => o.Track.MediaType.Name, false).SetCrudHidden(true);
+            c.Add(o => o.Track.UnitPrice, false).SetCrudHidden(true).Format("{0:C}");
+
+        /*
+        c.Add(o => o.Track.Album.Artist.Name, false)
+        .RenderValueAs(o => o.Track.Album.Artist.Name == null ? "" : o.Track.Album.Artist.Name)
+        .SetSelectField(true, o => o.Track.Album.Artist == null ? "" : o.Track.Album.Artist.ArtistId.ToString() + " - " + o.Track.Album.Artist.Name,
+        artistService.GetAllArtist)
+        .SetListFilter(artistService.GetAllArtist(), true, true)
+        ;
+
+        c.Add()
+        .SubGrid(subGrids2, ("InvoiceLineId", "InvoiceLineId"))
+        ;
+
+        c.Add(o => o.Track.Album.Title, false)
+        .RenderValueAs(o => o.Track.Album.Title == null ? "" : o.Track.Album.Title)
+        .SetSelectField(true, o => o.Track.Album == null ? "" : o.Track.Album.AlbumId.ToString() + " - " + o.Track.Album.Title,
+        albumService.GetAllAlbum)
+        .SetListFilter(albumService.GetAllAlbum(), true, true)
+        ;
+
+        c.Add(o => o.Track.Name, false)
+        .RenderValueAs(o => o.Track.Name == null ? "" : o.Track.Name)
+        .SetSelectField(true, o => o.Track == null ? "" : o.Track.TrackId.ToString() + " - " + o.Track.Name,
+        trackService.GetAllTrack)
+        .SetListFilter(trackService.GetAllTrack(), true, true)
+        ;
+        */
+        };
+
+        var locale = CultureInfo.CurrentCulture;
+        SharedResource.Culture = locale;
+        var query = new QueryDictionary<StringValues>();
+
+        Func<object[], Task<ICGrid>> subGrids = async keys =>
+        {
+            int invoiceId = Int32.Parse(keys[0].ToString());
+        //            MarkupString invoiceId_MS = new MarkupString("" + invoiceId);
+        //            IList<Action> invoiceId_IL_A = new IList(Action(invoiceId_IL_A));
+        //            Action invoiceId_A = new Action(invoiceId);
+
+            DialogComponentArtist test = new DialogComponentArtist();
+
+            test.invoiceId = invoiceId;
+
+            object invoiceIdObj = invoiceId;
+
+            var subGridClient = new GridClient<InvoiceLine>(q => invoiceLineService.GetInvoiceLineId(invoiceLineColumns, query, invoiceId),
+                query, false, "invoiceLineGrid" + invoiceId, invoiceLineColumns, locale)
+                .WithGridItemsCount()
+                .Selectable(true)
+                .SetHeaderCrudButtons(true)
+                .Crud(true, false, true, true, invoiceLineService)
+                .SetStriped(true)
+                .AddButtonComponent<DialogComponentArtist>("Artist N", "Artist L", null, null, null, invoiceIdObj)
+                .RearrangeableColumns()
+                ;
+        //                .AddToOnAfterRender(OnAfterInvoiceLineRender)
+        //                .AddButtonCrudComponent<InvoiceLine>("HI","Hi",false,false,true,false)
+        //                            .SetEditAfterInsert(true)
+        //                            .SetUpdateComponent<Invoice>(
+
+        //_gridInvoiceLine = subGridClient.Grid;
+        //_gridComponentInvoiceLine = _gridInvoiceLine.GridComponent;
+        //            _gridComponentInvoiceLine.BeforeUpdateChangeValue += BeforeUpdateChangeValueInvoiceLine;
+
+            await subGridClient.UpdateGrid();
+            return subGridClient.Grid;
+        };
+
+        var client = new GridClient<Invoice>(q => invoiceService.GetInvoiceGridRows(invoiceColumns, query), query, false,
+            "invoicesGrid", invoiceColumns, locale)
+            .Sortable()
+            .Filterable()
+            .SetKeyboard(true)
+            .Groupable(true)
+            .ClearFiltersButton(true)
+            .SetStriped(true)
+            .WithMultipleFilters()
+            .Searchable(true, false)
+            .WithGridItemsCount()
+            .ChangePageSize(true)
+            .Searchable()
+            .Selectable(true)
+            .SetHeaderCrudButtons(true)
+            .RearrangeableColumns()
+            .Crud(true, false, true, true, invoiceService)
+            .SubGrid(subGrids, ("InvoiceId", "InvoiceId"))
+            .SetStriped(true)
+            //        .SubGrid(subGrids2, ("CustomerId", "CustomerId"))
+            ;
+
+
+
+        _grid = client.Grid;
+
+        //        client.SetUpdateComponent<GridComponent<Invoice>>();
+
+        //        client.SetUpdateComponent<GridUpdateComponent<Invoice>>();
+        //client.SetUpdateComponent<GridDialogComponent<Invoice>>();
+
+        //        IList<Action<object>> actions,
+        //                    IList< Func<object, Task> > functions, object obj
+
+
+
+        _gridComponent = _grid.GridComponent;
+        _task = client.UpdateGrid();
+
+        //        await _gridComponent.UpdateItem(GridUpdateComponent<Invoice> );
+
+        //client.Crud(true, false, true, true, invoiceService);
+
+        await _task;
+
+        invoiceColumnsA = invoiceColumns;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _gridComponent.BeforeUpdateForm += BeforeUpdateForm;
+            //            _gridComponent.BeforeCreateForm += BeforeCreateForm;
+            //            _gridComponent.AfterCreateForm += AfterCreateForm;
+            //            _gridComponent.BeforeBack += BeforeBack;
+            _gridComponent.BeforeUpdate += BeforeUpdate;
+
+            //            _gridComponent.BeforeUpdateChangeValue += BeforeUpdateChangeValue;
+
+            //            _gridComponent.BeforeUpdateChangeValue += BeforeUpdateChangeValueInvoiceLine;
+
+
+
+        }
+    }
+
+    //    private async Task BeforeUpdateChangeValue(GridUpdateComponent<Invoice> component, Invoice item)
+    private async Task BeforeUpdateChangeValue(GridComponent<Invoice> component, Invoice item)
+    {
+
+    }
+
+    private async Task BeforeUpdateChangeValueInvoiceLine(GridComponent<InvoiceLine> component, InvoiceLine item)
+    {
+
+    }
+
+    private async Task<bool> BeforeBack(GridUpdateComponent<Invoice> component, Invoice item)
+    {
+        return true;
+    }
+
+
+    private async Task<bool> BeforeUpdate(GridUpdateComponent<Invoice> component, Invoice item)
+    {
+        //        var orderValidator = new InvoiceValidator();
+        //        var valid = await orderValidator.ValidateAsync(item);
+
+        bool valid = false;
+
+        //       if (!valid.IsValid)
+        {
+            //            component.Error = "Update operation returned one or more errors";
+            //            foreach (var error in valid.Errors)
+            //            {
+            //                component.ColumnErrors.AddParameter(error.PropertyName, error.ErrorMessage);
+            //            }
+        }
+
+        //        return valid.IsValid;
+        return valid;
+    }
+
+    private async Task<bool> BeforeUpdateForm(GridComponent<Invoice> component, Invoice item)
+    {
+        //        object[] keys = component.Keys;
+
+        IGridColumnCollection col = component.Grid.Columns;
+
+        return true;
+    }
+
+
+    private async Task OnAfterInvoiceLineRender(GridComponent<InvoiceLine> gridComponent, bool firstRender)
+    {
+        if (firstRender)
+        {
+            //            gridComponent.BeforeUpdateChangeValue += BeforeUpdateChangeValueInvoiceLine;
+
+            await Task.CompletedTask;
+        }
+    }
+
+    private async Task<bool> BeforeUpdateInvoiceLine(GridUpdateComponent<InvoiceLine> component, InvoiceLine item)
+    {
+        //            var invoiceLineValidator = new InvoiceLineValidator();
+        //            var valid = await invoiceLineValidator.ValidateAsync(item);
+
+        bool valid = false;
+
+        //        if (!valid.IsValid)
+        {
+            component.Error = "Update operation returned one or more errors";
+            //            foreach (var error in valid.Errors)
+            //            {
+            //                component.ColumnErrors.AddParameter(error.PropertyName, error.ErrorMessage);
+            //            }
+        }
+
+        //        return valid.IsValid;
+
+
+        return valid;
+    }
+
+}
+

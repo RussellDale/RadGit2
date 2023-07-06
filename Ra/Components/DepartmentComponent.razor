@@ -1,0 +1,74 @@
+﻿@page "/departmentcomponent"
+
+@using GridMvc.Demo.Resources
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridShared
+@using GridShared.Utility
+@using System
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using Ra.Models.Domian
+@using Ra.Services
+
+@inject IDepartmentService departmentService
+
+@if (_task.IsCompleted)
+{
+    <div class="font-italic small">
+        <div class="col-sm-12 table-sm">
+            <GridComponent T="Department" Grid="@_grid"></GridComponent>
+        </div>
+    </div>
+}
+else
+{
+    <p><em>Loading...</em></p>
+}
+
+@code
+{
+    private CGrid<Department> _grid;
+    private Task _task;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Action<IGridColumnCollection<Department>> departmentColumns = c =>
+        {
+            c.Add(o => o.DepartmentID, true).SetPrimaryKey(true).Titled(SharedResource.Number).SetWidth(50);
+            c.Add(o => o.Name, false);
+            c.Add(o => o.Budget, false);
+            c.Add(o => o.StartDate, false).Format("{0:yyyy-MM-dd}");
+            c.Add(o => o.InstructorID, false);
+            ;
+        };
+
+        var locale = CultureInfo.CurrentCulture;
+        SharedResource.Culture = locale;
+        var query = new QueryDictionary<StringValues>();
+
+        var client = new GridClient<Department>(q => departmentService.GetDepartmentGridRow(departmentColumns, query), query, false,
+            "departmentGrid", departmentColumns, locale)
+            .Sortable()
+            .Filterable()
+            .SetKeyboard(true)
+            .Groupable(true)
+            .ClearFiltersButton(true)
+            .SetStriped(true)
+            .WithMultipleFilters()
+            .Searchable(true, false)
+            .WithGridItemsCount()
+            .ChangePageSize(true)
+            .Searchable()
+            .Selectable(true)
+            .Crud(true, true, true, true, departmentService)
+            .SetHeaderCrudButtons(true)
+            .SetStriped(true)
+            ;
+
+        _grid = client.Grid;
+        _task = client.UpdateGrid();
+        await _task;
+    }
+}

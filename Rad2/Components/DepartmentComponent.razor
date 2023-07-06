@@ -1,0 +1,107 @@
+﻿@page "/departmentcomponent"
+
+@using GridMvc.Demo.Resources
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridShared
+@using GridShared.Utility
+@using System
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using Rad2.Models.Domian
+@using Rad2.Services
+
+@inject IDepartmentService departmentService
+@inject ICourseService courseService
+@inject IInstructorService instructorService
+
+@if (_task.IsCompleted)
+{
+    <div class="font-italic small">
+        <div class="col-sm-12 table-sm">
+            <GridComponent T="Department" Grid="@_grid"></GridComponent>
+        </div>
+    </div>
+}
+else
+{
+    <p><em>Loading...</em></p>
+}
+
+@code
+{
+    private CGrid<Department> _grid;
+    private Task _task;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Action<IGridColumnCollection<Course>> courseColumns = c =>
+        {
+            c.Add(o => o.CourseId, true).SetPrimaryKey(true, true).Titled(SharedResource.Number).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.Title, false);
+            c.Add(o => o.Credits, false);
+        };
+
+        Action<IGridColumnCollection<Department>> departmentColumns = c =>
+        {
+            c.Add(o => o.DepartmentId, true).SetPrimaryKey(true).Titled(SharedResource.Number).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.Name, false);
+            c.Add(o => o.Budget, false).Format("{0:C}");
+            c.Add(o => o.StartDate, false).Titled("Start Date").Format("{0:yyyy-MM-dd}");
+            c.Add(o => o.InstructorId, false).Titled("Instrutor")
+                  .SetWidth(250).RenderValueAs(o => o.Instructor == null ? "" : o.Instructor.FirstName + " " + o.Instructor.LastName)
+                  .SetSelectField(true, o => o.Instructor == null ? "" : o.Instructor.Id.ToString() + " - " +
+                                   o.Instructor.FirstName + " " + o.Instructor.LastName,
+                                   instructorService.GetAllInstructor)
+                  .SetListFilter(instructorService.GetAllInstructor(), true, true);
+            c.Add(o => o.Instructor.OfficeAssignment.Location, false).Titled("Location")
+                  .RenderValueAs(o => (o.Instructor == null || o.Instructor.OfficeAssignment == null) ? "" : o.Instructor.OfficeAssignment.Location);
+        };
+
+        var locale = CultureInfo.CurrentCulture;
+        SharedResource.Culture = locale;
+        var query = new QueryDictionary<StringValues>();
+
+        Func<object[], Task<ICGrid>> subGrids = async keys =>
+        {
+            int departmentId = Int32.Parse(keys[0].ToString());
+            var subGridClient = new GridClient<Course>(q => courseService.GetCourseIdGridRow(courseColumns, query, departmentId),
+                 query, false, "courseGrid" + departmentId, courseColumns, locale)
+                 .WithGridItemsCount()
+                 .Selectable(true)
+                 .Sortable(true)
+                 .SetHeaderCrudButtons(true)
+                 .Crud(true, false, true, true, courseService)
+                 .SetStriped(true)
+            ;
+
+            await subGridClient.UpdateGrid();
+            return subGridClient.Grid;
+        };
+
+        var client = new GridClient<Department>(q => departmentService.GetDepartmentGridRow(departmentColumns, query), query, false,
+            "departmentGrid", departmentColumns, locale)
+            .Sortable()
+            .Filterable()
+            .SetKeyboard(true)
+            .Groupable(true)
+            .ClearFiltersButton(true)
+            .SetStriped(true)
+            .WithMultipleFilters()
+            .Searchable(true, false, true)
+            .WithGridItemsCount()
+            .ChangePageSize(true)
+            .Selectable(true)
+            .Crud(true, false, true, true, departmentService)
+            .SetHeaderCrudButtons(true)
+            .SubGrid(subGrids, ("DepartmentId", "DepartmentId"))
+            .SetStriped(true)
+            .SetDeleteConfirmation(true)
+            ;
+
+        _grid = client.Grid;
+        _task = client.UpdateGrid();
+        await _task;
+    }
+}

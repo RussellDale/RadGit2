@@ -1,0 +1,207 @@
+﻿@page "/artistcomponentsearch"
+
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridMvc.Demo.Resources
+@using GridShared
+@using GridShared.Utility
+@using System
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using System.Timers
+@using Rad.Models.Domian
+@using Rad.Services
+@using Rad.Dialogs
+
+@implements IDisposable
+
+@inject IModalService       modal
+@inject IArtistService      artistService
+@inject IAlbumService       albumService
+@inject ITrackService       trackService
+@inject IGenreService       genreService
+@inject IMediaTypeService   mediaTypeService
+
+@if (_task.IsCompleted)
+{
+    <div class="font-italic small">
+        <div class="col-sm-12 table-sm">
+            <GridComponent T="Artist" Grid="@_grid"></GridComponent>
+        </div>
+    </div>
+}
+else
+{
+    <p><em>Loading...</em></p>
+}
+
+@code {
+    private IGridClient<Artist> _client;
+    private CGrid<Artist> _grid;
+    private Task _task;
+    private IGridClient<Track> _clientTrack;
+    Timer timer;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Action<IGridColumnCollection<Artist>> artistColumns = c =>
+        {
+            c.Add(o => o.ArtistId, true).SetPrimaryKey(true).Titled(SharedResource.Number).SetWidth(50);
+            c.Add(o => o.Name, false);
+        };
+
+        Action<IGridColumnCollection<Album>> albumColumns = c =>
+        {
+            c.Add(o => o.AlbumId, true).SetPrimaryKey(true).Titled(SharedResource.Number).SetWidth(50);
+            c.Add(o => o.Title, false);
+        };
+
+        Action<IGridColumnCollection<Track>> trackColumns = c =>
+        {
+            c.Add(o => o.TrackId, true).SetPrimaryKey(true).SetWidth(50);
+            c.Add(o => o.Name, false);
+            c.Add(o => o.MediaTypeId, false)
+                  .SetWidth(250).RenderValueAs(o => o.MediaType == null ? "" : o.MediaType.Name)
+                  .SetSelectField(true, o => o.MediaType == null ? "" : o.MediaType.MediaTypeId.ToString() + " - " + o.MediaType.Name,
+                                  mediaTypeService.GetAllMediaType)
+                  .SetListFilter(mediaTypeService.GetAllMediaType(), true, true)
+            ;
+            c.Add(o => o.GenreId, false)
+                  .SetWidth(250).RenderValueAs(o => o.Genre == null ? "" : o.Genre.Name)
+                  .SetSelectField(true, o => o.Genre == null ? "" : o.Genre.GenreId.ToString() + " - " + o.Genre.Name,
+                                genreService.GetAllGenre)
+                  .SetListFilter(genreService.GetAllGenre(), true, true)
+            ;
+            c.Add(o => o.Composer, false);
+            c.Add(o => o.Milliseconds, true);
+            c.Add(o => o.Bytes, false).Format("{0:n0}");
+            c.Add().Titled("Price").RenderValueAs(o => "$" + o.UnitPrice);
+            c.Add(o => o.UnitPrice, true);
+        };
+
+        var locale = CultureInfo.CurrentCulture;
+        SharedResource.Culture = locale;
+        var query = new QueryDictionary<StringValues>();
+        int withPaging = 5;
+
+        Func<object[], Task<ICGrid>> subGrids1 = async keys =>
+        {
+            int albumId = Int32.Parse(keys[0].ToString());
+            var subGridClient = new GridClient<Track>(q => trackService.GetTrack(trackColumns, query, withPaging, albumId),
+                query, false, "trackGrid" + albumId, trackColumns, locale)
+                .WithGridItemsCount()
+                .Selectable(true)
+                .Sortable(true)
+                .SetStriped(true)
+                .WithPaging(5)
+            ;
+
+            _clientTrack = subGridClient;
+
+            timer.Start();
+
+            await subGridClient.UpdateGrid();
+            return subGridClient.Grid;
+        };
+
+        Func<object[], Task<ICGrid>> subGrids = async keys =>
+        {
+            int artistId = Int32.Parse(keys[0].ToString());
+            var subGridClient = new GridClient<Album>(q => albumService.GetAlbumId(albumColumns, query, withPaging, artistId),
+                query, false, "albumGrid" + artistId, albumColumns, locale)
+                .WithGridItemsCount()
+                .Selectable(true)
+                .Sortable(true)
+                .SubGrid(subGrids1, ("AlbumId", "AlbumId"))
+                .SetStriped(true)
+                .WithPaging(5)
+            ;
+
+            await subGridClient.UpdateGrid();
+            return subGridClient.Grid;
+        };
+
+        var client = new GridClient<Artist>(q => artistService.GetArtistGridRows(artistColumns, query, withPaging), query, false,
+                "artistGrid", artistColumns, locale)
+                .WithGridItemsCount()
+                .Searchable(true)
+                .Selectable(true)
+                .Sortable(true)
+                .SubGrid(subGrids, ("ArtistId", "ArtistId"))
+                .SetStriped(true)
+                .WithPaging(5)
+            ;
+
+        _grid = client.Grid;
+        _task = client.UpdateGrid();
+        _client = client;
+        await _task;
+
+        if (timer == null)
+        {
+            timer = new Timer();
+            timer.Interval = 500;
+            timer.Elapsed += TimerOnElapsed;
+        }
+    }
+
+    InvoiceLine invoiceLine = new InvoiceLine();
+
+    protected async void OnRowClickedTrack(object item)
+    {
+        Track track = null;
+
+        if (item.GetType() == typeof(Track))
+        {
+            track = (Track)item;
+
+            if (invoiceLine.TrackId == track.TrackId)
+            {
+                IModalReference modalRef = modal.Show<DialogComponent>("My Movies");
+
+                ModalResult result = await modalRef.Result;
+
+                if (result.Cancelled)
+                {
+                    Console.WriteLine("Modal was cancelled");
+                }
+                else
+                {
+                    Console.WriteLine(result.Data);
+                }
+            }
+            else
+            {
+                invoiceLine.TrackId = track.TrackId;
+                invoiceLine.UnitPrice = track.UnitPrice;
+                invoiceLine.Quantity = 1;
+                invoiceLine.InvoiceId = 4;  //to-do
+            }
+        }
+    }
+
+    private void TimerOnElapsed(object sender, ElapsedEventArgs e)
+    {
+        timer.Stop();
+
+        _clientTrack.Grid.GridComponent.OnRowClicked = OnRowClickedTrack;
+    }
+
+    public void Dispose()
+    {
+        if (timer != null)
+        {
+            timer.Dispose();
+            timer = null;
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+        }
+    }
+
+}

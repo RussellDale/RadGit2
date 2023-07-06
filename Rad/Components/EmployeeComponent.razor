@@ -1,0 +1,89 @@
+﻿@page "/employeecomponent"
+
+@using GridMvc.Demo.Resources
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridShared
+@using GridShared.Utility
+@using System
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using Rad.Models.Domian
+@using Rad.Services
+
+@inject IEmployeeService employeeService
+
+@if (_task.IsCompleted)
+{
+    <div class="font-italic small">
+        <div class="col-sm-12 table-sm">
+            <GridComponent T="Employee" Grid="@_grid"></GridComponent>
+        </div>
+    </div>
+}
+else
+{
+    <p><em>Loading...</em></p>
+}
+
+@code
+{
+    private CGrid<Employee> _grid;
+    private Task _task;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Action<IGridColumnCollection<Employee>> employeeColumns = c =>
+        {
+            c.Add(o => o.EmployeeId, true).SetPrimaryKey(true).Titled(SharedResource.Number).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.FirstName, false);
+            c.Add(o => o.LastName, false);
+            c.Add(o => o.Email, false);
+            c.Add(o => o.Title, false);
+            c.Add(o => o.Address, false);
+            c.Add(o => o.City, false);
+            c.Add(o => o.State, false);
+            c.Add(o => o.Country, false);
+            c.Add(o => o.PostalCode, false);
+            c.Add(o => o.BirthDate, false).Format("{0:yyyy-MM-dd}");
+            c.Add(o => o.HireDate, false).Format("{0:yyyy-MM-dd}");
+            c.Add(o => o.Phone, false);
+            c.Add(o => o.Fax, false);
+            c.Add(o => o.ReportsTo, false)
+                  .SetWidth(250).RenderValueAs(o => o.Employee_ReportsTo == null ? "" : o.Employee_ReportsTo.FirstName + " " + o.Employee_ReportsTo.LastName)
+                  .SetSelectField(true, o => o.ReportsTo == null ? "" : o.ReportsTo.ToString() + " - " +
+                                   o.FirstName + " " + o.LastName,
+                                   employeeService.GetAllEmployee)
+                  .SetListFilter(employeeService.GetAllEmployee(), true, true)
+            ;
+        };
+
+        var locale = CultureInfo.CurrentCulture;
+        SharedResource.Culture = locale;
+        var query = new QueryDictionary<StringValues>();
+
+        var client = new GridClient<Employee>(q => employeeService.GetEmployeeGridRow(employeeColumns, query), query, false,
+            "employeeGrid", employeeColumns, locale)
+            .Sortable()
+            .Filterable()
+            .SetKeyboard(true)
+            .Groupable(true)
+            .ClearFiltersButton(true)
+            .SetStriped(true)
+            .WithMultipleFilters()
+            .Searchable(true, false)
+            .WithGridItemsCount()
+            .ChangePageSize(true)
+            .Selectable(true)
+            .Crud(true, true, true, true, employeeService)
+            .SetHeaderCrudButtons(true)
+            .SetStriped(true)
+            ;
+
+        _grid = client.Grid;
+        _task = client.UpdateGrid();
+        await _task;
+    }
+}
+

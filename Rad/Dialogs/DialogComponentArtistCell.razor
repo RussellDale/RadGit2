@@ -1,0 +1,35 @@
+﻿@using GridBlazor.Resources
+@using GridMvc.Demo.Resources
+@using GridShared.Sorting
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridShared
+@using GridShared.Utility
+@using GridShared.Columns
+@using System
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using Rad.Models.Domian
+@using Rad.Services
+@using Rad.Dialogs
+
+@implements ICustomGridComponent<Invoice>
+
+<button class='btn btn-sm btn-primary' @onclick="MyClickHandler">Artist</button>
+
+@code {
+    [CascadingParameter(Name = "GridComponent")]
+    public GridComponent<Invoice> GridComponent { get; set; }
+
+    [Parameter]
+    public Invoice Item { get; set; }
+
+    private void MyClickHandler(MouseEventArgs e)
+    {
+        GridComponent.StartFormComponent<DialogComponentArtist>("Artist", null, null, Item.InvoiceId);
+ //       GridComponent.StartFormComponent<ArtistComponent>("Artist", null, null, Item.InvoiceId);
+
+
+    }
+}

@@ -1,0 +1,26 @@
+﻿@using GridCore
+@using GridCore.Resources
+@using GridShared.Utility
+@model ISGrid
+
+@{
+    string _seachUrl;
+    string _searchValue = Model.Settings.SearchSettings.SearchValue;
+
+    //determine current url:
+    var queryBuilder = new CustomQueryStringBuilder(Model.Settings.SearchSettings.Query);
+    var exceptQueryParameters = new List<string> { "grid-search" };
+    _seachUrl = queryBuilder.GetQueryStringExcept(exceptQueryParameters);
+}
+
+<div class="grid-search col-md-6" data-search-url="@_seachUrl">
+    <div class="input-group">
+        <span class="input-group-btn">
+            <button class="grid-button btn btn-default btn-primary grid-search-apply" type="button"></button>
+        </span>
+        <input type="text" class="form-control grid-search-input" value="@_searchValue" placeholder="@Strings.SearchFor" />
+        <span class="input-group-btn">
+            <button class="grid-button btn btn-default btn-primary grid-search-clear" type="button"></button>
+        </span>
+    </div>
+</div>

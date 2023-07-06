@@ -1,0 +1,72 @@
+﻿@page "/OfficeAssignmentcomponent"
+
+@using GridMvc.Demo.Resources
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridShared
+@using GridShared.Utility
+@using System
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using Rad2.Models.Domian
+@using Rad2.Services
+
+@inject IOfficeAssignmentService officeAssignmentService
+
+@if (_task.IsCompleted)
+{
+    <div class="font-italic small">
+        <div class="col-sm-12 table-sm">
+            <GridComponent T="OfficeAssignment" Grid="@_grid"></GridComponent>
+        </div>
+    </div>
+}
+else
+{
+    <p><em>Loading...</em></p>
+}
+
+@code
+{
+    private CGrid<OfficeAssignment> _grid;
+    private Task _task;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Action<IGridColumnCollection<OfficeAssignment>> officeAssignmentColumns = c =>
+        {
+            c.Add(o => o.InstructorId, false).SetPrimaryKey(true).Titled("Instructor").SetWidth(50)
+              .RenderValueAs(o => o.Instructor == null ? "" : o.Instructor.FirstName + " " + o.Instructor.LastName)
+                  .SetSelectField(true, o => o.Instructor == null ? "" : o.Instructor.Id.ToString() + " - " +
+                                   o.Instructor.FirstName + " " + o.Instructor.LastName,
+                                   officeAssignmentService.GetAllOfficeAssignment)
+                  .SetListFilter(officeAssignmentService.GetAllOfficeAssignment(), true, true)
+                  .SetReadOnlyOnUpdate(true);
+            c.Add(o => o.Location, false);
+        };
+
+        var locale = CultureInfo.CurrentCulture;
+        SharedResource.Culture = locale;
+        var query = new QueryDictionary<StringValues>();
+
+        var client = new GridClient<OfficeAssignment>(q => officeAssignmentService.GetOfficeAssignmentGridRow(officeAssignmentColumns, query), query, false,
+            "OfficeAssignmentGrid", officeAssignmentColumns, locale)
+            .Sortable()
+            .Filterable()
+            .SetKeyboard(true)
+            .SetStriped(true)
+            .WithMultipleFilters()
+            .Searchable(true, false)
+            .WithGridItemsCount()
+            .ChangePageSize(true)
+            .Selectable(true)
+            .Crud(true, false, true, true, officeAssignmentService)
+            .SetHeaderCrudButtons(true) 
+            ;
+
+        _grid = client.Grid;
+        _task = client.UpdateGrid();
+        await _task;
+    }
+}

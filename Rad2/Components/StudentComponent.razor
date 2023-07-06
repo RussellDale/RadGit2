@@ -1,0 +1,194 @@
+﻿@page "/studentcomponent"
+
+@using GridMvc.Demo.Resources
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridShared
+@using GridShared.Utility
+@using GridShared.Columns
+@using System
+@using System.Collections
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using Rad2.Models.Domian
+@using Rad2.Services
+
+@inject IStudentService studentService
+@inject IEnrollmentService enrollmentService
+@inject ICourseService courseService
+@inject ICourseAssignmentService courseAssignmentService
+@inject IDepartmentService departmentService
+@inject IInstructorService instructorService
+
+@if (_task.IsCompleted)
+{
+    <div class="font-italic small">
+        <div class="col-sm-12 table-sm">
+            <GridComponent T="Student" Grid="@_grid"></GridComponent>
+        </div>
+    </div>
+}
+else
+{
+    <p><em>Loading...</em></p>
+}
+
+@code
+{
+    private CGrid<Student> _grid;
+    private Task _task;
+
+    private CGrid<Enrollment> subGridClientEnrollment;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Action<IGridColumnCollection<CourseAssignment>> courseAssignmentColumns = c =>
+        {
+            c.Add(o => o.Instructor.FirstName, false).Titled("First Name");
+            c.Add(o => o.Instructor.LastName).Titled("Last Name");
+            c.Add(o => o.Instructor.OfficeAssignment.Location, false).Titled("Location").RenderValueAs(o => o.Instructor.OfficeAssignment == null ? "" : o.Instructor.OfficeAssignment.Location);
+        };
+        /*
+
+        Func<Enrollment, GridMode, Task> afterChangeEnrollmentId = async (enrollment, mode) =>
+        {
+            if (mode == GridMode.Create || mode == GridMode.Update)
+            {
+                int departmentId = enrollment.Course.DepartmentId;
+
+//                IGridColumn targetColumn(), insertingColumn();
+//                bool icSucceded = false;
+//                icSucceded = await subGridClientEnrollment.InsertColumn(targetColumn, insertingColumn);
+//                subGridClientEnrollment.Columns.Insert
+
+                IGridColumn courseId = subGridClientEnrollment.Columns.Get("CourseId");
+
+                var obj = courseId.FilterWidgetData;
+                IFilterableColumn obj1 = null;
+
+//                IFilterableColumn obj2 = (IFilterableColumn)courseId.FilterWidgetData;
+//                ListFilterOptions obj3 = (ListFilterOptions)courseId.FilterWidgetData;
+//                IEnumerable obj4 = (IEnumerable)courseId.FilterWidgetData;
+
+                subGridClientEnrollment.Columns.Add()
+                    .RenderValueAs(o => o.Course == null ? "" : o.Course.Title)
+                    .SetSelectField(true, o => o.Course == null ? "" : o.Course.CourseId.ToString() + " - " +
+                                        o.Course.Title,
+                                        courseService.GetAllCourse)
+                    .SetListFilter(courseService.GetAllDepartmentId(departmentId), true, true);
+
+//                StateHasChanged();
+                await Task.CompletedTask;
+           }
+        };
+*/
+
+        Action<IGridColumnCollection<Enrollment>> enrollmentColumns = c =>
+        {
+            c.Add(o => o.EnrollmentId, true).SetPrimaryKey(true).SetCrudHidden(true);//.Titled(SharedResource.Number).SetWidth(50);
+/*
+            c.Add(o => o.Course.DepartmentId, false).Titled("Department")
+                            .SetWidth(250).RenderValueAs(o => o.Course.Department == null ? "" : o.Course.Department.Name)
+                            .SetSelectField(true, o => o.Course.Department == null ? "" : o.Course.Department.DepartmentId.ToString() + " - " +
+                                              o.Course.Department.Name,
+                                              departmentService.GetAllDepartment)
+                            .SetListFilter(departmentService.GetAllDepartment(), true, true)
+                            .SetAfterChangeValue(afterChangeEnrollmentId);
+*/
+            c.Add(o => o.CourseId, false).Titled("Course")
+                             .SetWidth(250).RenderValueAs(o => o.Course == null ? "" : o.Course.CourseId + " " + o.Course.Title)
+                             .SetSelectField(true, o => o.Course == null ? "" : o.Course.CourseId.ToString() + " - " +
+                                              o.Course.Title,
+                                              courseService.GetAllCourse)
+                             .SetListFilter(courseService.GetAllCourse(), true, true);
+            c.Add(o => o.StudentId, true).SetCrudHidden(true);
+            c.Add(o => o.Course.Department.Name, false).Titled("Department")
+                   .RenderValueAs(o => o.Course.Department.Name);
+            c.Add(o => o.Grade, false);
+            c.Add(o => o.Course.Credits, false).Titled("Credits").SetCrudHidden(true);
+        };
+/*
+        Func<Student, GridMode, Task> afterChangeStudentId = async (student, mode) =>
+        {
+            if (mode == GridMode.Create)
+            {
+                student.EnrollmentDate = DateTime.Now;
+                StateHasChanged();
+                await Task.CompletedTask;
+            }
+        };
+*/
+        Action<IGridColumnCollection<Student>> studentColumns = c =>
+        {
+            c.Add(o => o.Id, true).SetPrimaryKey(true).Titled(SharedResource.Number).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.FirstName, false).Titled("First Name");
+            c.Add(o => o.LastName, false).Titled("Last Name");
+            c.Add(o => o.EnrollmentDate, false).Titled("Enrollment Date").Format("{0:yyyy-MM-dd}");//.SetAfterChangeValue(afterChangeStudentId);
+        };
+
+        var locale = CultureInfo.CurrentCulture;
+        SharedResource.Culture = locale;
+        var query = new QueryDictionary<StringValues>();
+
+        Func<object[], Task<ICGrid>> subGrids2 = async keys =>
+        {
+            int courseId = Int32.Parse(keys[0].ToString());
+            var subGridClient = new GridClient<CourseAssignment>(q => courseAssignmentService.GetCourseAssignmentIdGridRow(courseAssignmentColumns, query, courseId),
+                query, false, "courseAssignmentGrid" + courseId, courseAssignmentColumns, locale)
+                .WithGridItemsCount()
+                .Selectable(true)
+                .Sortable(true)
+                .SetHeaderCrudButtons(true)
+                .SetStriped(true)
+            ;
+
+            await subGridClient.UpdateGrid();
+            return subGridClient.Grid;
+        };
+
+        Func<object[], Task<ICGrid>> subGrids = async keys =>
+        {
+            int Id = Int32.Parse(keys[0].ToString());
+            var subGridClient = new GridClient<Enrollment>(q => enrollmentService.GetEnrollmentIdGridRow(enrollmentColumns, query, Id),
+                query, false, "enrollmentGrid" + Id, enrollmentColumns, locale)
+                .WithGridItemsCount()
+                .Selectable(true)
+                .Sortable(true)
+                .SetHeaderCrudButtons(true)
+                .Crud(true, false, true, true, enrollmentService)
+                .SetStriped(true)
+                .SubGrid(subGrids2, ("CourseId", "CourseId"))
+            ;
+
+            subGridClientEnrollment = subGridClient.Grid;
+
+            await subGridClient.UpdateGrid();
+            return subGridClient.Grid;
+        };
+
+        var client = new GridClient<Student>(q => studentService.GetStudentGridRow(studentColumns, query), query, false,
+            "studentGrid", studentColumns, locale)
+            .Sortable()
+            .Filterable()
+            .SetKeyboard(true)
+            .Groupable(true)
+            .ClearFiltersButton(true)
+            .SetStriped(true)
+            .WithMultipleFilters()
+            .Searchable(true, false)
+            .WithGridItemsCount()
+            .ChangePageSize(true)
+            .Selectable(true)
+            .Crud(true, false, true, true, studentService)
+            .SetHeaderCrudButtons(true)
+            .SetStriped(true)
+            .SubGrid(subGrids, ("Id", "StudentId"))
+            .SetDeleteConfirmation(true)
+            ;
+
+        _grid = client.Grid;
+        _task = client.UpdateGrid();
+        await _task;
+    }
+}

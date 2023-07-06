@@ -1,0 +1,91 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <LangVersion>8.0</LangVersion>
+    <GenerateEmbeddedFilesManifest>True</GenerateEmbeddedFilesManifest>
+    <EnableDefaultEmbeddedResourceItems>False</EnableDefaultEmbeddedResourceItems>
+    <Product>GridMvc</Product>
+    <PackageId>GridMvcCore</PackageId>
+    <Version>5.4.2</Version>
+    <Title>GridMvc</Title>
+    <Description>ASP.NET MVC Grid component</Description>
+    <Summary>ASP.NET MVC Grid component</Summary>
+    <Authors>Gustau Navarro</Authors>
+    <PackageTags>grid table mvc</PackageTags>
+    <PackageProjectUrl>https://github.com/gustavnavar/Grid.Blazor</PackageProjectUrl>
+    <PackageLicenseExpression>LGPL-2.1-only</PackageLicenseExpression>
+	<PackageReleaseNotes>Supports .NET Core 3.1, .NET 5.0, .NET 6.0</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="6.0" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="5.0" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\css\**\*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\js\**\*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\css\gridmvc.css" LogicalName="GridMvc.Resources.css.gridmvc.css" />
+    <EmbeddedResource Include="Resources\css\gridmvc.min.css" LogicalName="GridMvc.Resources.css.gridmvc.min.css" />
+    <EmbeddedResource Include="Resources\css\gridmvc-bootstrap3.css" LogicalName="GridMvc.Resources.css.gridmvc-bootstrap3.css" />
+    <EmbeddedResource Include="Resources\css\gridmvc-bootstrap3.min.css" LogicalName="GridMvc.Resources.css.gridmvc-bootstrap3.min.css" />
+    <EmbeddedResource Include="Resources\js\gridmvc.js" LogicalName="GridMvc.Resources.js.gridmvc.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc.min.js" LogicalName="GridMvc.Resources.js.gridmvc.min.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-lang-de.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-de.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-lang-fr.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-fr.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-lang-it.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-it.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-lang-es.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-es.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-lang-ru.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-ru.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-lang-nb.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-nb.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-lang-nl.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-nl.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-lang-tr.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-tr.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-lang-sl.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-sl.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-lang-cs.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-cs.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-lang-se.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-se.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-lang-sr.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-sr.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-lang-hr.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-hr.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-lang-fa.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-fa.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-lang-gl.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-gl.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-lang-eu.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-eu.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-lang-ca.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-ca.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-lang-pt.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-pt.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-lang-bg.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-bg.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-lang-uk.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-uk.js" />
+	<EmbeddedResource Include="Resources\js\gridmvc-lang-ar.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-ar.js" />
+	<EmbeddedResource Include="Resources\js\gridmvc-lang-da.js" LogicalName="GridMvc.Resources.js.gridmvc-lang-da.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-ajax.js" LogicalName="GridMvc.Resources.js.gridmvc-ajax.js" />
+    <EmbeddedResource Include="Resources\js\gridmvc-ajax.min.js" LogicalName="GridMvc.Resources.js.gridmvc-ajax.min.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="bundleconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="bundleconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GridCore\GridCore.csproj" />
+  </ItemGroup>
+</Project>

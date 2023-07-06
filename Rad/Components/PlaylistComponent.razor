@@ -1,0 +1,105 @@
+﻿@page "/playlistcomponent"
+
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridMvc.Demo.Resources
+@using GridShared
+@using GridShared.Columns
+@using GridShared.Utility
+@using System
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using Rad.Models.Domian
+@using Rad.Services
+@using Rad.Dialogs
+
+
+@inject IPlaylistService        playlistService
+@inject IPlaylistTrackService   playlistTrackService
+
+@if (_task.IsCompleted)
+{
+    <div class="font-italic small">
+        <div class="col-sm-12 table-sm">
+            <GridComponent T="Playlist" Grid="@_grid"></GridComponent>
+        </div>
+    </div>
+}
+else
+{
+    <p><em>Loading...</em></p>
+}
+
+@code
+{
+    private CGrid<Playlist> _grid;
+    private Task _task;
+//    private GridComponent<Playlist> component;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Action<IGridColumnCollection<Playlist>> playlistColumns = c =>
+        {
+            c.Add(o => o.PlaylistId, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.Name, false);
+        };
+
+        Action<IGridColumnCollection<PlaylistTrack>> playlistTrackColumns = c =>
+        {
+            c.Add(o => o.PlaylistId, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.TrackId, true).SetPrimaryKey(true, false);
+            //c.Add(o => o.Track.TrackId, false).SetCrudHidden(true);
+            c.Add(o => o.Track.Name, false).SetCrudHidden(true);
+            c.Add(o => o.Track.Genre.Name, false).SetCrudHidden(true);
+            //c.Add(o => o.Track.MediaType.Name, false);
+            c.Add(o => o.Track.Album.Artist.Name, false).SetCrudHidden(true);
+            c.Add(o => o.Track.Album.Title, false).SetCrudHidden(true);
+        };
+
+        var locale = CultureInfo.CurrentCulture;
+        SharedResource.Culture = locale;
+        var query = new QueryDictionary<StringValues>();
+
+        Func<object[], Task<ICGrid>> subGrids = async keys =>
+        {
+            int playlistId = Int32.Parse(keys[0].ToString());
+            var subGridClient = new GridClient<PlaylistTrack>(q => playlistTrackService.GetPlaylistTrackGridRows(playlistTrackColumns, query, playlistId),
+                query, false, "playlistGrid" + playlistId, playlistTrackColumns, locale)
+                .Sortable()
+                .Filterable()
+                .SetKeyboard(true)
+                .Groupable(true)
+                .ClearFiltersButton(true)
+                .SetStriped(true)
+                .WithMultipleFilters()
+                .Searchable(true, false)
+                .WithGridItemsCount()
+                .ChangePageSize(true)
+                .Selectable(true)
+                .SetHeaderCrudButtons(true)
+                .Crud(true, false, false, true, playlistTrackService)
+                .AddButtonComponent<DialogComponentArtist>("Artist N", "Artist L", null, null, null, playlistId)
+                .SetStriped(true)
+            ;
+
+            await subGridClient.UpdateGrid();
+            return subGridClient.Grid;
+        };
+
+        var client = new GridClient<Playlist>(q => playlistService.GetPlaylistGridRows(playlistColumns, query), query, false,
+            "playlistGrid", playlistColumns, locale)
+            .Selectable(true)
+            .Searchable(true, false)
+            .Crud(true, false, false, true, playlistService)
+            .SetHeaderCrudButtons(true)
+            .SubGrid(subGrids, ("PlaylistId", "PlaylistId"))
+            .SetStriped(true)
+        ;
+
+        _grid = client.Grid;
+        _task = client.UpdateGrid();
+        await _task;
+    }
+}
+

@@ -1,0 +1,115 @@
+﻿@page "/instructorcomponent"
+
+@using GridMvc.Demo.Resources
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridShared
+@using GridShared.Utility
+@using System
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using Rad2.Models.Domian
+@using Rad2.Services
+
+@inject IInstructorService instructorService
+@inject ICourseAssignmentService courseAssignmentService
+@inject ICourseService courseService
+@inject IDepartmentService departmentService
+
+@if (_task.IsCompleted)
+{
+    <div class="font-italic small">
+        <div class="col-sm-12 table-sm">
+            <GridComponent T="Instructor" Grid="@_grid"></GridComponent>
+        </div>
+    </div>
+}
+else
+{
+    <p><em>Loading...</em></p>
+}
+
+@code
+{
+    private CGrid<Instructor> _grid;
+    private Task _task;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Action<IGridColumnCollection<CourseAssignment>> courseAssignmentColumns = c =>
+        {
+/*
+            c.Add(o => o.Course.DepartmentId, false).Titled("Department")
+                            .SetWidth(250).RenderValueAs(o => o.Course.Department == null ? "" : o.Course.Department.Name)
+                            .SetSelectField(true, o => o.Course.DepartmentId == null ? "" : o.Course.Department.DepartmentId.ToString() + " - " +
+                                              o.Course.Department.Name,
+                                              departmentService.GetAllDepartment)
+                            .SetListFilter(departmentService.GetAllDepartment(), true, true);
+*/
+            c.Add(o => o.CourseId, true).Titled("Title").SetPrimaryKey(true)//.SetWidth(50)
+                .SetWidth(250).RenderValueAs(o => o.Course == null ? "" : o.Course.Title)
+                .SetSelectField(true, o => o.Course == null ? "" : o.Course.CourseId.ToString() + " - " +
+                                o.Course.Title,
+                                courseService.GetAllCourse)
+                .SetListFilter(courseService.GetAllCourse(), true, false);
+            c.Add(o => o.InstructorId, true).SetPrimaryKey(true, false).SetCrudHidden(true);
+            c.Add(o => o.Course.Title, false).Titled("Title").SetCrudHidden(true);
+         };
+ 
+        Action<IGridColumnCollection<Instructor>> instructorColumns = c =>
+        {
+            c.Add(o => o.Id, true).SetPrimaryKey(true).Titled(SharedResource.Number).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.FirstName, false).Titled("First Name");
+            c.Add(o => o.LastName, false).Titled("Last Name");
+            c.Add(o => o.HireDate, false).Titled("Hire Date").Format("{0:yyyy-MM-dd}");
+            c.Add(o => o.OfficeAssignment.Location, false).Titled("Location")
+              .RenderValueAs(o => o.OfficeAssignment == null ? "" : o.OfficeAssignment.Location);
+        };
+
+        var locale = CultureInfo.CurrentCulture;
+        SharedResource.Culture = locale;
+        var query = new QueryDictionary<StringValues>();
+
+        Func<object[], Task<ICGrid>> subGrids = async keys =>
+         {
+             int Id = Int32.Parse(keys[0].ToString());
+             var subGridClient = new GridClient<CourseAssignment>(q => courseAssignmentService.GetCourseAssignmentGridRow(courseAssignmentColumns, query, Id),
+                 query, false, "courseGrid" + Id, courseAssignmentColumns, locale)
+                 .WithGridItemsCount()
+                 .Selectable(true)
+                 .Sortable(true)
+                 .SetHeaderCrudButtons(true)
+                 .Crud(true, false, false, true, courseAssignmentService)
+                 .SetStriped(true)
+             ;
+
+             await subGridClient.UpdateGrid();
+             return subGridClient.Grid;
+         };
+
+        var client = new GridClient<Instructor>(q => instructorService.GetInstructorGridRow(instructorColumns, query), query, false,
+            "instructorGrid", instructorColumns, locale)
+            .Sortable()
+            .Filterable()
+            .SetKeyboard(true)
+            .Groupable(true)
+            .ClearFiltersButton(true)
+            .SetStriped(true)
+            .WithMultipleFilters()
+            .Searchable(true, false)
+            .WithGridItemsCount()
+            .ChangePageSize(true)
+            .Selectable(true)
+            .Crud(true, false, true, true, instructorService)
+            .SetHeaderCrudButtons(true)
+            .SetStriped(true)
+            .SubGrid(subGrids, ("Id", "InstructorId"))
+            .SetDeleteConfirmation(true)
+            ;
+
+        _grid = client.Grid;
+        _task = client.UpdateGrid();
+        await _task;
+    }
+}

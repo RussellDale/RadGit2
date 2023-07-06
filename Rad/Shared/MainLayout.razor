@@ -1,0 +1,43 @@
+﻿@inherits LayoutComponentBase
+
+<div class="sidebar">
+    <NavMenu />
+</div>
+
+@code {
+    bool bArtist = true;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            bArtist = true;
+        }
+
+
+    }
+}
+
+<div class="main">
+    <!--
+    <div class="top-row px-4">
+    -->
+    <div class="top-row px-4">
+
+    @if (bArtist)
+    {
+        <a href="artistcomponent">Artist</a>
+        <a href="invoicecomponent">Invoices</a>
+        <a href="playlistcomponent">Playlist</a>
+        <a href="customercomponent">Customer</a>
+        <a href="employeecomponent">Employee</a>
+    }
+        <!--
+        <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        -->
+    </div>
+
+    <div class="content px-4">
+        @Body
+    </div>
+</div>

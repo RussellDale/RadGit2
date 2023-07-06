@@ -1,0 +1,40 @@
+﻿@page "/Dialogs"
+
+@using GridBlazor.Resources
+@using GridMvc.Demo.Resources
+@using GridShared.Sorting
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridShared
+@using GridShared.Utility
+@using GridShared.Columns
+@using System
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using Rad.Models.Domian
+@using Rad.Services
+@using Rad.Dialogs
+
+@inject IModalService       modal
+
+@implements ICustomGridComponent<Invoice>
+
+@code {
+
+    [Parameter]
+    public Invoice Item { get; set; }
+
+    public int invoiceId { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        IModalReference modalRef = modal.Show<ArtistComponentSearch>();
+/*
+        var parameters = new ModalParameters();
+        parameters.Add(invoiceId.ToString(), invoiceId);
+
+        IModalReference modalRef = modal.Show<ArtistComponentSearch>("Artist", parameters);
+*/
+    }
+}
