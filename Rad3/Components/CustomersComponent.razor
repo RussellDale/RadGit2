@@ -15,8 +15,10 @@
 
 @inject ICustomersService customersService
 @inject IOrdersService ordersService
+@inject IOrderDetailsService orderDetailsService
 @inject IEmployeesService employeesService
 @inject IShippersService shippersService
+@inject IProductsService productsService
 
 @if (_task.IsCompleted)
 {
@@ -35,6 +37,7 @@ else
     private CGrid<Customers> _grid;
     private Task _task;
     Func<object[], Task<ICGrid>> subEx;
+    Func<object[], Task<ICGrid>> subEx1;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -85,9 +88,46 @@ else
             c.Add(o => o.ShipCountry, false);
         };
 
+        Action<IGridColumnCollection<OrderDetails>> orderDetailsColumns = c =>
+        {
+            c.Add(o => o.OrderId, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.ProductId, false).SetPrimaryKey(true, false).SetCrudHidden(false, true, true, true)
+                  .Titled("Product").SetWidth(250)
+                  .RenderValueAs(o => o.Product.ProductName)
+                  .SetSelectField(true, o => o.ProductId.ToString() + " - " + o.Product.ProductName,
+                                  productsService.GetAllProducts)
+                  .SetListFilter(productsService.GetAllProducts(), true, true);
+            c.Add(o => o.UnitPrice, false);
+            c.Add(o => o.Quantity, false);
+            c.Add(o => o.Discount, false);
+        };
+
         var locale = CultureInfo.CurrentCulture;
         SharedResource.Culture = locale;
         var query = new QueryDictionary<StringValues>();
+        
+        Func<object[], Task<ICGrid>> subGrids1 = async keys =>
+        {
+            int orderId = Int32.Parse(keys[0].ToString());
+
+            var subGridClient = new GridClient<OrderDetails>(q => orderDetailsService.GetOrderDetailsGridRow(orderDetailsColumns, query, orderId),
+                                                             query, false, "orderDetailsGrid", orderDetailsColumns, locale)
+               .Sortable()
+              .Filterable()
+              .SetKeyboard(true)
+              .SetStriped(true)
+              .WithMultipleFilters()
+              .Searchable(true, false)
+              .WithGridItemsCount()
+              .ChangePageSize(true)
+              .Selectable(true)
+              .SetHeaderCrudButtons(true)
+              .Crud(true, false, true, true, orderDetailsService)
+              ;
+
+            await subGridClient.UpdateGrid();
+            return subGridClient.Grid;
+        };
 
         Func<object[], Task<ICGrid>> subGrids = async keys =>
         {
@@ -106,6 +146,7 @@ else
               .Selectable(true)
               .SetHeaderCrudButtons(true)
               .Crud(true, false, true, true, ordersService)
+              .SubGrid(subEx1, ("OrderId", "OrderId"))
               ;
 
             await subGridClient.UpdateGrid();
@@ -113,6 +154,7 @@ else
         };
 
         subEx = subGrids;
+        subEx1 = subGrids1;
 
         var client = GridClient(customersColumns, query, locale);
 
@@ -139,7 +181,6 @@ else
            .SetHeaderCrudButtons(true)
            .Crud(true, false, true, true, customersService)
            .SubGrid(subEx, ("CustomerId", "CustomerId"))
-
            ;
 
         return subGridClient;
