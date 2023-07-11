@@ -62,6 +62,28 @@ namespace Rad3.Services
             }
         }
 
+        public ItemsDTO<Orders> GetOrdersCGridRow(Action<IGridColumnCollection<Orders>> columns,
+                                                  QueryDictionary<StringValues> query, string Id)
+        {
+            using (var context = new dbContext(_options))
+            {
+                var repository = new OrdersRepository(context);
+
+                var server = new GridServer<Orders>(repository.GetAll()
+                                                              .Include(r => r.OrderDetails)
+                                                              .Where(c => c.CustomerId == Id),
+                                                    new QueryCollection(query),
+                              false, "OrdersGrid", columns)
+                            .WithPaging(10)
+                            .Sortable()
+                            .Searchable(true, false, true)
+                    ;
+
+                var items = server.ItemsToDisplay;
+                return items;
+            }
+        }
+
         public IEnumerable<SelectItem> GetAllOrders()
         {
             using (var context = new dbContext(_options))
@@ -143,6 +165,9 @@ namespace Rad3.Services
                                           QueryDictionary<StringValues> query);
         ItemsDTO<Orders> GetOrdersEGridRow(Action<IGridColumnCollection<Orders>> columns,
                                            QueryDictionary<StringValues> query, int Id);
+        ItemsDTO<Orders> GetOrdersCGridRow(Action<IGridColumnCollection<Orders>> columns,
+                                           QueryDictionary<StringValues> query, string Id);
+
         IEnumerable<SelectItem> GetAllOrders();
     }
 }
