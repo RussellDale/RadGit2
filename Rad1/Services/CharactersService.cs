@@ -13,23 +13,23 @@ using System.Threading.Tasks;
 
 namespace Rad1.Services
 {
-    public class CategoriesService : ICategoriesService
+    public class CharactersService : ICharactersService
     {
         private readonly DbContextOptions<dbContext> _options;
 
-        public CategoriesService(DbContextOptions<dbContext> options)
+        public CharactersService(DbContextOptions<dbContext> options)
         {
             _options = options;
         }
-        public ItemsDTO<Categories> GetCategoriesGridRow(Action<IGridColumnCollection<Categories>> columns,
+        public ItemsDTO<Characters> GetCharactersGridRow(Action<IGridColumnCollection<Characters>> columns,
                                                          QueryDictionary<StringValues> query)
         {
             using (var context = new dbContext(_options))
             {
-                var repository = new CategoriesRepository(context);
+                var repository = new CharactersRepository(context);
 
-                var server = new GridServer<Categories>(repository.GetAll(), new QueryCollection(query),
-                              false, "categoriesGrid", columns)
+                var server = new GridServer<Characters>(repository.GetAll(), new QueryCollection(query),
+                              false, "charactersGrid", columns)
                             .WithPaging(10)
                             .Sortable()
                             .Searchable(true, false, true)
@@ -39,36 +39,24 @@ namespace Rad1.Services
                 return items;
             }
         }
-
-        public IEnumerable<SelectItem> GetAllCategories()
-        {
-            using (var context = new dbContext(_options))
-            {
-                CategoriesRepository repository = new CategoriesRepository(context);
-                return repository.GetAll()
-                     .Select(r => new SelectItem(r.CategoryId.ToString(), r.CategoryId.ToString() + " - " + r.CategoryName))
-                                               .ToList();
-            }
-        }
-
-        public async Task<Categories> Get(params object[] keys)
+        public async Task<Characters> Get(params object[] keys)
         {
             using (var context = new dbContext(_options))
             {
                 int categoryID;
                 int.TryParse(keys[0].ToString(), out categoryID);
-                var repository = new CategoriesRepository(context);
+                var repository = new CharactersRepository(context);
                 return await repository.GetById(categoryID);
             }
         }
 
-        public async Task Insert(Categories item)
+        public async Task Insert(Characters item)
         {
             using (var context = new dbContext(_options))
             {
                 try
                 {
-                    var repository = new CategoriesRepository(context);
+                    var repository = new CharactersRepository(context);
                     await repository.Insert(item);
                     repository.Save();
                 }
@@ -79,13 +67,13 @@ namespace Rad1.Services
             }
         }
 
-        public async Task Update(Categories item)
+        public async Task Update(Characters item)
         {
             using (var context = new dbContext(_options))
             {
                 try
                 {
-                    var repository = new CategoriesRepository(context);
+                    var repository = new CharactersRepository(context);
                     await repository.Update(item);
                     repository.Save();
                 }
@@ -103,7 +91,7 @@ namespace Rad1.Services
                 try
                 {
                     var category = await Get(keys);
-                    var repository = new CategoriesRepository(context);
+                    var repository = new CharactersRepository(context);
                     repository.Delete(category);
                     repository.Save();
                 }
@@ -115,10 +103,9 @@ namespace Rad1.Services
         }
     }
 
-    public interface ICategoriesService : ICrudDataService<Categories>
+    public interface ICharactersService : ICrudDataService<Characters>
     {
-        ItemsDTO<Categories> GetCategoriesGridRow(Action<IGridColumnCollection<Categories>> columns,
+        ItemsDTO<Characters> GetCharactersGridRow(Action<IGridColumnCollection<Characters>> columns,
                                                   QueryDictionary<StringValues> query);
-        IEnumerable<SelectItem> GetAllCategories();
     }
 }

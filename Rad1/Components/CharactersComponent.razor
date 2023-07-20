@@ -1,4 +1,4 @@
-@page "/categoriescomponent"
+@page "/characterscomponent"
 
 @using GridMvc.Demo.Resources
 @using GridBlazor
@@ -13,13 +13,13 @@
 @using Rad1.Models.Domian
 @using Rad1.Services
 
-@inject ICategoriesService categoriesService
+@inject ICharactersService charactersService
 
 @if (_task.IsCompleted)
 {
     <div class="font-italic small">
         <div class="col-sm-12 table-sm">
-            <GridComponent T="Titles" Grid="@_grid"></GridComponent>
+            <GridComponent T="Characters" Grid="@_grid"></GridComponent>
         </div>
     </div>
 }
@@ -29,35 +29,34 @@ else
 }
 @code
 {
-    private CGrid<Categories> _grid;
+    private CGrid<Characters> _grid;
     private Task _task;
 
     protected override async Task OnParametersSetAsync()
     {
-        Action<IGridColumnCollection<Categories>> categoriesColumns = c =>
+        Action<IGridColumnCollection<Characters>> charactersColumns = c =>
         {
-            c.Add(o => o.CategoryID, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
-            c.Add(o => o.CategoryName, false);
-            c.Add(o => o.Description, false); 
+            c.Add(o => o.Id, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.Weapon, false);
         };
 
         var locale = CultureInfo.CurrentCulture;
         SharedResource.Culture = locale;
         var query = new QueryDictionary<StringValues>();
 
-        var client = GridClient(categoriesColumns, query, locale);
+        var client = GridClient(charactersColumns, query, locale);
 
         _grid = client.Grid;
         _task = client.UpdateGrid();
         await _task;
     }
 
-    IGridClient<Categories> GridClient(Action<IGridColumnCollection<Categories>> categoriesColumns, 
+    IGridClient<Characters> GridClient(Action<IGridColumnCollection<Characters>> charactersColumns,
                                        QueryDictionary<StringValues> query,
                                        CultureInfo locale)
     {
-        IGridClient<Categories> subGridClient = new GridClient<Categories>(q => categoriesService.GetCategoriesGridRow(categoriesColumns, query),
-        query, false, "categoriesGrid" + Id, categoriesColumns, locale)
+        IGridClient<Characters> subGridClient = new GridClient<Characters>(q => charactersService.GetCharactersGridRow(charactersColumns, query),
+        query, false, "charactersGrid", charactersColumns, locale)
            .Sortable()
            .Filterable()
            .SetKeyboard(true)
@@ -68,7 +67,7 @@ else
            .ChangePageSize(true)
            .Selectable(true)
            .SetHeaderCrudButtons(true)
-           .Crud(true, false, true, true, categoriesService)
+           .Crud(true, false, true, true, charactersService)
            ;
 
         return subGridClient;

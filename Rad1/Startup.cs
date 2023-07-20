@@ -70,9 +70,7 @@ namespace Rad1
 
             services.AddScoped<LanguageFilter>();
 
-            services.AddScoped<ICategoriesService, CategoriesService>();
-       
-            services.AddBlazoredModal();
+            services.AddScoped<ICharactersService, CharactersService>();
 
             services.AddSingleton<WeatherForecastService>();
 
