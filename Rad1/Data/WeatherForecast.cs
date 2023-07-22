@@ -1,3 +1,5 @@
+using System;
+
 namespace Rad1.Data
 {
     public class WeatherForecast
