@@ -1,28 +1,29 @@
 ﻿@inherits LayoutComponentBase
 
-<PageTitle>Rad1</PageTitle>
+<div class="sidebar">
+    <NavMenu />
+</div>
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+@code {
+    protected override void OnAfterRender(bool firstRender)
+    {
+    }
+}
 
-    <main>
 <div class="main">
     <!--
     <div class="top-row px-4">
     -->
     <div class="top-row px-4">
 
-                <a href="characterscomponent">Characters</a>
+        <a href="characterscomponent">Characters</a>
 
         <!--
         <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
         -->
     </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+    <div class="content px-4">
+        @Body
+    </div>
 </div>
