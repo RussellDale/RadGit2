@@ -12,7 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Rad1.Models.Domian;
 using Rad1.Data;
-using RadShared;
+using Rad1.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +22,7 @@ using GridShared.Data;
 using GridMvc;
 using RadShared.Data;
 using Rad1.Services;
+using Blazored.Modal;
 
 namespace Rad1
 {
@@ -71,6 +72,8 @@ namespace Rad1
             services.AddScoped<LanguageFilter>();
 
             services.AddScoped<ICharactersService, CharactersService>();
+
+            services.AddBlazoredModal();
 
             services.AddSingleton<WeatherForecastService>();
 

@@ -21,8 +21,8 @@ namespace Rad1.Models.Domian
 
                 case DbProvider.Sqlite:
                 default:
-                                        optionsBuilder.UseSqlite(@"Data Source = /home/runner/RadGit2/Rad1/df.db;");
-                    //optionsBuilder.UseSqlite(@"Data Source = \northwind.db;");
+                    optionsBuilder.UseSqlite(@"Data Source = /home/runner/RadGit2/Rad1/df.db;");
+ //                  optionsBuilder.UseSqlite(@"Data Source = \northwind.db;");
                     break;
             }
         }

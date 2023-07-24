@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridShared", "GridShared\Gr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridSharedData", "GridSharedData\GridSharedData.csproj", "{83F80F97-7F06-4031-97BF-749DA015F846}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rad1", "Rad1\Rad1.csproj", "{66210150-C2C3-4B9F-A879-55FFA017AF78}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rad1x", "Rad1x\Rad1x.csproj", "{66210150-C2C3-4B9F-A879-55FFA017AF78}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rad2", "Rad2\Rad2.csproj", "{6DCB23B5-079A-4C99-8026-36509E5675E8}"
 EndProject
@@ -24,6 +24,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridMvc", "GridMvc\GridMvc.csproj", "{08E1335E-24BA-4CFA-AB2C-1B101852A1A6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rad3", "Rad3\Rad3.csproj", "{84500DEF-874C-4D71-B36B-530FC26AB2DA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rad1", "Rad1\Rad1.csproj", "{23128284-0CC7-4EF2-B30D-A4ACF08A435D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -74,6 +76,10 @@ Global
 		{84500DEF-874C-4D71-B36B-530FC26AB2DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84500DEF-874C-4D71-B36B-530FC26AB2DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84500DEF-874C-4D71-B36B-530FC26AB2DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23128284-0CC7-4EF2-B30D-A4ACF08A435D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23128284-0CC7-4EF2-B30D-A4ACF08A435D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23128284-0CC7-4EF2-B30D-A4ACF08A435D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23128284-0CC7-4EF2-B30D-A4ACF08A435D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
