@@ -36,7 +36,7 @@ else
     {
         Action<IGridColumnCollection<Characters>> charactersColumns = c =>
         {
-            c.Add(o => o.Id, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.Id, false).SetPrimaryKey(true, false).SetWidth(50).SetCrudHidden(true);
             c.Add(o => o.Headgear, false);
             c.Add(o => o.Hair, false);
             c.Add(o => o.Face, false);
@@ -66,7 +66,7 @@ else
                                        CultureInfo locale)
     {
         IGridClient<Characters> subGridClient = new GridClient<Characters>(q => charactersService.GetCharactersGridRow(charactersColumns, query),
-        query, false, "charactersGrid", charactersColumns, locale)
+                                                                           query, false, "charactersGrid", charactersColumns, locale)
            .Sortable()
            .Filterable()
            .SetKeyboard(true)

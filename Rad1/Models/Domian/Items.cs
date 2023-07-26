@@ -7,9 +7,9 @@ namespace Rad1.Models.Domian
 {
     public partial class Items
     {
-        public long Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
-        public long? Part { get; set; }
+        public int? Part { get; set; }
         public string Desc { get; set; }
     }
 }
