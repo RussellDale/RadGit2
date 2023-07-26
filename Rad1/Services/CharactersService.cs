@@ -43,10 +43,10 @@ namespace Rad1.Services
         {
             using (var context = new dbContext(_options))
             {
-                int categoryID;
-                int.TryParse(keys[0].ToString(), out categoryID);
+                int Id;
+                int.TryParse(keys[0].ToString(), out Id);
                 var repository = new CharactersRepository(context);
-                return await repository.GetById(categoryID);
+                return await repository.GetById(Id);
             }
         }
 
@@ -90,9 +90,9 @@ namespace Rad1.Services
             {
                 try
                 {
-                    var category = await Get(keys);
+                    var Id = await Get(keys);
                     var repository = new CharactersRepository(context);
-                    repository.Delete(category);
+                    repository.Delete(Id);
                     repository.Save();
                 }
                 catch (Exception)

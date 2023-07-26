@@ -37,7 +37,17 @@ else
         Action<IGridColumnCollection<Characters>> charactersColumns = c =>
         {
             c.Add(o => o.Id, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.Headgear, false);
+            c.Add(o => o.Hair, false);
+            c.Add(o => o.Face, false);
+            c.Add(o => o.Jacket, false);
+            c.Add(o => o.Pants, false);
+            c.Add(o => o.Shoes, false);
+            c.Add(o => o.Breast, false);
+            c.Add(o => o.Waist, false);
+            c.Add(o => o.Skin, false);
             c.Add(o => o.Weapon, false);
+            c.Add(o => o.Job, false);
         };
 
         var locale = CultureInfo.CurrentCulture;

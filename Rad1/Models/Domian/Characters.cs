@@ -7,17 +7,17 @@ namespace Rad1.Models.Domian
 {
     public partial class Characters
     {
-        public long Id { get; set; }
-        public long Headgear { get; set; }
-        public long Hair { get; set; }
-        public long Face { get; set; }
-        public long Jacket { get; set; }
-        public long Pants { get; set; }
-        public long Shoes { get; set; }
-        public long Breast { get; set; }
-        public long Waist { get; set; }
-        public long Skin { get; set; }
-        public long Weapon { get; set; }
-        public long Job { get; set; }
+        public int Id { get; set; }
+        public int Headgear { get; set; }
+        public int Hair { get; set; }
+        public int Face { get; set; }
+        public int Jacket { get; set; }
+        public int Pants { get; set; }
+        public int Shoes { get; set; }
+        public int Breast { get; set; }
+        public int Waist { get; set; }
+        public int Skin { get; set; }
+        public int Weapon { get; set; }
+        public int Job { get; set; }
     }
 }
