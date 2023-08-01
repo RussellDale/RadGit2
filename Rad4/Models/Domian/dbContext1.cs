@@ -3,7 +3,7 @@
 using Microsoft.EntityFrameworkCore;
 using RadShared.Data;
 
-namespace Rad4.Models.Domian
+namespace Rad3.Models.Domian
 {
     public partial class dbContext : DbContext
     {
@@ -21,7 +21,7 @@ namespace Rad4.Models.Domian
 
                 case DbProvider.Sqlite:
                 default:
-                    optionsBuilder.UseSqlite(@"Data Source = /home/runner/RadGit2/Rad1/df.db;");
+                    optionsBuilder.UseSqlite(@"Data Source = /home/runner/RadGit2/Rad4/db1.db;");
  //                  optionsBuilder.UseSqlite(@"Data Source = \northwind.db;");
                     break;
             }

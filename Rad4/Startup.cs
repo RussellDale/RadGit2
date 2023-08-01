@@ -71,8 +71,7 @@ namespace Rad4
 
             services.AddScoped<LanguageFilter>();
 
-            services.AddScoped<ICharactersService, CharactersService>();
-            services.AddScoped<IItemsService, ItemsService>();
+            services.AddScoped<IT1Service, T1Service>();
 
             services.AddBlazoredModal();
 

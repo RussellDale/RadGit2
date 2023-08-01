@@ -13,39 +13,22 @@
    "Schemas": null,
    "SelectedHandlebarsLanguage": 0,
    "SelectedToBeGenerated": 0,
+   "T4TemplatePath": null,
    "Tables": [
       {
-         "Name": "Course",
+         "Name": "T1",
          "ObjectType": 0
       },
       {
-         "Name": "CourseAssignment",
-         "ObjectType": 0
-      },
-      {
-         "Name": "Department",
-         "ObjectType": 0
-      },
-      {
-         "Name": "Enrollment",
-         "ObjectType": 0
-      },
-      {
-         "Name": "Instructor",
-         "ObjectType": 0
-      },
-      {
-         "Name": "OfficeAssignment",
-         "ObjectType": 0
-      },
-      {
-         "Name": "Student",
+         "Name": "T2",
          "ObjectType": 0
       }
    ],
-   "UiHint": "contoso",
+   "UiHint": "\/home\/runner\/RadGit2\/Rad4\/db1.db",
+   "UncountableWords": null,
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,
+   "UseDateOnlyTimeOnly": false,
    "UseDbContextSplitting": false,
    "UseFluentApiOnly": true,
    "UseHandleBars": false,
@@ -53,13 +36,12 @@
    "UseInflector": false,
    "UseLegacyPluralizer": false,
    "UseManyToManyEntity": false,
-   "UseNoConstructor": false,
    "UseNoDefaultConstructor": false,
-   "UseNoNavigations": false,
    "UseNoObjectFilter": false,
    "UseNodaTime": false,
    "UseNullableReferences": false,
    "UseSchemaFolders": false,
+   "UseSchemaNamespaces": false,
    "UseSpatial": false,
    "UseT4": false
 }
