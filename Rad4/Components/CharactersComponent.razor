@@ -1,0 +1,85 @@
+@page "/characterscomponent"
+
+@using GridMvc.Demo.Resources
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridShared
+@using GridShared.Sorting
+@using GridShared.Utility
+@using System
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using Rad4.Models.Domian
+@using Rad4.Services
+
+@inject ICharactersService charactersService
+
+@if (_task.IsCompleted)
+{
+    <div class="font-italic small">
+        <div class="col-sm-12 table-sm">
+            <GridComponent T="Characters" Grid="@_grid"></GridComponent>
+        </div>
+    </div>
+}
+else
+{
+    <p><em>Loading...</em></p>
+}
+@code
+{
+    private CGrid<Characters> _grid;
+    private Task _task;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Action<IGridColumnCollection<Characters>> charactersColumns = c =>
+        {
+            c.Add(o => o.Id, false).SetPrimaryKey(true, false).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.Headgear, false);
+            c.Add(o => o.Hair, false);
+            c.Add(o => o.Face, false);
+            c.Add(o => o.Jacket, false);
+            c.Add(o => o.Pants, false);
+            c.Add(o => o.Shoes, false);
+            c.Add(o => o.Breast, false);
+            c.Add(o => o.Waist, false);
+            c.Add(o => o.Skin, false);
+            c.Add(o => o.Weapon, false);
+            c.Add(o => o.Job, false);
+        };
+
+        var locale = CultureInfo.CurrentCulture;
+        SharedResource.Culture = locale;
+        var query = new QueryDictionary<StringValues>();
+
+        var client = GridClient(charactersColumns, query, locale);
+
+        _grid = client.Grid;
+        _task = client.UpdateGrid();
+        await _task;
+    }
+
+    IGridClient<Characters> GridClient(Action<IGridColumnCollection<Characters>> charactersColumns,
+                                       QueryDictionary<StringValues> query,
+                                       CultureInfo locale)
+    {
+        IGridClient<Characters> subGridClient = new GridClient<Characters>(q => charactersService.GetCharactersGridRow(charactersColumns, query),
+                                                                           query, false, "charactersGrid", charactersColumns, locale)
+           .Sortable()
+           .Filterable()
+           .SetKeyboard(true)
+           .SetStriped(true)
+           .WithMultipleFilters()
+           .Searchable(true, false)
+           .WithGridItemsCount()
+           .ChangePageSize(true)
+           .Selectable(true)
+           .SetHeaderCrudButtons(true)
+           .Crud(true, false, true, true, charactersService)
+           ;
+
+        return subGridClient;
+    }
+}

@@ -1,0 +1,65 @@
+﻿{
+   "CodeGenerationMode": 2,
+   "ContextClassName": "dbContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": "Models\/Domian",
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "Rad4",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "Name": "Course",
+         "ObjectType": 0
+      },
+      {
+         "Name": "CourseAssignment",
+         "ObjectType": 0
+      },
+      {
+         "Name": "Department",
+         "ObjectType": 0
+      },
+      {
+         "Name": "Enrollment",
+         "ObjectType": 0
+      },
+      {
+         "Name": "Instructor",
+         "ObjectType": 0
+      },
+      {
+         "Name": "OfficeAssignment",
+         "ObjectType": 0
+      },
+      {
+         "Name": "Student",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": "contoso",
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoConstructor": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UseSchemaFolders": false,
+   "UseSpatial": false,
+   "UseT4": false
+}

@@ -1,0 +1,77 @@
+@page "/itemscomponent"
+
+@using GridMvc.Demo.Resources
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridShared
+@using GridShared.Sorting
+@using GridShared.Utility
+@using System
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using Rad4.Models.Domian
+@using Rad4.Services
+
+@inject IItemsService itemsService
+
+@if (_task.IsCompleted)
+{
+    <div class="font-italic small">
+        <div class="col-sm-12 table-sm">
+            <GridComponent T="Items" Grid="@_grid"></GridComponent>
+        </div>
+    </div>
+}
+else
+{
+    <p><em>Loading...</em></p>
+}
+@code
+{
+    private CGrid<Items> _grid;
+    private Task _task;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Action<IGridColumnCollection<Items>> itemsColumns = c =>
+        {
+            c.Add(o => o.Id, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.Name, false);
+            c.Add(o => o.Part, false);
+            c.Add(o => o.Desc, false);
+        };
+
+        var locale = CultureInfo.CurrentCulture;
+        SharedResource.Culture = locale;
+        var query = new QueryDictionary<StringValues>();
+
+        var client = GridClient(itemsColumns, query, locale);
+
+        _grid = client.Grid;
+        _task = client.UpdateGrid();
+        await _task;
+    }
+
+    IGridClient<Items> GridClient(Action<IGridColumnCollection<Items>> itemsColumns,
+                                  QueryDictionary<StringValues> query,
+                                  CultureInfo locale)
+    {
+        IGridClient<Items> subGridClient = new GridClient<Items>(q => itemsService.GetItemsGridRow(itemsColumns, query),
+                                                                 query, false, "itemsGrid", itemsColumns, locale)
+           .Sortable()
+           .Filterable()
+           .SetKeyboard(true)
+           .SetStriped(true)
+           .WithMultipleFilters()
+           .Searchable(true, false)
+           .WithGridItemsCount()
+           .ChangePageSize(true)
+           .Selectable(true)
+           .SetHeaderCrudButtons(true)
+           .Crud(true, false, true, true, itemsService)
+           ;
+
+        return subGridClient;
+    }
+}

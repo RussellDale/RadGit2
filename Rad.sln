@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rad3", "Rad3\Rad3.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rad1", "Rad1\Rad1.csproj", "{23128284-0CC7-4EF2-B30D-A4ACF08A435D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rad4", "Rad4\Rad4.csproj", "{A53DBFF5-17B7-464E-A62A-F1A3A0D1F2CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{23128284-0CC7-4EF2-B30D-A4ACF08A435D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23128284-0CC7-4EF2-B30D-A4ACF08A435D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23128284-0CC7-4EF2-B30D-A4ACF08A435D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A53DBFF5-17B7-464E-A62A-F1A3A0D1F2CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A53DBFF5-17B7-464E-A62A-F1A3A0D1F2CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A53DBFF5-17B7-464E-A62A-F1A3A0D1F2CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A53DBFF5-17B7-464E-A62A-F1A3A0D1F2CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
