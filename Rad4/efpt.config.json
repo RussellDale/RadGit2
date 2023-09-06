@@ -16,15 +16,11 @@
    "T4TemplatePath": null,
    "Tables": [
       {
-         "Name": "T1",
-         "ObjectType": 0
-      },
-      {
-         "Name": "T2",
+         "Name": "Person",
          "ObjectType": 0
       }
    ],
-   "UiHint": "\/home\/runner\/RadGit2\/Rad4\/db1.db",
+   "UiHint": "C:\\home\\runner\\RadGit2\\test1\\db.db",
    "UncountableWords": null,
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,

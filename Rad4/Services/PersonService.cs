@@ -13,23 +13,23 @@ using System.Threading.Tasks;
 
 namespace Rad4.Services
 {
-    public class T1Service : IT1Service
+    public class PersonService : IPersonService
     {
         private readonly DbContextOptions<dbContext> _options;
 
-        public T1Service(DbContextOptions<dbContext> options)
+        public PersonService(DbContextOptions<dbContext> options)
         {
             _options = options;
         }
-        public ItemsDTO<T1> GetCharactersGridRow(Action<IGridColumnCollection<T1>> columns,
-                                                         QueryDictionary<StringValues> query)
+        public ItemsDTO<Person> GetPersonGridRow(Action<IGridColumnCollection<Person>> columns,
+                                                 QueryDictionary<StringValues> query)
         {
             using (var context = new dbContext(_options))
             {
-                var repository = new T1Repository(context);
+                var repository = new PersonRepository(context);
 
-                var server = new GridServer<T1>(repository.GetAll(), new QueryCollection(query),
-                              false, "charactersGrid", columns)
+                var server = new GridServer<Person>(repository.GetAll(), new QueryCollection(query),
+                              false, "personGrid", columns)
                             .WithPaging(10)
                             .Sortable()
                             .Searchable(true, false, true)
@@ -39,24 +39,24 @@ namespace Rad4.Services
                 return items;
             }
         }
-        public async Task<T1> Get(params object[] keys)
+        public async Task<Person> Get(params object[] keys)
         {
             using (var context = new dbContext(_options))
             {
                 int Id;
                 int.TryParse(keys[0].ToString(), out Id);
-                var repository = new T1Repository(context);
+                var repository = new PersonRepository(context);
                 return await repository.GetById(Id);
             }
         }
 
-        public async Task Insert(T1 item)
+        public async Task Insert(Person item)
         {
             using (var context = new dbContext(_options))
             {
                 try
                 {
-                    var repository = new T1Repository(context);
+                    var repository = new PersonRepository(context);
                     await repository.Insert(item);
                     repository.Save();
                 }
@@ -67,13 +67,13 @@ namespace Rad4.Services
             }
         }
 
-        public async Task Update(T1 item)
+        public async Task Update(Person item)
         {
             using (var context = new dbContext(_options))
             {
                 try
                 {
-                    var repository = new T1Repository(context);
+                    var repository = new PersonRepository(context);
                     await repository.Update(item);
                     repository.Save();
                 }
@@ -91,7 +91,7 @@ namespace Rad4.Services
                 try
                 {
                     var Id = await Get(keys);
-                    var repository = new T1Repository(context);
+                    var repository = new PersonRepository(context);
                     repository.Delete(Id);
                     repository.Save();
                 }
@@ -103,9 +103,9 @@ namespace Rad4.Services
         }
     }
 
-    public interface IT1Service : ICrudDataService<T1>
+    public interface IPersonService : ICrudDataService<Person>
     {
-        ItemsDTO<T1> GetCharactersGridRow(Action<IGridColumnCollection<T1>> columns,
+        ItemsDTO<Person> GetPersonGridRow(Action<IGridColumnCollection<Person>> columns,
                                           QueryDictionary<StringValues> query);
     }
 }

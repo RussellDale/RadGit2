@@ -5,8 +5,9 @@ using System.Collections.Generic;
 
 namespace Rad4.Models.Domian
 {
-    public partial class T1
+    public partial class Person
     {
-        public long Id { get; set; }
+        public string FirstName { get; set; }
+//        public string LastName { get; set; }
     }
 }

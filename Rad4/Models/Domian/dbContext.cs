@@ -18,21 +18,13 @@ namespace Rad4.Models.Domian
         {
         }
 
-        public virtual DbSet<T1> T1 { get; set; }
-        public virtual DbSet<T2> T2 { get; set; }
+        public virtual DbSet<Person> Person { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<T1>(entity =>
+            modelBuilder.Entity<Person>(entity =>
             {
-                entity.Property(e => e.Id).HasDefaultValueSql("1");
-            });
-
-            modelBuilder.Entity<T2>(entity =>
-            {
-                entity.Property(e => e.Id).HasDefaultValueSql("1");
-
-                entity.Property(e => e.Date).HasColumnType("NUMERIC");
+                entity.HasNoKey();
             });
 
             OnModelCreatingPartial(modelBuilder);

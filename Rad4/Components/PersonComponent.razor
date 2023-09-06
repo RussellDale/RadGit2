@@ -1,4 +1,4 @@
-@page "/t1component"
+@page "/personcomponent"
 
 @using GridMvc.Demo.Resources
 @using GridBlazor
@@ -13,13 +13,13 @@
 @using Rad4.Models.Domian
 @using Rad4.Services
 
-@inject IT1Service t1Service
+@inject IPersonService personService
 
 @if (_task.IsCompleted)
 {
     <div class="font-italic small">
         <div class="col-sm-12 table-sm">
-            <GridComponent T="T1" Grid="@_grid"></GridComponent>
+            <GridComponent T="Person" Grid="@_grid"></GridComponent>
         </div>
     </div>
 }
@@ -29,33 +29,34 @@ else
 }
 @code
 {
-    private CGrid<T1> _grid;
+    private CGrid<Person> _grid;
     private Task _task;
 
     protected override async Task OnParametersSetAsync()
     {
-        Action<IGridColumnCollection<T1>> t1Columns = c =>
+        Action<IGridColumnCollection<Person>> personColumns = c =>
         {
-            c.Add(o => o.Id, false).SetPrimaryKey(true, false).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.FirstName, false);
+//            c.Add(o => o.LastName, false);
         };
 
         var locale = CultureInfo.CurrentCulture;
         SharedResource.Culture = locale;
         var query = new QueryDictionary<StringValues>();
 
-        var client = GridClient(t1Columns, query, locale);
+        var client = GridClient(personColumns, query, locale);
 
         _grid = client.Grid;
         _task = client.UpdateGrid();
         await _task;
     }
 
-    IGridClient<T1> GridClient(Action<IGridColumnCollection<T1>> charactersColumns,
-                                       QueryDictionary<StringValues> query,
-                                       CultureInfo locale)
+    IGridClient<Person> GridClient(Action<IGridColumnCollection<Person>> personColumns,
+                                   QueryDictionary<StringValues> query,
+                                   CultureInfo locale)
     {
-        IGridClient<T1> subGridClient = new GridClient<T1>(q => t1Service.GetCharactersGridRow(charactersColumns, query),
-                                                                           query, false, "t1Grid", charactersColumns, locale)
+        IGridClient<Person> subGridClient = new GridClient<Person>(q => personService.GetPersonGridRow(personColumns, query),
+                                                                   query, false, "personGrid", personColumns, locale)
            .Sortable()
            .Filterable()
            .SetKeyboard(true)
@@ -66,7 +67,7 @@ else
            .ChangePageSize(true)
            .Selectable(true)
            .SetHeaderCrudButtons(true)
-           .Crud(true, false, true, true, t1Service)
+           .Crud(true, false, true, true, personService)
            ;
 
         return subGridClient;
