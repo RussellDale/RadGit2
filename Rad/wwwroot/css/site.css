@@ -51,6 +51,7 @@ app {
 
 .sidebar {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background-image: linear-gradient(180deg, #26b050, #3a0647 70%);
 }
 
     .sidebar .top-row {
@@ -83,6 +84,7 @@ app {
 
         .sidebar .nav-item a {
             color: #d7d7d7;
+            color:aqua;
             border-radius: 4px;
             height: 3rem;
             display: flex;
