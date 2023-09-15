@@ -34,13 +34,21 @@ else
             }
         </tbody>
     </table>
+    <button onclick="OnPrint">Print</button>
 }
 
 @code {
     private WeatherForecast[] forecasts;
 
+    [Inject]
+    private IJSRuntime JS { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+    }
+    public void OnPrint()
+    {
+        JS.InvokeVoidAsync("Print");
     }
 }
