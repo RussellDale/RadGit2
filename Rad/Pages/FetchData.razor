@@ -3,7 +3,12 @@
 @using Rad.Data
 @inject WeatherForecastService ForecastService
 
-<h1>Weather forecast</h1>
+<!-- -->
+@if (Param != "")
+{
+    <h1>@Param</h1>
+}
+<h1>Weather Forecast</h1>
 
 <p>This component demonstrates fetching data from a service.</p>
 
@@ -34,21 +39,16 @@ else
             }
         </tbody>
     </table>
-    <button @onclick="OnPrint">Print</button>
 }
 
 @code {
     private WeatherForecast[] forecasts;
 
-    [Inject]
-    private IJSRuntime JS { get; set; }
+    [Parameter]
+    public string Param { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
-    }
-    public void OnPrint()
-    {
-        JS.InvokeVoidAsync("Print");
     }
 }

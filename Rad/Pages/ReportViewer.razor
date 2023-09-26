@@ -1,0 +1,59 @@
+﻿@page "/reportviewer"
+@inject IJSRuntime js
+
+<h3>Report Viewer</h3>
+
+<div class="row">
+    <div class="col-2">
+        <button class="btn btn-primary" @onclick="ShowCounter">Show Counter</button>
+    </div>
+    <div class="col-2">
+        <button class="btn btn-primary" @onclick="ShowForecast">Show Forecast</button>
+    </div>
+    <div class="col-2">
+        <button class="btn btn-primary" @onclick="Print">Print</button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div id="PrintDiv" style="border:1px solid black; min-height:400px;padding:5px;">
+            @if(html != null)
+            {
+                @html
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    public RenderFragment html;
+
+    public void ShowCounter()
+    {
+        RenderFragment CreateDynamicComponent() => builder =>
+        {
+            builder.OpenComponent(0, typeof(Counter));
+            builder.CloseComponent();
+        };
+
+        html = CreateDynamicComponent();
+    }
+
+    public void ShowForecast()
+    {
+        RenderFragment CreateDynamicComponent() => builder =>
+        {
+            builder.OpenComponent(0, typeof(FetchData));
+            builder.AddAttribute(0, "Param", "Weather Forecast Report");
+            builder.CloseComponent();
+        };
+
+        html = CreateDynamicComponent();
+    }
+
+    public async Task Print()
+    {
+        await js.InvokeVoidAsync("Print");
+    }
+}
