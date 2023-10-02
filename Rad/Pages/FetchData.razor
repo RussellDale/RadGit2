@@ -19,6 +19,7 @@
 }
 else
 {
+  <div id="PrintDiv">
     <table class="table">
         <thead>
             <tr>
@@ -40,6 +41,7 @@ else
             }
         </tbody>
     </table>
+  </div>
     <button type="button" @onclick="@(() => PrintingService.Print("docs/sample.pdf"))">
         Print PDF
     </button>
@@ -63,18 +65,28 @@ else
     <button @onclick="@(_ => PrintingService.Print("printable-form", PrintType.Html))">
         Print Form
     </button>
-  
+
             string rawHtml = String.Join(
                 Environment.NewLine,
                 "<h1>Print.js Raw HTML Print Test</h1>",
                 "<p style=\"color: blue;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit,</p>",
                 "<p>sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>");
         
-
         <button @onclick="@(_ => PrintingService.Print(rawHtml, PrintType.RawHtml))">
             Print Raw Html
         </button>
-    
+//    var divcontent = document.getElementById("PrintDiv").innerHTML;
+
+    <script>
+        // run this function when the document is loaded
+        window.onload = () => {
+            // create a couple of elements in an otherwise empty HTML page
+            const heading = document.createElement("h1");
+            const headingText = document.createTextNode("Big Head!");
+            heading.appendChild(headingText);
+            document.body.appendChild(heading);
+        };
+    </script>
 }
 
 @code {
