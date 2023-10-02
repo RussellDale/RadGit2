@@ -2,6 +2,7 @@
 
 @using Rad.Data
 @inject WeatherForecastService ForecastService
+@inject IPrintingService PrintingService
 
 <!-- -->
 @if (Param != "")
@@ -39,6 +40,9 @@ else
             }
         </tbody>
     </table>
+    <button type="button" @onclick="@(() => PrintingService.Print("docs/sample.pdf"))">
+        Print PDF
+    </button>
 }
 
 @code {
