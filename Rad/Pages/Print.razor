@@ -1,6 +1,13 @@
 ﻿@page "/print"
 
-@inject IPrintingService PrintingService
+@using Rad.Models.Domian
+@using Rad.Services
+
+<!-- 
+@inject InvoiceRepository invoiceRepository
+@inject InvoiceService invoiceService
+-->
+@inject IPrintingService printingService
 
 <h3>Print</h3>
 
@@ -11,13 +18,16 @@
 }
 else
 {
-   string rawHtml = String.Join(
+//    Task<Invoice> invoiceRepository.GetById(object id)
+//    invoiceService.Get();
+
+    string rawHtml = String.Join(
           Environment.NewLine,
           "<h1>Invoice</h1>",
           "<table><tr><th>Invoice Line</th></tr>",
           "<tr><td>1.00</td></tr></table>");
 
-    <button @onclick="@(_ => PrintingService.Print(rawHtml, PrintType.RawHtml))">
+    <button @onclick="@(_ => printingService.Print(rawHtml, PrintType.RawHtml))">
         Print
     </button>
 }
