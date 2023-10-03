@@ -1,0 +1,29 @@
+﻿@page "/print"
+
+
+@inject IPrintingService PrintingService
+
+<h3>Print</h3>
+
+@if (null == null)
+{
+   string rawHtml = String.Join(
+          Environment.NewLine,
+          "<h1>Invoice</h1>",
+          "<table><tr><th>Invoice Line</th></tr>",
+          "<tr><td>1.00</td></tr></table>");
+
+    <button @onclick="@(_ => PrintingService.Print(rawHtml, PrintType.RawHtml))">
+        Print
+    </button>
+}
+else
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+
+@code {
+    private Task _task;
+}
