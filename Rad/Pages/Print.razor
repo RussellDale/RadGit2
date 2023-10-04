@@ -4,9 +4,9 @@
 @using Rad.Services
 
 <!-- 
-@inject InvoiceRepository invoiceRepository
-@inject InvoiceService invoiceService
+@inject IInvoiceRepository invoiceRepository
 -->
+@inject IInvoiceService invoiceService
 @inject IPrintingService printingService
 
 <h3>Print</h3>
@@ -18,8 +18,17 @@
 }
 else
 {
-    //    Task<Invoice> invoiceRepository.GetById(object id)
-    //    public async Task<Invoice> invoiceService.Get(params object[] keys);
+    Task<Invoice> invoice;
+    int[] keys;
+
+//    invoice = invoiceRepository.GetById(0);
+
+
+
+    invoice = invoiceService.Get(0);
+ 
+
+  //  var invoice2 = Task<Invoice>.invoiceService.Get(0);
 
     string rawHtml = String.Join(
           Environment.NewLine,
