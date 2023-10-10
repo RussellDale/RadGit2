@@ -17,6 +17,8 @@ namespace Rad.Models.Domian
             return EfDbSet
                 .Include("InvoiceLines")
                 .Include("InvoiceLines.Track")
+                .Include("InvoiceLines.Track.Album")
+                .Include("InvoiceLines.Track.Album.Artist")
                 .Include("Customer")
                 ;
         }

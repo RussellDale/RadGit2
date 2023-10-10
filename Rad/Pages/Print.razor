@@ -17,19 +17,26 @@
 }
 else
 {
-    Invoice invoice = invoiceService.Get(1).Result;
+    Invoice invoice = invoiceService.Get(5).Result;
 
 //    InvoiceLine invoiceLines = IEnumerable<InvoiceLine>
 
     string rawHtml = String.Join(
           Environment.NewLine,
-          "<h1>Invoice</h1>",
-          invoice.Customer.FirstName + " " + invoice.Customer.LastName + "</br>",
+          "<h1>Invoice - " + invoice.InvoiceDate + " - " + invoice.Total + "</h1>",
+          invoice.Customer.FirstName + " " + invoice.Customer.LastName + " (" + invoice.Customer.Email + ")</br>",
           invoice.BillingAddress + "</br>",
           invoice.BillingCity + " " + invoice.BillingState + ", " + invoice.BillingCountry + " " + invoice.BillingPostalCode + "</br>",
+          invoice.InvoiceDate + "</br>",
           "<table><tr><th>Invoice Line</th></tr>",
-          "<tr><td>" + invoice.InvoiceLines.First<InvoiceLine>().Track.Name + "</td></tr></br>",
-          "<tr><td>" + invoice.InvoiceLines.Last<InvoiceLine>().Track.Name + "</td></tr></br>",
+          "<tr><td>" + invoice.InvoiceLines.First<InvoiceLine>().Track.Name + " (" +
+                       invoice.InvoiceLines.First<InvoiceLine>().Track.Album.Title + " - " +
+                       invoice.InvoiceLines.First<InvoiceLine>().Track.Album.Artist.Name + ")" +
+          "</td></tr></br>",
+          "<tr><td>" + invoice.InvoiceLines.Last<InvoiceLine>().Track.Name + " (" +
+                       invoice.InvoiceLines.Last<InvoiceLine>().Track.Album.Title + " - " +
+                       invoice.InvoiceLines.Last<InvoiceLine>().Track.Album.Artist.Name + ")" +
+          "</td></tr></br>",
           "</table>");
 
     <button @onclick="@(_ => printingService.Print(rawHtml, PrintType.RawHtml))">
