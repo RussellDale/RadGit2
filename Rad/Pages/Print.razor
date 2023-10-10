@@ -3,9 +3,7 @@
 @using Rad.Models.Domian
 @using Rad.Services
 
-<!-- 
-@inject IInvoiceRepository invoiceRepository
--->
+<!-- -->
 @inject IInvoiceService invoiceService
 @inject IPrintingService printingService
 
@@ -18,21 +16,16 @@
 }
 else
 {
-    Task<Invoice> invoice;
-    int[] keys;
-
-//    invoice = invoiceRepository.GetById(0);
-
-
-
-    invoice = invoiceService.Get(0);
- 
-
-  //  var invoice2 = Task<Invoice>.invoiceService.Get(0);
+    Invoice invoice = invoiceService.Get(1).Result;
 
     string rawHtml = String.Join(
           Environment.NewLine,
-          "<h1>Invoice - Leonie	Köhler</h1>",
+          "<h1>Invoice</h1>",
+          invoice.Customer.FirstName + " " + invoice.Customer.LastName + "</br>",
+          invoice.BillingAddress + "</br>",
+          invoice.BillingCity + " " + invoice.BillingState + ", " + invoice.BillingCountry + " " + invoice.BillingPostalCode + "</br>",
+          invoice.InvoiceLines.Count,
+          
           "<table><tr><th>Invoice Line</th></tr>",
           "<tr><td>1.00</td></tr></table>");
 

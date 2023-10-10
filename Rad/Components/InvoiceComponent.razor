@@ -14,6 +14,7 @@
 @using System.Globalization
 @using System.Threading.Tasks
 @using Rad.Models.Domian
+@using Rad.Pages;
 @using Rad.Services
 @using Rad.Dialogs
 
@@ -272,6 +273,7 @@ else
             .Searchable()
             .Selectable(true)
             .SetHeaderCrudButtons(true)
+            .AddButtonComponent<Print>("Print", "Print", null, null, null, 1)
             .RearrangeableColumns()
             .Crud(true, false, true, true, invoiceService)
             .SubGrid(subGrids, ("InvoiceId", "InvoiceId"))
