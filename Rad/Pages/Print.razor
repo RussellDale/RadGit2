@@ -23,11 +23,11 @@ else
 
     string rawHtml = String.Join(
           Environment.NewLine,
-          "<h1>Invoice - " + invoice.InvoiceDate + " - " + invoice.Total + "</h1>",
+          "<h1>Invoice - " + invoice.InvoiceDate + "</h1>",
+          "<h1>Total: " + invoice.Total + "</h1>",
           invoice.Customer.FirstName + " " + invoice.Customer.LastName + " (" + invoice.Customer.Email + ")</br>",
           invoice.BillingAddress + "</br>",
           invoice.BillingCity + " " + invoice.BillingState + ", " + invoice.BillingCountry + " " + invoice.BillingPostalCode + "</br>",
-          invoice.InvoiceDate + "</br>",
           "<table><tr><th>Invoice Line</th></tr>",
           "<tr><td>" + invoice.InvoiceLines.First<InvoiceLine>().Track.Name + " (" +
                        invoice.InvoiceLines.First<InvoiceLine>().Track.Album.Title + " - " +
