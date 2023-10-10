@@ -122,7 +122,7 @@ else
     {
         Action<IGridColumnCollection<Invoice>> invoiceColumns = c =>
         {
-            c.Add(o => o.InvoiceId, true).SetPrimaryKey(true).Titled(SharedResource.Number).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.InvoiceId, false).SetPrimaryKey(true).Titled(SharedResource.Number).SetWidth(50).SetCrudHidden(true);
 //            c.Add().Encoded(false).Sanitized(false).RenderComponentAs<DialogComponentArtistCell>();
             c.Add(o => o.InvoiceDate, false).Format("{0:yyyy-MM-dd}");
             c.Add(o => o.Total, false).Format("{0:C}");

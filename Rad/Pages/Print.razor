@@ -5,6 +5,7 @@
 
 <!-- -->
 @inject IInvoiceService invoiceService
+@inject IInvoiceLineService invoiceLineService
 @inject IPrintingService printingService
 
 <h3>Print</h3>
@@ -18,16 +19,18 @@ else
 {
     Invoice invoice = invoiceService.Get(1).Result;
 
+//    InvoiceLine invoiceLines = IEnumerable<InvoiceLine>
+
     string rawHtml = String.Join(
           Environment.NewLine,
           "<h1>Invoice</h1>",
           invoice.Customer.FirstName + " " + invoice.Customer.LastName + "</br>",
           invoice.BillingAddress + "</br>",
           invoice.BillingCity + " " + invoice.BillingState + ", " + invoice.BillingCountry + " " + invoice.BillingPostalCode + "</br>",
-          invoice.InvoiceLines.Count,
-          
           "<table><tr><th>Invoice Line</th></tr>",
-          "<tr><td>1.00</td></tr></table>");
+          "<tr><td>" + invoice.InvoiceLines.First<InvoiceLine>().Track.Name + "</td></tr></br>",
+          "<tr><td>" + invoice.InvoiceLines.Last<InvoiceLine>().Track.Name + "</td></tr></br>",
+          "</table>");
 
     <button @onclick="@(_ => printingService.Print(rawHtml, PrintType.RawHtml))">
         Print
