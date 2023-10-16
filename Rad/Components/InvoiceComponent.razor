@@ -13,6 +13,7 @@
 @using Microsoft.Extensions.Primitives
 @using System.Globalization
 @using System.Threading.Tasks
+@using System.Timers
 @using Rad.Models.Domian
 @using Rad.Pages;
 @using Rad.Services
@@ -24,6 +25,7 @@
 @inject IInvoiceService         invoiceService
 @inject IInvoiceLineService     invoiceLineService
 @inject ICustomerService        customerService
+@inject IModalService           modal
 
 @if (_task.IsCompleted)
 {
@@ -104,10 +106,10 @@ else
 
 @code
 {
-
+    Timer timer;
     private CGrid<Invoice> _grid;
     private GridComponent<Invoice> _gridComponent;
-
+    private IGridClient<Track> _clientTrack;
 
 
     //    private CGrid<InvoiceLine> _gridInvoiceLine;
@@ -305,8 +307,65 @@ else
         await _task;
 
         invoiceColumnsA = invoiceColumns;
+
+        if (timer == null)
+        {
+            timer = new Timer();
+            timer.Interval = 500;
+            timer.Elapsed += TimerOnElapsed;
+        }
     }
 
+    InvoiceLine invoiceLine = new InvoiceLine();
+
+    protected async void OnRowClickedTrack(object item)
+    {
+        Track track = null;
+
+        if (item.GetType() == typeof(Track))
+        {
+            track = (Track)item;
+
+            if (invoiceLine.TrackId == track.TrackId)
+            {
+                IModalReference modalRef = modal.Show<DialogComponent>("My Movies");
+
+                ModalResult result = await modalRef.Result;
+
+                if (result.Cancelled)
+                {
+                    Console.WriteLine("Modal was cancelled");
+                }
+                else
+                {
+                    Console.WriteLine(result.Data);
+                }
+            }
+            else
+            {
+                invoiceLine.TrackId = track.TrackId;
+                invoiceLine.UnitPrice = track.UnitPrice;
+                invoiceLine.Quantity = 1;
+                invoiceLine.InvoiceId = 4;  //to-do
+            }
+        }
+    }
+
+    private void TimerOnElapsed(object sender, ElapsedEventArgs e)
+    {
+        timer.Stop();
+
+        _clientTrack.Grid.GridComponent.OnRowClicked = OnRowClickedTrack;
+    }
+
+    public void Dispose()
+    {
+        if (timer != null)
+        {
+            timer.Dispose();
+            timer = null;
+        }
+    }
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
