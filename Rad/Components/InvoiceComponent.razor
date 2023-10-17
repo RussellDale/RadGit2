@@ -109,13 +109,29 @@ else
 {
     string err = "You must select the row you want to edit";
 
-
-    Invoice invoice = new Invoice();
+    Invoice invoice2 = new Invoice();
 
     string rawHtml = String.Join(
           Environment.NewLine,
-          "<h1>Invoice - " + invoice2.InvoiceId + "</h1>");
-
+          "<h1>Invoice - " + invoice.InvoiceId + "</h1>");
+/*
+          "<h1>Invoice - " + invoice.InvoiceId + " " + invoice.InvoiceDate + "</h1>",
+          "<h1>Total: " + invoice.Total + "</h1>",
+          invoice.Customer.FirstName + " " + invoice.Customer.LastName + " (" + invoice.Customer.Email + ")</br>",
+          invoice.BillingAddress + "</br>",
+          invoice.BillingCity + " " + invoice.BillingState + ", " + invoice.BillingCountry + " " + invoice.BillingPostalCode + "</br>",
+          "<table><tr><th>Invoice Line</th></tr>",
+          "<tr><td>" + invoice.InvoiceLines.First<InvoiceLine>().Track.Name + " (" +
+                       invoice.InvoiceLines.First<InvoiceLine>().Track.Album.Title + " - " +
+                       invoice.InvoiceLines.First<InvoiceLine>().Track.Album.Artist.Name + ")" +
+          "</td></tr></br>",
+          "<tr><td>" + invoice.InvoiceLines.Last<InvoiceLine>().Track.Name + " (" +
+                       invoice.InvoiceLines.Last<InvoiceLine>().Track.Album.Title + " - " +
+                       invoice.InvoiceLines.Last<InvoiceLine>().Track.Album.Artist.Name + ")" +
+          "</td></tr></br>",
+          "</table>"
+          );
+*/
     <button @onclick="@(_ => printingService.Print(rawHtml, PrintType.RawHtml))">
         Print
     </button>
@@ -290,7 +306,7 @@ else
             .Searchable()
             .Selectable(true)
             .SetHeaderCrudButtons(true)
-            .AddButtonComponent<Print>("Print", "Print", null, null, null, invoice2)
+            .AddButtonComponent<Print>("Print", "Print", null, null, null, invoice)
             .RearrangeableColumns()
             .Crud(true, false, true, true, invoiceService)
             .SubGrid(subGrids, ("InvoiceId", "InvoiceId"))
@@ -333,14 +349,14 @@ else
         timer.Start();
     }
 
-    Invoice invoice2 = new Invoice();
+    Invoice invoice = new Invoice();
     int invoiceId;
 
     protected async void OnRowClickedInvoice(object item)
     {
         if (item.GetType() == typeof(Invoice))
         {
-            invoice2 = (Invoice)item;
+            invoice = (Invoice)item;
             invoiceId = ((Invoice)item).InvoiceId;
         }
     }
