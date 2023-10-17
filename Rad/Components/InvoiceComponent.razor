@@ -111,7 +111,7 @@ else
 
     string rawHtml = String.Join(
           Environment.NewLine,
-          "<h1>Invoice - "  + "</h1>");
+          "<h1>Invoice - " + invoice2.InvoiceId + "</h1>");
 
     <button @onclick="@(_ => printingService.Print(rawHtml, PrintType.RawHtml))">
         Print
