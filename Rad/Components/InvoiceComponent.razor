@@ -109,8 +109,6 @@ else
     Timer timer;
     private CGrid<Invoice> _grid;
     private GridComponent<Invoice> _gridComponent;
-    private IGridClient<Track> _clientTrack;
-
 
     //    private CGrid<InvoiceLine> _gridInvoiceLine;
     //    private GridComponent<InvoiceLine> _gridComponentInvoiceLine;
@@ -125,7 +123,7 @@ else
         Action<IGridColumnCollection<Invoice>> invoiceColumns = c =>
         {
             c.Add(o => o.InvoiceId, false).SetPrimaryKey(true).Titled(SharedResource.Number).SetWidth(50).SetCrudHidden(true);
-//            c.Add().Encoded(false).Sanitized(false).RenderComponentAs<DialogComponentArtistCell>();
+            //            c.Add().Encoded(false).Sanitized(false).RenderComponentAs<DialogComponentArtistCell>();
             c.Add(o => o.InvoiceDate, false).Format("{0:yyyy-MM-dd}");
             c.Add(o => o.Total, false).Format("{0:C}");
             c.Add().Titled("Billing")
@@ -153,21 +151,21 @@ else
 
         Func<object[], bool, bool, bool, bool, Task<IGrid>> subGrids2 = async (keys, create, read, update, delete) =>
         {
-        /*
-        int invoiceId = Int32.Parse(keys[0].ToString());
+            /*
+            int invoiceId = Int32.Parse(keys[0].ToString());
 
-        var subGridClient = new GridClient<InvoiceLine>(q => invoiceLineService.GetInvoiceLineId(invoiceLineColumns, query, invoiceId),
-        query, false, "invoiceLineGrid" + invoiceId, invoiceLineColumns, locale)
-            .WithGridItemsCount()
-            .Selectable(true)
-            .SetHeaderCrudButtons(true)
-            .Crud(true, false, true, true, invoiceLineService)
-            //                .SetEditAfterInsert(true)
-        //                .SetUpdateComponent<Invoice>()
-        ;
+            var subGridClient = new GridClient<InvoiceLine>(q => invoiceLineService.GetInvoiceLineId(invoiceLineColumns, query, invoiceId),
+                query, false, "invoiceLineGrid" + invoiceId, invoiceLineColumns, locale)
+                .WithGridItemsCount()
+                .Selectable(true)
+                .SetHeaderCrudButtons(true)
+                .Crud(true, false, true, true, invoiceLineService)
+                //                .SetEditAfterInsert(true)
+            //                .SetUpdateComponent<Invoice>()
+            ;
 
-        await subGridClient.UpdateGrid();
-        return subGridClient.Grid;
+            await subGridClient.UpdateGrid();
+            return subGridClient.Grid;
             */
             return null;
 
@@ -192,30 +190,30 @@ else
             c.Add(o => o.Track.MediaType.Name, false).SetCrudHidden(true);
             c.Add(o => o.Track.UnitPrice, false).SetCrudHidden(true).Format("{0:C}");
 
-        /*
-        c.Add(o => o.Track.Album.Artist.Name, false)
-        .RenderValueAs(o => o.Track.Album.Artist.Name == null ? "" : o.Track.Album.Artist.Name)
-        .SetSelectField(true, o => o.Track.Album.Artist == null ? "" : o.Track.Album.Artist.ArtistId.ToString() + " - " + o.Track.Album.Artist.Name,
-        artistService.GetAllArtist)
-        .SetListFilter(artistService.GetAllArtist(), true, true)
-        ;
+            /*
+            c.Add(o => o.Track.Album.Artist.Name, false)
+            .RenderValueAs(o => o.Track.Album.Artist.Name == null ? "" : o.Track.Album.Artist.Name)
+            .SetSelectField(true, o => o.Track.Album.Artist == null ? "" : o.Track.Album.Artist.ArtistId.ToString() + " - " + o.Track.Album.Artist.Name,
+            artistService.GetAllArtist)
+            .SetListFilter(artistService.GetAllArtist(), true, true)
+            ;
 
-        c.Add()
-        .SubGrid(subGrids2, ("InvoiceLineId", "InvoiceLineId"))
-        ;
+            c.Add()
+            .SubGrid(subGrids2, ("InvoiceLineId", "InvoiceLineId"))
+            ;
 
-        c.Add(o => o.Track.Album.Title, false)
-        .RenderValueAs(o => o.Track.Album.Title == null ? "" : o.Track.Album.Title)
-        .SetSelectField(true, o => o.Track.Album == null ? "" : o.Track.Album.AlbumId.ToString() + " - " + o.Track.Album.Title,
-        albumService.GetAllAlbum)
-        .SetListFilter(albumService.GetAllAlbum(), true, true)
-        ;
+            c.Add(o => o.Track.Album.Title, false)
+            .RenderValueAs(o => o.Track.Album.Title == null ? "" : o.Track.Album.Title)
+            .SetSelectField(true, o => o.Track.Album == null ? "" : o.Track.Album.AlbumId.ToString() + " - " + o.Track.Album.Title,
+            albumService.GetAllAlbum)
+            .SetListFilter(albumService.GetAllAlbum(), true, true)
+            ;
 
-        c.Add(o => o.Track.Name, false)
-        .RenderValueAs(o => o.Track.Name == null ? "" : o.Track.Name)
-        .SetSelectField(true, o => o.Track == null ? "" : o.Track.TrackId.ToString() + " - " + o.Track.Name,
-        trackService.GetAllTrack)
-        .SetListFilter(trackService.GetAllTrack(), true, true)
+            c.Add(o => o.Track.Name, false)
+            .RenderValueAs(o => o.Track.Name == null ? "" : o.Track.Name)
+            .SetSelectField(true, o => o.Track == null ? "" : o.Track.TrackId.ToString() + " - " + o.Track.Name,
+            trackService.GetAllTrack)
+            .SetListFilter(trackService.GetAllTrack(), true, true)
         ;
         */
         };
@@ -227,9 +225,9 @@ else
         Func<object[], Task<ICGrid>> subGrids = async keys =>
         {
             int invoiceId = Int32.Parse(keys[0].ToString());
-        //            MarkupString invoiceId_MS = new MarkupString("" + invoiceId);
-        //            IList<Action> invoiceId_IL_A = new IList(Action(invoiceId_IL_A));
-        //            Action invoiceId_A = new Action(invoiceId);
+            //            MarkupString invoiceId_MS = new MarkupString("" + invoiceId);
+            //            IList<Action> invoiceId_IL_A = new IList(Action(invoiceId_IL_A));
+            //            Action invoiceId_A = new Action(invoiceId);
 
             DialogComponentArtist test = new DialogComponentArtist();
 
@@ -247,14 +245,14 @@ else
                 .AddButtonComponent<DialogComponentArtist>("Artist N", "Artist L", null, null, null, invoiceIdObj)
                 .RearrangeableColumns()
                 ;
-        //                .AddToOnAfterRender(OnAfterInvoiceLineRender)
-        //                .AddButtonCrudComponent<InvoiceLine>("HI","Hi",false,false,true,false)
-        //                            .SetEditAfterInsert(true)
-        //                            .SetUpdateComponent<Invoice>(
+            //                .AddToOnAfterRender(OnAfterInvoiceLineRender)
+            //                .AddButtonCrudComponent<InvoiceLine>("HI","Hi",false,false,true,false)
+            //                            .SetEditAfterInsert(true)
+            //                            .SetUpdateComponent<Invoice>(
 
-        //_gridInvoiceLine = subGridClient.Grid;
-        //_gridComponentInvoiceLine = _gridInvoiceLine.GridComponent;
-        //            _gridComponentInvoiceLine.BeforeUpdateChangeValue += BeforeUpdateChangeValueInvoiceLine;
+            //_gridInvoiceLine = subGridClient.Grid;
+            //_gridComponentInvoiceLine = _gridInvoiceLine.GridComponent;
+            //            _gridComponentInvoiceLine.BeforeUpdateChangeValue += BeforeUpdateChangeValueInvoiceLine;
 
             await subGridClient.UpdateGrid();
             return subGridClient.Grid;
@@ -275,7 +273,7 @@ else
             .Searchable()
             .Selectable(true)
             .SetHeaderCrudButtons(true)
-            .AddButtonComponent<Print>("Print", "Print", null, null, null, 5)
+            .AddButtonComponent<Print>("Print", "Print", null, null, null, invoice)
             .RearrangeableColumns()
             .Crud(true, false, true, true, invoiceService)
             .SubGrid(subGrids, ("InvoiceId", "InvoiceId"))
@@ -314,48 +312,31 @@ else
             timer.Interval = 500;
             timer.Elapsed += TimerOnElapsed;
         }
+
+        timer.Start();
     }
 
-    InvoiceLine invoiceLine = new InvoiceLine();
+    Invoice invoice = new Invoice();
+    int invoiceId;
 
-    protected async void OnRowClickedTrack(object item)
+    protected async void OnRowClickedInvoice(object item)
     {
-        Track track = null;
-
-        if (item.GetType() == typeof(Track))
+        if (item.GetType() == typeof(Invoice))
         {
-            track = (Track)item;
-
-            if (invoiceLine.TrackId == track.TrackId)
-            {
-                IModalReference modalRef = modal.Show<DialogComponent>("My Movies");
-
-                ModalResult result = await modalRef.Result;
-
-                if (result.Cancelled)
-                {
-                    Console.WriteLine("Modal was cancelled");
-                }
-                else
-                {
-                    Console.WriteLine(result.Data);
-                }
-            }
-            else
-            {
-                invoiceLine.TrackId = track.TrackId;
-                invoiceLine.UnitPrice = track.UnitPrice;
-                invoiceLine.Quantity = 1;
-                invoiceLine.InvoiceId = 4;  //to-do
-            }
+            invoice = (Invoice)item;
+            invoiceId = ((Invoice)item).InvoiceId;
         }
     }
 
     private void TimerOnElapsed(object sender, ElapsedEventArgs e)
     {
-        timer.Stop();
+        if (timer != null)
+        {
+            timer.Stop();
+            timer.Dispose();
 
-        _clientTrack.Grid.GridComponent.OnRowClicked = OnRowClickedTrack;
+            _gridComponent.OnRowClicked = OnRowClickedInvoice;
+        }
     }
 
     public void Dispose()
