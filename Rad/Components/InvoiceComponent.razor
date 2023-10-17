@@ -107,6 +107,9 @@ else
 
 @if (isMessage != null)
 {
+    string err = "You must select the row you want to edit";
+
+
     Invoice invoice = new Invoice();
 
     string rawHtml = String.Join(
