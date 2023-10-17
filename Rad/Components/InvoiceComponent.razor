@@ -26,35 +26,36 @@
 @inject IInvoiceLineService     invoiceLineService
 @inject ICustomerService        customerService
 @inject IModalService           modal
+@inject IPrintingService        printingService
 
 @if (_task.IsCompleted)
 {
     @code {
-        EditForm Form;
-        protected Boolean isMessage = false;
+    EditForm Form;
+    protected Boolean isMessage = false;
 
-        protected void closeModal()
-        {
-            isMessage = false;
-        }
-
-        private void MyClickHandler(MouseEventArgs e)
-        {
-            var iC = invoiceColumnsA;
-
-            Action<IGridColumnCollection<Invoice>> invoiceColumnsX = c =>
-            {
-                c.Add(o => o.CustomerId, false)
-                      .RenderValueAs(o => o.Customer == null ? "" : o.Customer.Email)
-                      .SetSelectField(true, o => o.Customer == null ? "" : o.Customer.CustomerId.ToString() + " - " + o.Customer.Email,
-                                      customerService.GetAllCustomer)
-                      .SetListFilter(customerService.GetAllCustomer(), true, true)
-                ;
-            };
-
-            isMessage = true;
-        }
+    protected void closeModal()
+    {
+        isMessage = false;
     }
+
+    private void MyClickHandler(MouseEventArgs e)
+    {
+        var iC = invoiceColumnsA;
+
+        Action<IGridColumnCollection<Invoice>> invoiceColumnsX = c =>
+        {
+            c.Add(o => o.CustomerId, false)
+                  .RenderValueAs(o => o.Customer == null ? "" : o.Customer.Email)
+                  .SetSelectField(true, o => o.Customer == null ? "" : o.Customer.CustomerId.ToString() + " - " + o.Customer.Email,
+                                  customerService.GetAllCustomer)
+                  .SetListFilter(customerService.GetAllCustomer(), true, true)
+            ;
+        };
+
+        isMessage = true;
+    }
+}
 
 
     @if (isMessage)
@@ -67,7 +68,7 @@
 
                             <!--
 
-                                                        <FluentValidationValidator />
+                            <FluentValidationValidator />
                             -->
 
                             <form>
@@ -76,7 +77,7 @@
                                     <ValidationSummary />
 
                                     <!--
-                                                                    <GridComponent T="@T"></GridComponent>
+                                    <GridComponent T="@T"></GridComponent>
                                     -->
                                 </EditForm>
                             </form>
@@ -90,7 +91,7 @@
             </div>
         </div>
     }
-
+    
     <div class="font-italic small">
         <div class="col-sm-12 table-sm">
             <GridComponent @ref="_gridComponent" T="Invoice" Grid="@_grid"></GridComponent>
@@ -102,6 +103,19 @@ else
     <p>
         <em>Loading...</em>
     </p>
+}
+
+@if (isMessage != null)
+{
+    Invoice invoice = new Invoice();
+
+    string rawHtml = String.Join(
+          Environment.NewLine,
+          "<h1>Invoice - "  + "</h1>");
+
+    <button @onclick="@(_ => printingService.Print(rawHtml, PrintType.RawHtml))">
+        Print
+    </button>
 }
 
 @code
@@ -273,7 +287,7 @@ else
             .Searchable()
             .Selectable(true)
             .SetHeaderCrudButtons(true)
-            .AddButtonComponent<Print>("Print", "Print", null, null, null, invoice)
+            .AddButtonComponent<Print>("Print", "Print", null, null, null, invoice2)
             .RearrangeableColumns()
             .Crud(true, false, true, true, invoiceService)
             .SubGrid(subGrids, ("InvoiceId", "InvoiceId"))
@@ -316,14 +330,14 @@ else
         timer.Start();
     }
 
-    Invoice invoice = new Invoice();
+    Invoice invoice2 = new Invoice();
     int invoiceId;
 
     protected async void OnRowClickedInvoice(object item)
     {
         if (item.GetType() == typeof(Invoice))
         {
-            invoice = (Invoice)item;
+            invoice2 = (Invoice)item;
             invoiceId = ((Invoice)item).InvoiceId;
         }
     }
