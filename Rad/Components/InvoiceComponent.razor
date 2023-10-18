@@ -97,6 +97,10 @@
             <GridComponent @ref="_gridComponent" T="Invoice" Grid="@_grid"></GridComponent>
         </div>
     </div>
+
+    <button @onclick="Print">
+        Print
+    </button>
 }
 else
 {
@@ -107,6 +111,7 @@ else
 
 @if (isMessage != null)
 {
+/*
     string err = "You must select the row you want to print";
 
     Invoice invoice2 = new Invoice();
@@ -114,7 +119,7 @@ else
     string rawHtml = String.Join(
           Environment.NewLine,
           "<h1>Invoice - " + invoice.InvoiceId + "</h1>");
-/*
+
           "<h1>Invoice - " + invoice.InvoiceId + " " + invoice.InvoiceDate + "</h1>",
           "<h1>Total: " + invoice.Total + "</h1>",
           invoice.Customer.FirstName + " " + invoice.Customer.LastName + " (" + invoice.Customer.Email + ")</br>",
@@ -131,10 +136,11 @@ else
           "</td></tr></br>",
           "</table>"
           );
-*/
+
     <button @onclick="@(_ => printingService.Print(rawHtml, PrintType.RawHtml))">
         Print
     </button>
+*/
 }
 
 @code
@@ -150,6 +156,22 @@ else
 
     Action<IGridColumnCollection<Invoice>> invoiceColumnsA;
 
+    private void Print()
+    {
+        string err = "You must select the row you want to print";
+
+        string rawHtml = String.Join(
+          Environment.NewLine,
+          "<h1>Invoice - " + invoice.InvoiceId + " " + invoice.InvoiceDate + "</h1>",
+          "<h1>Total: " + invoice.Total + "</h1>",
+          invoice.Customer.FirstName + " " + invoice.Customer.LastName + " (" + invoice.Customer.Email + ")</br>",
+          invoice.BillingAddress + "</br>",
+          invoice.BillingCity + " " + invoice.BillingState + ", " + invoice.BillingCountry + " " + invoice.BillingPostalCode + "</br>"
+
+        );
+
+        printingService.Print(rawHtml, PrintType.RawHtml);
+    }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -339,6 +361,11 @@ else
 
         invoiceColumnsA = invoiceColumns;
 
+        Start();
+    }
+
+    public void Start()
+    {
         if (timer == null)
         {
             timer = new Timer();
@@ -350,14 +377,12 @@ else
     }
 
     Invoice invoice = new Invoice();
-    int invoiceId;
 
-    protected async void OnRowClickedInvoice(object item)
+    protected void OnRowClickedInvoice(object item)
     {
         if (item.GetType() == typeof(Invoice))
         {
             invoice = (Invoice)item;
-            invoiceId = ((Invoice)item).InvoiceId;
         }
     }
 
