@@ -109,40 +109,6 @@ else
     </p>
 }
 
-@if (isMessage != null)
-{
-/*
-    string err = "You must select the row you want to print";
-
-    Invoice invoice2 = new Invoice();
-
-    string rawHtml = String.Join(
-          Environment.NewLine,
-          "<h1>Invoice - " + invoice.InvoiceId + "</h1>");
-
-          "<h1>Invoice - " + invoice.InvoiceId + " " + invoice.InvoiceDate + "</h1>",
-          "<h1>Total: " + invoice.Total + "</h1>",
-          invoice.Customer.FirstName + " " + invoice.Customer.LastName + " (" + invoice.Customer.Email + ")</br>",
-          invoice.BillingAddress + "</br>",
-          invoice.BillingCity + " " + invoice.BillingState + ", " + invoice.BillingCountry + " " + invoice.BillingPostalCode + "</br>",
-          "<table><tr><th>Invoice Line</th></tr>",
-          "<tr><td>" + invoice.InvoiceLines.First<InvoiceLine>().Track.Name + " (" +
-                       invoice.InvoiceLines.First<InvoiceLine>().Track.Album.Title + " - " +
-                       invoice.InvoiceLines.First<InvoiceLine>().Track.Album.Artist.Name + ")" +
-          "</td></tr></br>",
-          "<tr><td>" + invoice.InvoiceLines.Last<InvoiceLine>().Track.Name + " (" +
-                       invoice.InvoiceLines.Last<InvoiceLine>().Track.Album.Title + " - " +
-                       invoice.InvoiceLines.Last<InvoiceLine>().Track.Album.Artist.Name + ")" +
-          "</td></tr></br>",
-          "</table>"
-          );
-
-    <button @onclick="@(_ => printingService.Print(rawHtml, PrintType.RawHtml))">
-        Print
-    </button>
-*/
-}
-
 @code
 {
     Timer timer;
@@ -168,8 +134,8 @@ else
       "<h1>Total: " + invoice.Total + "</h1>",
       invoice.Customer.FirstName + " " + invoice.Customer.LastName + " (" + invoice.Customer.Email + ")</br>",
       invoice.BillingAddress + "</br>",
-          invoice.BillingCity + " " + invoice.BillingState + ", " + invoice.BillingCountry + " " + invoice.BillingPostalCode + "</br>",
-          "<table><tr><th>Invoice Line</th></tr>");
+          invoice.BillingCity + " " + invoice.BillingState + ", " + invoice.BillingCountry + " " + invoice.BillingPostalCode + "</br></br>",
+          "<table><tr><th>Track (Album - Artist)</th><th>Unit Price</th><th>Quantity</th><th>Total</th></tr>");
 
         string rawHtml2 = null;
 
@@ -179,9 +145,14 @@ else
             "<tr><td>" +
             invoiceLine.Track.Name + " (" +
             invoiceLine.Track.Album.Title + " - " +
-            invoiceLine.Track.Album.Artist.Name + ")" +
+            invoiceLine.Track.Album.Artist.Name + ")</td><td>" +
+            invoiceLine.UnitPrice + "</td><td>" +
+            invoiceLine.Quantity + "</td><td>" +
+            invoiceLine.UnitPrice * invoiceLine.Quantity + "</td><td>" +
             "</td></tr>";
         }
+
+        rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td>Total</td><td>" + invoice.Total + "</td></tr>";
 
         rawHtml2 = rawHtml2 + "</table>";
 
