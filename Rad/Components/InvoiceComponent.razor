@@ -126,43 +126,50 @@ else
     {
         string err = "You must select the row you want to print";
 
-        List<InvoiceLine> invoiceLines = (List<InvoiceLine>)invoice.InvoiceLines;
-
-        string rawHtml1 = string.Join(
-      Environment.NewLine,
-      "<h1>Invoice - " + invoice.InvoiceId + " " + invoice.InvoiceDate + "</h1>",
-      "<h1>Total: " + invoice.Total + "</h1>",
-      invoice.Customer.FirstName + " " + invoice.Customer.LastName + " (" + invoice.Customer.Email + ")</br>",
-      invoice.BillingAddress + "</br>",
-          invoice.BillingCity + " " + invoice.BillingState + ", " + invoice.BillingCountry + " " + invoice.BillingPostalCode + "</br></br>",
-          "<table><tr><th>Track (Album - Artist)</th><th>Unit Price</th><th>Quantity</th><th>Total</th></tr>");
-
-        string rawHtml2 = null;
-
-        foreach (var invoiceLine in invoiceLines)
+        if (invoice.InvoiceId == 0)
         {
-            rawHtml2 = rawHtml2 +
-            "<tr><td>" +
-            invoiceLine.Track.Name + " (" +
-            invoiceLine.Track.Album.Title + " - " +
-            invoiceLine.Track.Album.Artist.Name + ")</td><td>" +
-            invoiceLine.UnitPrice + "</td><td>" +
-            invoiceLine.Quantity + "</td><td>" +
-            invoiceLine.UnitPrice * invoiceLine.Quantity + "</td><td>" +
-            "</td></tr>";
+
         }
+        else
+        {
+            List<InvoiceLine> invoiceLines = (List<InvoiceLine>)invoice.InvoiceLines;
 
-        rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td>Total</td><td>" + invoice.Total + "</td></tr>";
-
-        rawHtml2 = rawHtml2 + "</table>";
-
-        string rawHtml = String.Join(
+            string rawHtml1 = string.Join(
           Environment.NewLine,
-          rawHtml1,
-          rawHtml2
-        );
+          "<h1>Invoice - " + invoice.InvoiceId + " " + invoice.InvoiceDate + "</h1>",
+          "<h1>Total: " + invoice.Total + "</h1>",
+          invoice.Customer.FirstName + " " + invoice.Customer.LastName + " (" + invoice.Customer.Email + ")</br>",
+          invoice.BillingAddress + "</br>",
+              invoice.BillingCity + " " + invoice.BillingState + ", " + invoice.BillingCountry + " " + invoice.BillingPostalCode + "</br></br>",
+              "<table><tr><th>Track (Album - Artist)</th><th>Unit Price</th><th>Quantity</th><th>Total</th></tr>");
 
-        printingService.Print(rawHtml, PrintType.RawHtml);
+            string rawHtml2 = null;
+
+            foreach (var invoiceLine in invoiceLines)
+            {
+                rawHtml2 = rawHtml2 +
+                "<tr><td>" +
+                invoiceLine.Track.Name + " (" +
+                invoiceLine.Track.Album.Title + " - " +
+                invoiceLine.Track.Album.Artist.Name + ")</td><td>" +
+                invoiceLine.UnitPrice + "</td><td>" +
+                invoiceLine.Quantity + "</td><td>" +
+                invoiceLine.UnitPrice * invoiceLine.Quantity + "</td><td>" +
+                "</td></tr>";
+            }
+
+            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td>Total</td><td>" + invoice.Total + "</td></tr>";
+
+            rawHtml2 = rawHtml2 + "</table>";
+
+            string rawHtml = String.Join(
+              Environment.NewLine,
+              rawHtml1,
+              rawHtml2
+            );
+
+            printingService.Print(rawHtml, PrintType.RawHtml);
+        }
     }
 
     protected override async Task OnParametersSetAsync()
