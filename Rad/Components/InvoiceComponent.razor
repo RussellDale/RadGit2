@@ -320,7 +320,6 @@ else
             .Searchable()
             .Selectable(true)
             .SetHeaderCrudButtons(true)
-            .AddButtonComponent<Print>("Print", "Print", null, null, null, invoice)
             .RearrangeableColumns()
             .Crud(true, false, true, true, invoiceService)
             .SubGrid(subGrids, ("InvoiceId", "InvoiceId"))
