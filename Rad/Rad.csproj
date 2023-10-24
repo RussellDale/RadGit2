@@ -5,6 +5,17 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="BlazorComponents\**" />
+	  <Compile Remove="Views\**" />
+	  <Content Remove="BlazorComponents\**" />
+	  <Content Remove="Views\**" />
+	  <EmbeddedResource Remove="BlazorComponents\**" />
+	  <EmbeddedResource Remove="Views\**" />
+	  <None Remove="BlazorComponents\**" />
+	  <None Remove="Views\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Content Remove="wwwroot\index.html" />
 	</ItemGroup>
 	
@@ -40,12 +51,6 @@
 			<Generator>PublicResXFileCodeGenerator</Generator>
 			<LastGenOutput>SharedResource.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="BlazorComponents\" />
-		<Folder Include="Views\Home\" />
-		<Folder Include="wwwroot\docs\" />
 	</ItemGroup>
 
 	<ItemGroup>

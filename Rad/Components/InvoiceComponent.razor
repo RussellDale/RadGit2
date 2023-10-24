@@ -132,12 +132,32 @@ else
         }
         else
         {
+/*
+            "<head>" +
+            "<style>" +
+            "table {" +
+                       " border-collapse: collapse;" +
+                    " width: 100 %;" +
+                   " }" +
+                   " th, td {" +
+                      "  text-align: left;" +
+                   " padding: 8px;" +
+                   " }" +
+               " tr: nth-child(even) {" +
+                      " background-color: #D6EEEE;" +
+            "}" +
+            "</style>" +
+            "</head>",
+*/
             List<InvoiceLine> invoiceLines = (List<InvoiceLine>)invoice.InvoiceLines;
+
+            string invoiceDate = string.Format("{0:d}", invoice.InvoiceDate);
+            string invoiceTotal = string.Format("{0,0:C}", invoice.Total);
 
             string rawHtml1 = string.Join(
           Environment.NewLine,
-          "<h1>Invoice - " + invoice.InvoiceId + " " + invoice.InvoiceDate + "</h1>",
-          "<h1>Total: " + invoice.Total + "</h1>",
+          "<h1>Invoice - " + invoiceDate + "</h1>",
+          "<h1>Total: " + invoiceTotal + "</h1>",
           invoice.Customer.FirstName + " " + invoice.Customer.LastName + " (" + invoice.Customer.Email + ")</br>",
           invoice.BillingAddress + "</br>",
               invoice.BillingCity + " " + invoice.BillingState + ", " + invoice.BillingCountry + " " + invoice.BillingPostalCode + "</br></br>",
@@ -147,6 +167,7 @@ else
 
             foreach (var invoiceLine in invoiceLines)
             {
+//                string invoiceLineTotal = string.Format("      {0,-7:C}", invoiceLine.UnitPrice * invoiceLine.Quantity);
                 rawHtml2 = rawHtml2 +
                 "<tr><td>" +
                 invoiceLine.Track.Name + " (" +
@@ -159,7 +180,7 @@ else
             }
 
             rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td>----------</td></tr>";
-            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td>Total</td><td>" + invoice.Total + "</td></tr>";
+            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td>Total</td><td>" + invoiceTotal + "</td></tr>";
             rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td>======</td></tr>";
 
             rawHtml2 = rawHtml2 + "</table>";
