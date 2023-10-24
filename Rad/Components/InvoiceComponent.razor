@@ -141,7 +141,7 @@ else
           invoice.Customer.FirstName + " " + invoice.Customer.LastName + " (" + invoice.Customer.Email + ")</br>",
           invoice.BillingAddress + "</br>",
               invoice.BillingCity + " " + invoice.BillingState + ", " + invoice.BillingCountry + " " + invoice.BillingPostalCode + "</br></br>",
-              "<table><tr><th>Track (Album - Artist)</th><th>Unit Price</th><th>Quantity</th><th>Total</th></tr>");
+              "<table><tr><th>Track (Album - Artist)</th><th>Unit</br>Price</th><th>Quantity</th><th>Total</th></tr>");
 
             string rawHtml2 = null;
 
@@ -158,7 +158,9 @@ else
                 "</td></tr>";
             }
 
+            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td>----------</td></tr>";
             rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td>Total</td><td>" + invoice.Total + "</td></tr>";
+            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td>======</td></tr>";
 
             rawHtml2 = rawHtml2 + "</table>";
 
