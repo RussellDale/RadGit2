@@ -149,7 +149,10 @@ else
 
                         */
 
-            string head = "<head><style>table, td {border-bottom: 1px solid LightGray;}</style></head>";
+            string head = "<head><style>table, td {border-bottom: 1px solid LightGray; text-align: r;} " +
+                                              "th {text-align: left;}" + 
+                                              "table#t01 {width:100 %; background-color: #f2f2d1;}" +
+                          "</style></head>";
 
             List<InvoiceLine> invoiceLines = (List<InvoiceLine>)invoice.InvoiceLines;
 
@@ -186,6 +189,11 @@ else
             rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td>Total</td><td>" + invoiceTotal + "</td></tr>";
             rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td>======</td></tr>";
             rawHtml2 = rawHtml2 + "</table>";
+
+            rawHtml2 = rawHtml2 + "<table id='t01'>" +
+                                  "<tr><th>.</th><th>.</th><th>.</th><th>.</th></tr>" +
+                                  "<tr><td>.</td><td>.</td><td>.</td><td>.</td></tr>" +
+                                  "</table>";
 
             string rawHtml = String.Join(
               Environment.NewLine,
