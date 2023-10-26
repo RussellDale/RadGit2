@@ -120,6 +120,43 @@ else
 
     Action<IGridColumnCollection<Invoice>> invoiceColumnsA;
 
+    private void Print1()
+    {
+        string rawHtml1 = null;
+
+        rawHtml1 = rawHtml1 +
+        "<head><style>table, th, td {border: 1px solid black; border-collapse: collapse;}" +
+                            "th, td {padding: 5px; text-align: left;}" +
+                     "table#t01 {width: 100%; background-color: #f2f2d1;}" +
+                         "tbody {font-size:95%; font-style:Comic Sans MS}" +
+        "</style></head>";
+
+        rawHtml1 = rawHtml1 +
+        "<table style=\"width:100%\">" +
+           "<tr><th>Firstname</th><th>Lastname</th><th>Age</th></tr>" +
+           "<tr><td>Priya</td><td>Sharma</td><td>24</td></tr>" +
+           "<tr><td>Arun</td><td>Singh</td><td>32</td></tr>" +
+           "<tr><td>Sam</td><td>Watson</td><td>41</td></tr>" +
+        "</table>";
+
+        rawHtml1 = rawHtml1 + "<br /><br />";
+
+        rawHtml1 = rawHtml1 +
+        "<table id=\"t01\">" +
+           "<tr><th>Firstname</th><th>Lastname</th><th>Age</th></tr>" +
+           "<tr><td>Priya</td><td>Sharma</td><td>24</td></tr>" +
+           "<tr><td>Arun</td><td>Singh</td><td>32</td></tr>" +
+           "<tr><td>Sam</td><td>Watson</td><td>41</td></tr>" +
+        "</table>";
+
+        string rawHtml = String.Join(
+          Environment.NewLine,
+          rawHtml1
+        );
+
+        printingService.Print(rawHtml, PrintType.RawHtml);
+    }
+
     private void Print()
     {
         string err = "You must select the row you want to print";
