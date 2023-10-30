@@ -167,29 +167,7 @@ else
         }
         else
         {
-            /*
-                                    "<head>" +
-                                    "<style>" +
-                                    "table { border-collapse: collapse; width: 100%; }" +
-                                    " th, td { text-align: left; padding: 8px; }" +
-                                    " tr: nth-child(even) { background-color: #D6EEEE; }" +
-                                    "</style>" +
-                                    "</head>",
-
-                        ​<head>
-                        <style>
-                        table, th, td {
-                          border: 1px solid black;
-                        }
-                        </style>
-                        </head>
-
-                        */
-
-            string head = "<head><style>table {width: 100%;} th {text-align: left;}" +
-                                       "td {border-bottom: 1px solid LightGray; text-align: left;} " +
-                                       "table#t01 {width: 100%;}" +
-                          "</style></head>";
+            string head = "<head><style>table {width: 100%;} th {text-align: left;}</style></head>";
 
             List<InvoiceLine> invoiceLines = (List<InvoiceLine>)invoice.InvoiceLines;
 
@@ -202,8 +180,11 @@ else
               "<h1>Invoice - " + invoiceDate + "</h1>",
               "<h1>Total: " + invoiceTotal + "</h1>",
               invoice.Customer.FirstName + " " + invoice.Customer.LastName + " (" + invoice.Customer.Email + ")</br>",
-              invoice.BillingAddress + "</br>",
+              "Bill To: " + invoice.Customer.Address + "</br>",
+              invoice.Customer.City + " " + invoice.Customer.State + ", " + invoice.Customer.Country + " " + invoice.Customer.PostalCode + "</br></br>",
+              "Ship To: " + invoice.BillingAddress + "</br>",
               invoice.BillingCity + " " + invoice.BillingState + ", " + invoice.BillingCountry + " " + invoice.BillingPostalCode + "</br></br>",
+
               "<table><tr><th>Track (Album - Artist)</th><th>Unit</br>Price</th><th>Quantity</th><th>Total</th></tr>");
 
             string rawHtml2 = null;
@@ -215,9 +196,9 @@ else
                 "<tr><td>" +
                 invoiceLine.Track.Name + " (" +
                 invoiceLine.Track.Album.Title + " - " +
-                invoiceLine.Track.Album.Artist.Name + ")</td><td text-align: center>" +
-                invoiceLine.UnitPrice + "</td><td text-align: right;}>" +
-                invoiceLine.Quantity + "</td><td text-align: right;}>" +
+                invoiceLine.Track.Album.Artist.Name + ")</td><td>" +
+                invoiceLine.UnitPrice + "</td><td>" +
+                invoiceLine.Quantity + "</td><td>" +
                 invoiceLine.UnitPrice * invoiceLine.Quantity + "</td>" +
                 "</tr>";
             }
