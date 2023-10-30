@@ -179,11 +179,11 @@ else
               head,
               "<h1>Invoice - " + invoiceDate + "</h1>",
               "<h1>Total: " + invoiceTotal + "</h1>",
-              invoice.Customer.FirstName + " " + invoice.Customer.LastName + " (" + invoice.Customer.Email + ")</br>",
-              "Bill To: " + invoice.Customer.Address + "</br>",
-              invoice.Customer.City + " " + invoice.Customer.State + ", " + invoice.Customer.Country + " " + invoice.Customer.PostalCode + "</br></br>",
-              "Ship To: " + invoice.BillingAddress + "</br>",
-              invoice.BillingCity + " " + invoice.BillingState + ", " + invoice.BillingCountry + " " + invoice.BillingPostalCode + "</br></br>",
+              invoice.Customer.FirstName + " " + invoice.Customer.LastName + " (" + invoice.Customer.Email + ")",
+              "<table><tr><td><h4>Bill To:</h4></td><td>" + invoice.Customer.Address + " </br> ",
+              invoice.Customer.City + " " + invoice.Customer.State + ", " + invoice.Customer.Country + " " + invoice.Customer.PostalCode + "</td>",
+              "<td><h4>Ship To:</h4></td><td>" + invoice.BillingAddress + "</br>",
+              invoice.BillingCity + " " + invoice.BillingState + ", " + invoice.BillingCountry + " " + invoice.BillingPostalCode + "</td></tr></table>",
 
               "<table><tr><th>Track (Album - Artist)</th><th>Unit</br>Price</th><th>Quantity</th><th>Total</th></tr>");
 
