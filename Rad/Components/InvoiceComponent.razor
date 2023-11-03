@@ -395,13 +395,15 @@ else
 
     private void TimerOnElapsed(object sender, ElapsedEventArgs e)
     {
-        if (timer != null)
+        if (timer != null && _gridComponent != null)
         {
             timer.Stop();
             timer.Dispose();
 
             _gridComponent.OnRowClicked = OnRowClickedInvoice;
         }
+        else
+            _gridComponent = _grid.GridComponent;
     }
 
     public void Dispose()
