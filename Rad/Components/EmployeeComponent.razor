@@ -48,10 +48,25 @@ else
         }
         else
         {
+            string reportTo = "";
+
+            if (employee.ReportsTo != null)
+                reportTo = employee.Employee_ReportsTo.FirstName + " " + employee.Employee_ReportsTo.LastName;
+
+            string birthDate = string.Format("{0:d}", employee.BirthDate);
+            string hireDate = string.Format("{0:d}", employee.HireDate);
+
             string rawHtml = string.Join(
               Environment.NewLine,
-              "<h1>Employee</h1>",
-              employee.FirstName + " " + employee.LastName);
+              "<h1>Employee</h1>" +
+              "<h2>" + employee.FirstName + " " + employee.LastName + " (" + employee.Email + ")</h2>" +
+              "<h3>" + employee.Title + "</h3>" +
+              employee.Address + "</br>" +
+              employee.City + ", " + employee.State + " " + employee.Country + " " + employee.PostalCode + "</br></br>" +
+              "Birth Date: " + birthDate + " Hire Date: " + hireDate + "</br></br>" +
+              "Phone: " + employee.Phone + "</br>" +
+              "Fax: " + employee.Fax + "</br></br>" +
+              "Report To: " + reportTo);
 
             printingService.Print(rawHtml, PrintType.RawHtml);
         }
