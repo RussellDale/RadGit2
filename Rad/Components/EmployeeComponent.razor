@@ -9,10 +9,13 @@
 @using Microsoft.Extensions.Primitives
 @using System.Globalization
 @using System.Threading.Tasks
+@using System.Timers
 @using Rad.Models.Domian
 @using Rad.Services
 
 @inject IEmployeeService employeeService
+@inject IPrintingService printingService
+
 
 @if (_task.IsCompleted)
 {
@@ -21,6 +24,7 @@
             <GridComponent T="Employee" Grid="@_grid"></GridComponent>
         </div>
     </div>
+    <button @onclick="Print">Print</button>
 }
 else
 {
@@ -31,6 +35,28 @@ else
 {
     private CGrid<Employee> _grid;
     private Task _task;
+    Timer timer;
+    private GridComponent<Employee> _gridComponent;
+
+    private void Print()
+    {
+        string err = "You must select the row you want to print";
+
+        if (employee.EmployeeId == 0)
+        {
+
+        }
+        else
+        {
+            string rawHtml = string.Join(
+              Environment.NewLine,
+              "<h1>Employee</h1>",
+              employee.FirstName + " " + employee.LastName);
+
+            printingService.Print(rawHtml, PrintType.RawHtml);
+        }
+    }
+
 
     protected override async Task OnParametersSetAsync()
     {
@@ -82,8 +108,53 @@ else
             ;
 
         _grid = client.Grid;
+        _gridComponent = _grid.GridComponent;
         _task = client.UpdateGrid();
         await _task;
+        Start();
+    }
+    public void Start()
+    {
+        if (timer == null)
+        {
+            timer = new Timer();
+            timer.Interval = 500;
+            timer.Elapsed += TimerOnElapsed;
+        }
+
+        timer.Start();
+    }
+
+    Employee employee = new Employee();
+
+    protected void OnRowClickedEmployee(object item)
+    {
+        if (item.GetType() == typeof(Employee))
+        {
+            employee = (Employee)item;
+        }
+    }
+
+    private void TimerOnElapsed(object sender, ElapsedEventArgs e)
+    {
+        if (timer != null && _gridComponent != null)
+        {
+            timer.Stop();
+            timer.Dispose();
+
+            _gridComponent.OnRowClicked = OnRowClickedEmployee;
+        }
+        else
+            _gridComponent = _grid.GridComponent;
+    }
+
+    public void Dispose()
+    {
+        if (timer != null)
+        {
+            timer.Dispose();
+            timer = null;
+        }
     }
 }
 
