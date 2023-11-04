@@ -50,9 +50,13 @@ else
         {
             string rawHtml = string.Join(
               Environment.NewLine,
-              "<h1>Customer</h1>",
-              "<h1>" + customer.FirstName + " " + customer.LastName + "</h1>",
-              " (" + customer.Email + ")");
+              "<h1>Customer</h1>" + 
+              "<h2>" + customer.FirstName + " " + customer.LastName + " (" + customer.Email + ")</h2>" +
+              customer.Company + "</br></br>" +
+              customer.Address + "</br>" +
+              customer.City + " " + customer.State + ", " + customer.Country + " " + customer.PostalCode + "</br></br>" +
+              "Phone: " + customer.Phone + "</br>" + 
+              "Fax: " + customer.Fax);
 
             printingService.Print(rawHtml, PrintType.RawHtml);
         }
