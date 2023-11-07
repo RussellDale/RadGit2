@@ -23,7 +23,7 @@
 @inject IGenreService       genreService
 @inject IMediaTypeService   mediaTypeService
 @inject IInvoiceLineService invoiceLineService
-
+@inject IPrintingService    printingService
 
 
 @if (_task.IsCompleted)
@@ -33,6 +33,7 @@
             <GridComponent T="Artist" Grid="@_grid"></GridComponent>
         </div>
     </div>
+    <button @onclick="Print">Print</button>
 }
 else
 {
@@ -45,8 +46,40 @@ else
     private Task _task;
     private IGridClient<Track> _clientTrack;
     Timer timer;
+    private GridComponent<Artist> _gridComponent;
 
-    
+    private void Print()
+    {
+        string err = "You must select the row you want to print";
+
+        if (artist.ArtistId == 0)
+        {
+
+        }
+        else
+        {
+            List<Album> albums = (List<Album>)artist.Albums;
+
+            foreach (var album in albums)
+            {
+//                "<h2>Album - " + albums + "</h2>";
+                List<Track> tracks = (List<Track>)album.Tracks;
+
+                foreach (var track in tracks)
+                {
+               
+
+                }
+            }
+
+            string rawHtml = string.Join(
+              Environment.NewLine,
+              "<h1>Artist - " + artist.Name + "</h1>"
+            );
+
+            printingService.Print(rawHtml, PrintType.RawHtml);
+        }
+    }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -65,9 +98,9 @@ else
         Action<IGridColumnCollection<Track>> trackColumns = c =>
         {
             c.Add(o => o.TrackId, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
-        //            c.Add(o => o.AlbumId, false);
+            //            c.Add(o => o.AlbumId, false);
 
-        c.Add(o => o.Name, false)
+            c.Add(o => o.Name, false)
 
                     ;
 
@@ -90,19 +123,19 @@ else
             //                  .Format("{0:n0}")
             ;
 
-        //            c.Add(x => x.Milliseconds.ToString())
-        //            .RenderValueAs(o => o.Milliseconds)
-        //            .Titled("Milliseconds")
-        //                .Format("{0:n0}")
+            //            c.Add(x => x.Milliseconds.ToString())
+            //            .RenderValueAs(o => o.Milliseconds)
+            //            .Titled("Milliseconds")
+            //                .Format("{0:n0}")
 
-        //                .Css("hidden-xs")
-        //                .SetCellCssClassesContraint(o => o.Milliseconds < 0 ? "black" : "red")
-        //                "{n}" +
-        ;
+            //                .Css("hidden-xs")
+            //                .SetCellCssClassesContraint(o => o.Milliseconds < 0 ? "black" : "red")
+            //                "{n}" +
+            ;
             c.Add(o => o.Bytes, false).Format("{0:n0}");
             c.Add(o => o.UnitPrice, false).Titled("Price").Format("{0:C}");
-        //            c.Add().RenderComponentAs(typeof(ButtonCell));
-    };
+            //            c.Add().RenderComponentAs(typeof(ButtonCell));
+        };
 
         var locale = CultureInfo.CurrentCulture;
         SharedResource.Culture = locale;
@@ -124,7 +157,7 @@ else
 
             _clientTrack = subGridClient;
 
-            timer.Start();
+//            timer.Start();
 
             await subGridClient.UpdateGrid();
             return subGridClient.Grid;
@@ -162,23 +195,37 @@ else
             ;
 
         _grid = client.Grid;
+        _gridComponent = _grid.GridComponent;
         _task = client.UpdateGrid();
         _client = client;
         await _task;
 
+        Start();
+    }
+
+    public void Start()
+    {
         if (timer == null)
         {
             timer = new Timer();
             timer.Interval = 500;
             timer.Elapsed += TimerOnElapsed;
         }
+
+        timer.Start();
     }
 
+    Artist artist = new Artist();
     InvoiceLine invoiceLine = new InvoiceLine();
 
-    protected async void OnRowClickedTrack(object item)
+    protected async void OnRowClicked(object item)
     {
         Track track = null;
+
+        if (item.GetType() == typeof(Artist))
+        {
+            artist = (Artist)item;
+        }
 
         if (item.GetType() == typeof(Track))
         {
@@ -211,9 +258,15 @@ else
 
     private void TimerOnElapsed(object sender, ElapsedEventArgs e)
     {
-        timer.Stop();
+        if (timer != null && _gridComponent != null)
+        {
+            timer.Stop();
+            timer.Dispose();
 
-        _clientTrack.Grid.GridComponent.OnRowClicked = OnRowClickedTrack;
+            _gridComponent.OnRowClicked = OnRowClicked;
+        }
+        else
+            _gridComponent = _grid.GridComponent;
     }
 
     public void Dispose()
