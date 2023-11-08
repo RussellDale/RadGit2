@@ -51,53 +51,28 @@ else
         }
         else
         {
-            string head = "<head><style>table {width: 100%;} th {text-align: left;}</style></head>";
+            List<PlaylistTrack> playlistTracks = (List<PlaylistTrack>)playlist.PlaylistTracks;
 
-            List<PlaylistTrack> playlistTrack = (List<PlaylistTrack>)playlist.PlaylistTracks;
-                          /*
-                          string invoiceDate = string.Format("{0:d}", invoice.InvoiceDate);
-                          string invoiceTotal = string.Format("{0,0:C}", invoice.Total);
+            string rawHtml1 = string.Join(
+                Environment.NewLine,
+                "<h1>Playlist - " + playlist.Name + "</h1>");
 
-                          string rawHtml1 = string.Join(
-                          Environment.NewLine,
-                          head,
-                          "<h1>Invoice - " + invoiceDate + "</h1>",
-                          "<h1>Total: " + invoiceTotal + "</h1>",
-                          invoice.Customer.FirstName + " " + invoice.Customer.LastName + " (" + invoice.Customer.Email + ")",
-                          "<table><tr><td><h4>Bill To:</h4></td><td>" + invoice.Customer.Address + " </br> ",
-                          invoice.Customer.City + " " + invoice.Customer.State + ", " + invoice.Customer.Country + " " + invoice.Customer.PostalCode + "</td>",
-                        "<td><h4>Ship To:</h4></td><td>" + invoice.BillingAddress + "</br>",
-                        invoice.BillingCity + " " + invoice.BillingState + ", " + invoice.BillingCountry + " " + invoice.BillingPostalCode + "</td></tr></table>",
-                            "<table><tr><th>Track (Album - Artist)</th><th>Unit</br>Price</th><th>Quantity</th><th>Total</th></tr>");
+            string rawHtml2 = null;
 
-                            string rawHtml2 = null;
+            foreach (var playlistTrack in playlistTracks)
+            {
+                rawHtml2 = rawHtml2 + playlistTrack.Track.Name + " (" + 
+                                      playlistTrack.Track.Album.Title + " - " + 
+                                      playlistTrack.Track.Album.Artist.Name + ")</br>";
+            }
 
-                            foreach (var invoiceLine in invoiceLines)
-                            {
-                            rawHtml2 = rawHtml2 +
-                            "<tr><td>" +
-                            invoiceLine.Track.Name + " (" +
-                            invoiceLine.Track.Album.Title + " - " +
-                            invoiceLine.Track.Album.Artist.Name + ")</td><td>" +
-                        invoiceLine.UnitPrice + "</td><td>" +
-                        invoiceLine.Quantity + "</td><td>" +
-                        invoiceLine.UnitPrice * invoiceLine.Quantity + "</td>" +
-                        "</tr>";
-                        }
+            string rawHtml = String.Join(
+                Environment.NewLine,
+                rawHtml1,
+                rawHtml2
+            );
 
-                        rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td>----------</td></tr>";
-                        rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td>Total</td><td>" + invoiceTotal + "</td></tr>";
-                        rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td>======</td></tr>";
-                          rawHtml2 = rawHtml2 + "</table>";
-
-                          string rawHtml = String.Join(
-                          Environment.NewLine,
-                        rawHtml1,
-                        rawHtml2
-                        );
-
-                        printingService.Print(rawHtml, PrintType.RawHtml);
-        */
+            printingService.Print(rawHtml, PrintType.RawHtml);
         }
     }
 

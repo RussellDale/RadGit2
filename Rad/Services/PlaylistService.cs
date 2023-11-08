@@ -28,8 +28,8 @@ namespace Rad.Services
             using (var context = new MyDbContext(_options))
             {
                 PlaylistRepository repository = new PlaylistRepository(context);
-                IGridServer<Playlist> server = new GridServer<Playlist>(repository.GetAll(), new QueryCollection(query),
-                    true, "playlistGrid", columns, 10)
+                IGridServer<Playlist> server = new GridServer<Playlist>(repository.GetAll(),
+                    new QueryCollection(query), true, "playlistGrid", columns, 10)
                         .Sortable(true)
                         .WithPaging(10)
                         .Searchable(true)

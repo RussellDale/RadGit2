@@ -14,7 +14,12 @@ namespace Rad.Models.Domian
 
         public override IQueryable<Playlist> GetAll()
         {
-            return EfDbSet;
+            return EfDbSet
+                .Include("PlaylistTracks")
+                .Include("PlaylistTracks.Track")
+                .Include("PlaylistTracks.Track.Album")
+                .Include("PlaylistTracks.Track.Album.Artist")
+                ;
         }
 
         public override async Task<Playlist> GetById(object id)
