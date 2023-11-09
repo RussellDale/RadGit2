@@ -53,6 +53,15 @@ namespace Rad.Services
             }
         }
 
+        public IEnumerable<Album> GetForAlbum(int id)
+        {
+            using (var context = new MyDbContext(_options))
+            {
+                AlbumRepository repository = new AlbumRepository(context);
+                return repository.GetForAlbum(id);
+            }
+        }
+
         public async Task<Album> Get(params object[] keys)
         {
             using (var context = new MyDbContext(_options))
@@ -123,5 +132,7 @@ namespace Rad.Services
                                           QueryDictionary<StringValues> query, int withPaging,
                                           int artistId);
         IEnumerable<SelectItem> GetAllAlbum();
+
+        IEnumerable<Album> GetForAlbum(int id);
     }
 }

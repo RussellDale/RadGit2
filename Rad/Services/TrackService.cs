@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace Rad.Services
 {
@@ -52,6 +53,15 @@ namespace Rad.Services
                     .Select(r => new SelectItem(r.AlbumId.ToString(), r.AlbumId.ToString() + " - "
                         + r.Name))
                     .ToList();
+            }
+        }
+
+        public IEnumerable<Track> GetForTrack(int id)
+        {
+            using (var context = new MyDbContext(_options))
+            {
+                TrackRepository repository = new TrackRepository(context);
+                return repository.GetForTrack(id);
             }
         }
 
@@ -125,5 +135,6 @@ namespace Rad.Services
         ItemsDTO<Track> GetTrack(Action<IGridColumnCollection<Track>> columns,
                                  QueryDictionary<StringValues> query, int withPaging, int albumId);
         IEnumerable<SelectItem> GetAllTrack();
+        IEnumerable<Track> GetForTrack(int id);
     }
 }

@@ -58,23 +58,26 @@ else
         }
         else
         {
-            List<Album> albums = (List<Album>)artist.Albums;
+            string rawHtml1 = null;
+
+            IEnumerable<Album> albums = albumService.GetForAlbum(artist.ArtistId);
 
             foreach (var album in albums)
             {
-//                "<h2>Album - " + albums + "</h2>";
-                List<Track> tracks = (List<Track>)album.Tracks;
+                rawHtml1 = rawHtml1 + "<h2>Album - " + album.Title + "</h2>";
+
+                IEnumerable<Track> tracks = trackService.GetForTrack(album.AlbumId);
 
                 foreach (var track in tracks)
                 {
-               
-
+                    rawHtml1 = rawHtml1 + track.Name + "</br>";
                 }
             }
 
             string rawHtml = string.Join(
               Environment.NewLine,
-              "<h1>Artist - " + artist.Name + "</h1>"
+              "<h1>Artist - " + artist.Name + "</h1>",
+              rawHtml1
             );
 
             printingService.Print(rawHtml, PrintType.RawHtml);
