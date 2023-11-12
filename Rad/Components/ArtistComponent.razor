@@ -70,7 +70,8 @@ else
 
                 foreach (var track in tracks)
                 {
-                    rawHtml1 = rawHtml1 + track.Name + "</br>";
+                    string milliseconds = track.Milliseconds.ToString();
+                    rawHtml1 = rawHtml1 + track.Name + " (" + milliseconds.Substring(0, 1) + ":" + milliseconds.Substring(2, 2) + ")</br>";
                 }
             }
 
