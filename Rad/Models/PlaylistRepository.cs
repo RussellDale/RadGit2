@@ -17,6 +17,7 @@ namespace Rad.Models.Domian
             return EfDbSet
                 .Include("PlaylistTracks")
                 .Include("PlaylistTracks.Track")
+                .Include("PlaylistTracks.Track.Genre")
                 .Include("PlaylistTracks.Track.Album")
                 .Include("PlaylistTracks.Track.Album.Artist")
                 ;

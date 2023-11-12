@@ -61,9 +61,13 @@ else
 
             foreach (var playlistTrack in playlistTracks)
             {
+                string milliseconds = playlistTrack.Track.Milliseconds.ToString();
+
                 rawHtml2 = rawHtml2 + playlistTrack.Track.Name + " (" + 
                                       playlistTrack.Track.Album.Title + " - " + 
-                                      playlistTrack.Track.Album.Artist.Name + ")</br>";
+                                      playlistTrack.Track.Album.Artist.Name + ") " + 
+                                      milliseconds.Substring(0, 1) + ":" + milliseconds.Substring(2, 2) + " " +
+                                      playlistTrack.Track.Genre.Name + "</br>";
             }
 
             string rawHtml = String.Join(
