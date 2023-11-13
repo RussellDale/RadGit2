@@ -58,7 +58,7 @@ namespace Rad.Services
             using (var context = new MyDbContext(_options))
             {
                 AlbumRepository repository = new AlbumRepository(context);
-                return repository.GetForAlbum(id);
+                return repository.GetForAlbum(id).OrderBy(r => r.Title);
             }
         }
 

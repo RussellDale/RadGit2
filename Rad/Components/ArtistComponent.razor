@@ -59,20 +59,23 @@ else
         else
         {
             string rawHtml1 = null;
-
             IEnumerable<Album> albums = albumService.GetForAlbum(artist.ArtistId);
 
             foreach (var album in albums)
             {
-                rawHtml1 = rawHtml1 + "<h2>Album - " + album.Title + "</h2>";
-
+                string rawHtml2 = null;
+                string genre = null;
                 IEnumerable<Track> tracks = trackService.GetForTrack(album.AlbumId);
 
                 foreach (var track in tracks)
                 {
+                    if(genre == null)
+                        genre = track.Genre.Name;
+
                     string milliseconds = track.Milliseconds.ToString();
-                    rawHtml1 = rawHtml1 + track.Name + " (" + milliseconds.Substring(0, 1) + ":" + milliseconds.Substring(2, 2) + ")</br>";
+                    rawHtml2 = rawHtml2 + track.Name + " (" + milliseconds.Substring(0, 1) + ":" + milliseconds.Substring(2, 2) + ")</br>";
                 }
+                rawHtml1 = rawHtml1 + "<h2>Album - " + album.Title + " - " + genre + "</h2>" + rawHtml2;
             }
 
             string rawHtml = string.Join(
