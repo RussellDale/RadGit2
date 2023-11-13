@@ -98,7 +98,6 @@
             <GridComponent @ref="_gridComponent" T="Invoice" Grid="@_grid"></GridComponent>
         </div>
     </div>
-    <p></p>
     <button @onclick="Print">Print</button>
 }
 else
@@ -201,7 +200,8 @@ else
 
             c.Add(o => o.CustomerId, false)
                   .RenderValueAs(o => o.Customer == null ? "" : o.Customer.Email)
-                  .SetSelectField(true, o => o.Customer == null ? "" : o.Customer.CustomerId.ToString() + " - " + o.Customer.Email,
+//                  .SetSelectField(true, o => o.Customer == null ? "" : o.Customer.CustomerId.ToString() + " - " + o.Customer.Email,
+                  .SetSelectField(true, o => o.Customer == null ? "" : o.Customer.Email,
                                   customerService.GetAllCustomer)
                   .SetListFilter(customerService.GetAllCustomer(), true, true)
             ;

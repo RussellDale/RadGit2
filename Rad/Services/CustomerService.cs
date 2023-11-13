@@ -48,8 +48,8 @@ namespace Rad.Services
             {
                 CustomerRepository repository = new CustomerRepository(context);
                 return repository.GetAll()
-                    .Select(r => new SelectItem(r.CustomerId.ToString(), r.CustomerId.ToString() + " - "
-                        + r.Email))
+//                    .Select(r => new SelectItem(r.CustomerId.ToString(), r.CustomerId.ToString() + " - "
+                    .Select(r => new SelectItem(r.CustomerId.ToString(), r.Email))
                     .ToList();
             }
         }
