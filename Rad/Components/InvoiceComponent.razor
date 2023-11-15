@@ -66,23 +66,13 @@
                 <div class="modal-content">
                     <div class="modal-body">
                         <div class="form-group">
-
-                            <!--
-
-                            <FluentValidationValidator />
-                            -->
-
                             <form>
                                 <EditForm Model="@isMessage" OnValidSubmit="@closeModal" @ref="Form">
                                     <DataAnnotationsValidator />
                                     <ValidationSummary />
-
-                                    <!--
-                                    <GridComponent T="@T"></GridComponent>
-                                    -->
+                                    <ArtistComponentSearch />                                   
                                 </EditForm>
                             </form>
-                            <strong><label for="FirstName" class="control-label">Message:</label></strong>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -99,6 +89,7 @@
         </div>
     </div>
     <button @onclick="Print">Print</button>
+    <button @onclick="Artist">Artist</button>
 }
 else
 {
@@ -119,6 +110,11 @@ else
     private Task _task;
 
     Action<IGridColumnCollection<Invoice>> invoiceColumnsA;
+
+    private void Artist()
+    {
+        isMessage = true;
+    }
 
     private void Print()
     {
