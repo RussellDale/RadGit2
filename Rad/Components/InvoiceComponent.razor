@@ -84,6 +84,8 @@
         </div>
     }
     @code {
+    ArtistComponentSearch artistComponentSearch = new ArtistComponentSearch();
+        
     private string displaySummary = "display:none";
 
    
@@ -208,7 +210,7 @@ else
 
             c.Add(o => o.CustomerId, false)
                   .RenderValueAs(o => o.Customer == null ? "" : o.Customer.Email)
-//                  .SetSelectField(true, o => o.Customer == null ? "" : o.Customer.CustomerId.ToString() + " - " + o.Customer.Email,
+                  //                  .SetSelectField(true, o => o.Customer == null ? "" : o.Customer.CustomerId.ToString() + " - " + o.Customer.Email,
                   .SetSelectField(true, o => o.Customer == null ? "" : o.Customer.Email,
                                   customerService.GetAllCustomer)
                   .SetListFilter(customerService.GetAllCustomer(), true, true)
@@ -397,6 +399,7 @@ else
         if (item.GetType() == typeof(Invoice))
         {
             invoice = (Invoice)item;
+            artistComponentSearch.Invoice = invoice;
         }
     }
 
