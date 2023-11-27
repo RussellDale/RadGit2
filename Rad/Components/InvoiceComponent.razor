@@ -37,6 +37,7 @@
 
     protected void closeModal()
     {
+        displaySummary = "display:block";
         isMessage = false;
     }
 
@@ -69,8 +70,8 @@
                             <form>
                                 <EditForm Model="@isMessage" OnValidSubmit="@closeModal" @ref="Form">
                                     <DataAnnotationsValidator />
-                                    <ValidationSummary />
-                                    <ArtistComponentSearch />                                   
+                                    <ValidationSummary OnInitialized() style="@displaySummary" />
+                                    <ArtistComponentSearch />
                                 </EditForm>
                             </form>
                         </div>
@@ -82,7 +83,16 @@
             </div>
         </div>
     }
-    
+    @code {
+    private string displaySummary = "display:none";
+
+   
+
+    private void Submit()
+    {
+        displaySummary = "display:block";
+    }
+}
     <div class="font-italic small">
         <div class="col-sm-12 table-sm">
             <GridComponent @ref="_gridComponent" T="Invoice" Grid="@_grid"></GridComponent>
