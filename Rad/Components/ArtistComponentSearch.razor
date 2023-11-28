@@ -171,6 +171,7 @@ else
                 {
                     Console.WriteLine(result.Data);
                     await invoiceLineService.Insert(invoiceLine);
+                    invoiceLine = new InvoiceLine();
                 }
             }
             else
