@@ -1,9 +1,11 @@
-﻿using Rad.Models.Domian;
+﻿using Microsoft.AspNetCore.Components;
+using Rad.Models.Domian;
 
 namespace Rad.Components
 {
     public partial class ArtistComponentSearch
     {
-        public Invoice Invoice { get; set; }
+        [Parameter] 
+        public int InvoiceId { get; set; }
     }
 }

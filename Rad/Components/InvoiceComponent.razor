@@ -69,9 +69,11 @@
                         <div class="form-group">
                             <form>
                                 <EditForm Model="@isMessage" OnValidSubmit="@closeModal" @ref="Form">
+                                    <!--
                                     <DataAnnotationsValidator />
-                                    <ValidationSummary OnInitialized() style="@displaySummary" />
-                                    <ArtistComponentSearch />
+                                    <ValidationSummary />
+                                    -->
+                                    <ArtistComponentSearch InvoiceId="@artistComponentSearch.InvoiceId" />
                                 </EditForm>
                             </form>
                         </div>
@@ -399,7 +401,7 @@ else
         if (item.GetType() == typeof(Invoice))
         {
             invoice = (Invoice)item;
-            artistComponentSearch.Invoice = invoice;
+            artistComponentSearch.InvoiceId = invoice.InvoiceId;
         }
     }
 
