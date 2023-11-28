@@ -22,6 +22,7 @@
 @inject ITrackService       trackService
 @inject IGenreService       genreService
 @inject IMediaTypeService   mediaTypeService
+@inject IInvoiceLineService invoiceLineService
 
 @if (_task.IsCompleted)
 {
@@ -158,7 +159,7 @@ else
 
             if (invoiceLine.TrackId == track.TrackId)
             {
-                IModalReference modalRef = modal.Show<DialogComponent>("My Movies");
+                IModalReference modalRef = modal.Show<DialogComponent>("Track ID");
 
                 ModalResult result = await modalRef.Result;
 
@@ -169,14 +170,15 @@ else
                 else
                 {
                     Console.WriteLine(result.Data);
+                    await invoiceLineService.Insert(invoiceLine);
                 }
             }
             else
             {
+                invoiceLine.InvoiceId = this.InvoiceId;
                 invoiceLine.TrackId = track.TrackId;
                 invoiceLine.UnitPrice = track.UnitPrice;
                 invoiceLine.Quantity = 1;
-                invoiceLine.InvoiceId = 4;  //to-do
             }
         }
     }
