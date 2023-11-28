@@ -37,7 +37,6 @@
 
     protected void closeModal()
     {
-        displaySummary = "display:block";
         isMessage = false;
     }
 
@@ -69,10 +68,6 @@
                         <div class="form-group">
                             <form>
                                 <EditForm Model="@isMessage" OnValidSubmit="@closeModal" @ref="Form">
-                                    <!--
-                                    <DataAnnotationsValidator />
-                                    <ValidationSummary />
-                                    -->
                                     <ArtistComponentSearch InvoiceId="@artistComponentSearch.InvoiceId" />
                                 </EditForm>
                             </form>
@@ -85,18 +80,11 @@
             </div>
         </div>
     }
+
     @code {
-    ArtistComponentSearch artistComponentSearch = new ArtistComponentSearch();
-        
-    private string displaySummary = "display:none";
-
-   
-
-    private void Submit()
-    {
-        displaySummary = "display:block";
+       ArtistComponentSearch artistComponentSearch = new ArtistComponentSearch();
     }
-}
+
     <div class="font-italic small">
         <div class="col-sm-12 table-sm">
             <GridComponent @ref="_gridComponent" T="Invoice" Grid="@_grid"></GridComponent>
@@ -316,7 +304,7 @@ else
                 .SetHeaderCrudButtons(true)
                 .Crud(true, false, true, true, invoiceLineService)
                 .SetStriped(true)
-                .AddButtonComponent<DialogComponentArtist>("Artist N", "Artist L", null, null, null, invoiceIdObj)
+//                .AddButtonComponent<DialogComponentArtist>("Artist N", "Artist L", null, null, null, invoiceIdObj)
                 .RearrangeableColumns()
                 ;
             //                .AddToOnAfterRender(OnAfterInvoiceLineRender)
