@@ -42,6 +42,14 @@ namespace Rad.Services
                 return items;
             }
         }
+        public Task<Invoice> GetForInvoice(int id)
+        {
+            using (var context = new MyDbContext(_options))
+            {
+                InvoiceRepository repository = new InvoiceRepository(context);
+                return repository.GetById(id);
+            }
+        }
 
         public async Task<Invoice> Get(params object[] keys)
         {
@@ -125,5 +133,6 @@ namespace Rad.Services
     {
          ItemsDTO<Invoice> GetInvoiceGridRows(Action<IGridColumnCollection<Invoice>> columns,
                                               QueryDictionary<StringValues> query);
+        Task<Invoice> GetForInvoice(int id);
     }
 }

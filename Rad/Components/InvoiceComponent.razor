@@ -139,6 +139,9 @@ else
         {
             string head = "<head><style>table {width: 100%;} th {text-align: left;}</style></head>";
 
+            Task<Invoice> invoiceTask = invoiceService.GetForInvoice(invoice.InvoiceId);
+            invoice.InvoiceId = invoiceTask.Result.InvoiceId;
+
             List<InvoiceLine> invoiceLines = (List<InvoiceLine>)invoice.InvoiceLines;
 
             string invoiceDate = string.Format("{0:d}", invoice.InvoiceDate);
