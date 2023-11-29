@@ -176,10 +176,13 @@ else
             }
             else
             {
-                invoiceLine.InvoiceId = this.InvoiceId;
-                invoiceLine.TrackId = track.TrackId;
-                invoiceLine.UnitPrice = track.UnitPrice;
-                invoiceLine.Quantity = 1;
+                if (this.InvoiceId != 0)
+                {
+                    invoiceLine.InvoiceId = this.InvoiceId;
+                    invoiceLine.TrackId = track.TrackId;
+                    invoiceLine.UnitPrice = track.UnitPrice;
+                    invoiceLine.Quantity = 1;
+                }
             }
         }
     }

@@ -115,7 +115,16 @@ else
 
     private void Artist()
     {
-        isMessage = true;
+        string err = "You must select the row you want to artist";
+
+        if (invoice.InvoiceId == 0)
+        {
+
+        }
+        else
+        {
+            isMessage = true;
+        }
     }
 
     private void Print()
