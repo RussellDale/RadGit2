@@ -140,7 +140,8 @@ else
             string head = "<head><style>table {width: 100%;} th {text-align: left;}</style></head>";
 
             Task<Invoice> invoiceTask = invoiceService.GetForInvoice(invoice.InvoiceId);
-            invoice.InvoiceId = invoiceTask.Result.InvoiceId;
+
+            invoice = (Invoice)invoiceTask.Result;
 
             List<InvoiceLine> invoiceLines = (List<InvoiceLine>)invoice.InvoiceLines;
 
