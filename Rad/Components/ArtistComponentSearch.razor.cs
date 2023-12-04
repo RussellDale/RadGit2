@@ -7,5 +7,7 @@ namespace Rad.Components
     {
         [Parameter] 
         public int InvoiceId { get; set; }
+        [Parameter]
+        public int PlaylistId { get; set; }
     }
 }

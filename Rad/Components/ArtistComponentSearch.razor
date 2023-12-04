@@ -23,6 +23,7 @@
 @inject IGenreService       genreService
 @inject IMediaTypeService   mediaTypeService
 @inject IInvoiceLineService invoiceLineService
+@inject IPlaylistTrackService playlistTrackService
 
 @if (_task.IsCompleted)
 {
@@ -148,6 +149,7 @@ else
     }
 
     InvoiceLine invoiceLine = new InvoiceLine();
+    PlaylistTrack playlistTrack = new PlaylistTrack();
 
     protected async void OnRowClickedTrack(object item)
     {
@@ -157,31 +159,62 @@ else
         {
             track = (Track)item;
 
-            if (invoiceLine.TrackId == track.TrackId)
+            if (this.InvoiceId != 0)
             {
-                IModalReference modalRef = modal.Show<DialogComponent>("Track ID");
-
-                ModalResult result = await modalRef.Result;
-
-                if (result.Cancelled)
+                if (invoiceLine.TrackId == track.TrackId)
                 {
-                    Console.WriteLine("Modal was cancelled");
+                    IModalReference modalRef = modal.Show<DialogComponent>("Track ID");
+
+                    ModalResult result = await modalRef.Result;
+
+                    if (result.Cancelled)
+                    {
+                        Console.WriteLine("Modal was cancelled");
+                    }
+                    else
+                    {
+                        Console.WriteLine(result.Data);
+                        await invoiceLineService.Insert(invoiceLine);
+                        invoiceLine = new InvoiceLine();
+                    }
                 }
                 else
                 {
-                    Console.WriteLine(result.Data);
-                    await invoiceLineService.Insert(invoiceLine);
-                    invoiceLine = new InvoiceLine();
+                    if (this.InvoiceId != 0)
+                    {
+                        invoiceLine.InvoiceId = this.InvoiceId;
+                        invoiceLine.TrackId = track.TrackId;
+                        invoiceLine.UnitPrice = track.UnitPrice;
+                        invoiceLine.Quantity = 1;
+                    }
                 }
             }
-            else
+            else if (this.PlaylistId != 0)
             {
-                if (this.InvoiceId != 0)
+                if (playlistTrack.TrackId == track.TrackId)
                 {
-                    invoiceLine.InvoiceId = this.InvoiceId;
-                    invoiceLine.TrackId = track.TrackId;
-                    invoiceLine.UnitPrice = track.UnitPrice;
-                    invoiceLine.Quantity = 1;
+                    IModalReference modalRef = modal.Show<DialogComponent>("Track ID");
+
+                    ModalResult result = await modalRef.Result;
+
+                    if (result.Cancelled)
+                    {
+                        Console.WriteLine("Modal was cancelled");
+                    }
+                    else
+                    {
+                        Console.WriteLine(result.Data);
+                        await playlistTrackService.Insert(playlistTrack);
+                        playlistTrack = new PlaylistTrack();
+                    }
+                }
+                else
+                {
+                    if (this.PlaylistId != 0)
+                    {
+                        playlistTrack.PlaylistId = this.PlaylistId;
+                        playlistTrack.TrackId = track.TrackId;
+                    }
                 }
             }
         }

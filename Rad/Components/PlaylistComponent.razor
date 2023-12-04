@@ -20,6 +20,39 @@
 @inject IPlaylistTrackService   playlistTrackService
 @inject IPrintingService        printingService
 
+@if (isMessage)
+{
+    <div class="modal" tabindex="-1" style="display:block" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <form>
+                            <EditForm Model="@isMessage" OnValidSubmit="@closeModal" @ref="Form">
+                                <ArtistComponentSearch PlaylistId="@artistComponentSearch.PlaylistId" />
+                            </EditForm>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-warning" @onclick="@closeModal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    ArtistComponentSearch artistComponentSearch = new ArtistComponentSearch();
+    EditForm Form;
+    protected Boolean isMessage = false;
+
+    protected void closeModal()
+    {
+        isMessage = false;
+    }
+}
+
 @if (_task.IsCompleted)
 {
     <div class="font-italic small">
@@ -28,6 +61,7 @@
         </div>
     </div>
     <button @onclick="Print">Print</button>
+    <button @onclick="Playlist">Playlist</button>
 }
 else
 {
@@ -40,6 +74,21 @@ else
     private CGrid<Playlist> _grid;
     private GridComponent<Playlist> _gridComponent;
     private Task _task;
+
+    private void Playlist()
+    {
+        string err = "You must select the row you want to playlist";
+
+        if (playlist.PlaylistId == 0)
+        {
+
+        }
+        else
+        {
+            isMessage = true;
+        }
+    }
+
 
     private void Print()
     {
@@ -168,6 +217,7 @@ else
         if (item.GetType() == typeof(Playlist))
         {
             playlist = (Playlist)item;
+            artistComponentSearch.PlaylistId = playlist.PlaylistId;
         }
     }
 
