@@ -63,23 +63,7 @@ else
         {
             c.Add(o => o.TrackId, true).SetPrimaryKey(true).SetWidth(50);
             c.Add(o => o.Name, false);
-            c.Add(o => o.MediaTypeId, false)
-                  .SetWidth(250).RenderValueAs(o => o.MediaType == null ? "" : o.MediaType.Name)
-                  .SetSelectField(true, o => o.MediaType == null ? "" : o.MediaType.MediaTypeId.ToString() + " - " + o.MediaType.Name,
-                                  mediaTypeService.GetAllMediaType)
-                  .SetListFilter(mediaTypeService.GetAllMediaType(), true, true)
-            ;
-            c.Add(o => o.GenreId, false)
-                  .SetWidth(250).RenderValueAs(o => o.Genre == null ? "" : o.Genre.Name)
-                  .SetSelectField(true, o => o.Genre == null ? "" : o.Genre.GenreId.ToString() + " - " + o.Genre.Name,
-                                genreService.GetAllGenre)
-                  .SetListFilter(genreService.GetAllGenre(), true, true)
-            ;
-            c.Add(o => o.Composer, false);
-            c.Add(o => o.Milliseconds, true);
-            c.Add(o => o.Bytes, false).Format("{0:n0}");
-            c.Add().Titled("Price").RenderValueAs(o => "$" + o.UnitPrice);
-            c.Add(o => o.UnitPrice, true);
+            c.Add(o => o.Genre.Name, false);
         };
 
         var locale = CultureInfo.CurrentCulture;
@@ -204,7 +188,14 @@ else
                     else
                     {
                         Console.WriteLine(result.Data);
-                        await playlistTrackService.Insert(playlistTrack);
+
+                        try
+                        {
+                            await playlistTrackService.Insert(playlistTrack);
+                        }
+                        catch (Exception e)
+                        { }
+
                         playlistTrack = new PlaylistTrack();
                     }
                 }

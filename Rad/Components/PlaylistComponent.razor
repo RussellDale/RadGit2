@@ -100,6 +100,10 @@ else
         }
         else
         {
+            Task<Playlist> playlistTask = playlistService.Get(playlist.PlaylistId);
+
+            playlist = (Playlist)playlistTask.Result;
+
             List<PlaylistTrack> playlistTracks = (List<PlaylistTrack>)playlist.PlaylistTracks;
 
             string rawHtml1 = string.Join(
@@ -173,7 +177,7 @@ else
                 .Selectable(true)
                 .SetHeaderCrudButtons(true)
                 .Crud(true, false, false, true, playlistTrackService)
-                .AddButtonComponent<DialogComponentArtist>("Artist N", "Artist L", null, null, null, playlistId)
+//                .AddButtonComponent<DialogComponentArtist>("Artist N", "Artist L", null, null, null, playlistId)
                 .SetStriped(true)
             ;
 
