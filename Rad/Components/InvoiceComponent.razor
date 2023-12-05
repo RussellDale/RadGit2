@@ -139,7 +139,7 @@ else
         {
             string head = "<head><style>table {width: 100%;} th {text-align: left;}</style></head>";
 
-            Task<Invoice> invoiceTask = invoiceService.GetForInvoice(invoice.InvoiceId);
+            Task<Invoice> invoiceTask = invoiceService.Get(invoice.InvoiceId);
 
             invoice = (Invoice)invoiceTask.Result;
 
