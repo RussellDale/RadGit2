@@ -253,7 +253,6 @@ else
         {
             c.Add(o => o.InvoiceLineId, true).SetPrimaryKey(true).SetWidth(500).SetCrudHidden(true);
             c.Add(o => o.TrackId, true);
-
             c.Add(false).Titled("Track")
                    .RenderValueAs(o => o.Track.Name + " (" + o.Track.Album.Title + " - " +
                                        o.Track.Album.Artist.Name + ")" )
@@ -261,6 +260,9 @@ else
 
             c.Add(o => o.Quantity, false);
             c.Add(o => o.UnitPrice, false).Titled("Price").Format("{0:C}");
+            c.Add().Titled("Total")
+               .RenderValueAs(o => "$" + (o.Quantity * o.UnitPrice).ToString())//.Format("{0:C}")
+            ;
             c.Add(o => o.Track.Genre.Name, false).SetCrudHidden(true);
             c.Add(o => o.Track.MediaType.Name, false).SetCrudHidden(true);
             c.Add(o => o.Track.UnitPrice, false).SetCrudHidden(true).Format("{0:C}");
