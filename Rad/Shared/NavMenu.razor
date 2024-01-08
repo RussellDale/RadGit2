@@ -3,19 +3,6 @@
 <div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">Rad - Chinook</a>
 
-    <p>Current count: @currentCount</p>
-
-    <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-
-    @code {
-        public int currentCount = 0;
-
-        private void IncrementCount()
-        {
-            currentCount++;
-        }
-    }
-
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
     </button>
