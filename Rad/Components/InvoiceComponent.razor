@@ -127,6 +127,27 @@ else
         }
     }
 
+    Invoice invoice = new Invoice();
+
+    protected void OnRowClickedInvoice(object item)
+    {
+        if (item.GetType() == typeof(Invoice))
+        {
+            invoice = (Invoice)item;
+            artistComponentSearch.InvoiceId = invoice.InvoiceId;
+
+            GridItems();
+        }
+    }
+
+    private void GridItems()
+    {
+        Task<Invoice> invoiceTask = invoiceService.Get(invoice.InvoiceId);
+        invoice = (Invoice)invoiceTask.Result;
+        List<Invoice> items = (List<Invoice>)_grid.Items;
+        items[_gridComponent.SelectedRow] = invoice;
+    }
+
     private void Print()
     {
         string err = "You must select the row you want to print";
@@ -138,11 +159,7 @@ else
         else
         {
             string head = "<head><style>table {width: 100%;} th {text-align: left;}</style></head>";
-
-            Task<Invoice> invoiceTask = invoiceService.Get(invoice.InvoiceId);
-
-            invoice = (Invoice)invoiceTask.Result;
-
+            GridItems();
             List<InvoiceLine> invoiceLines = (List<InvoiceLine>)invoice.InvoiceLines;
 
             string invoiceDate = string.Format("{0:d}", invoice.InvoiceDate);
@@ -395,17 +412,6 @@ else
         }
 
         timer.Start();
-    }
-
-    Invoice invoice = new Invoice();
-
-    protected void OnRowClickedInvoice(object item)
-    {
-        if (item.GetType() == typeof(Invoice))
-        {
-            invoice = (Invoice)item;
-            artistComponentSearch.InvoiceId = invoice.InvoiceId;
-        }
     }
 
     private void TimerOnElapsed(object sender, ElapsedEventArgs e)
