@@ -337,8 +337,9 @@ else
                 .SetHeaderCrudButtons(true)
                 .Crud(true, false, true, true, invoiceLineService)
                 .SetStriped(true)
-//                .AddButtonComponent<DialogComponentArtist>("Artist N", "Artist L", null, null, null, invoiceIdObj)
+                //                .AddButtonComponent<DialogComponentArtist>("Artist N", "Artist L", null, null, null, invoiceIdObj)
                 .RearrangeableColumns()
+                .AddToOnAfterRender(OnAfterInvoiceLineRender)
                 ;
             //                .AddToOnAfterRender(OnAfterInvoiceLineRender)
             //                .AddButtonCrudComponent<InvoiceLine>("HI","Hi",false,false,true,false)
@@ -401,6 +402,25 @@ else
         invoiceColumnsA = invoiceColumns;
 
         Start();
+    }
+
+    private async Task OnAfterInvoiceLineRender(GridComponent<InvoiceLine> gridComponent, bool firstRender)
+    {
+        if (firstRender)
+        {
+            //            gridComponent.BeforeInsert += BeforeInsertInvoiceLine;
+            //            gridComponent.BeforeUpdate += BeforeUpdateInvoiceLine;
+            gridComponent.AfterDelete += AfterDeleteInvoiceLine;
+
+            await Task.CompletedTask;
+        }
+    }
+
+    private async Task<bool> AfterDeleteInvoiceLine(GridDeleteComponent<InvoiceLine> component, InvoiceLine item)
+    {
+        bool task = new bool();
+        GridItems();
+        return task;
     }
 
     public void Start()
