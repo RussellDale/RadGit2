@@ -103,7 +103,8 @@ else
 
 @code
 {
-    Timer timer;
+    Timer timer1;
+    Timer timer2;
     private CGrid<Invoice> _grid;
     private GridComponent<Invoice> _gridComponent;
 
@@ -401,7 +402,7 @@ else
 
         invoiceColumnsA = invoiceColumns;
 
-        Start();
+        Start1();
     }
 
     private async Task OnAfterInvoiceLineRender(GridComponent<InvoiceLine> gridComponent, bool firstRender)
@@ -418,29 +419,29 @@ else
 
     private async Task<bool> AfterDeleteInvoiceLine(GridDeleteComponent<InvoiceLine> component, InvoiceLine item)
     {
-        bool task = new bool();
-        GridItems();
-        return task;
+        Start2();
+//        GridItems();
+        return true;
     }
 
-    public void Start()
+    public void Start1()
     {
-        if (timer == null)
+        if (timer1 == null)
         {
-            timer = new Timer();
-            timer.Interval = 500;
-            timer.Elapsed += TimerOnElapsed;
+            timer1 = new Timer();
+            timer1.Interval = 500;
+            timer1.Elapsed += Timer1OnElapsed;
         }
 
-        timer.Start();
+        timer1.Start();
     }
 
-    private void TimerOnElapsed(object sender, ElapsedEventArgs e)
+    private void Timer1OnElapsed(object sender, ElapsedEventArgs e)
     {
-        if (timer != null && _gridComponent != null)
+        if (timer1 != null && _gridComponent != null)
         {
-            timer.Stop();
-            timer.Dispose();
+            timer1.Stop();
+            timer1.Dispose();
 
             _gridComponent.OnRowClicked = OnRowClickedInvoice;
         }
@@ -448,12 +449,44 @@ else
             _gridComponent = _grid.GridComponent;
     }
 
-    public void Dispose()
+    public void Dispose1()
     {
-        if (timer != null)
+        if (timer1 != null)
         {
-            timer.Dispose();
-            timer = null;
+            timer1.Dispose();
+            timer1 = null;
+        }
+    }
+
+    public void Start2()
+    {
+        if (timer2 == null)
+        {
+            timer2 = new Timer();
+            timer2.Interval = 500;
+            timer2.Elapsed += Timer2OnElapsed;
+        }
+
+        timer2.Start();
+    }
+
+    private void Timer2OnElapsed(object sender, ElapsedEventArgs e)
+    {
+        if (timer2 != null)
+        {
+            timer2.Stop();
+            timer2.Dispose();
+
+            GridItems();
+        }
+    }
+
+    public void Dispose2()
+    {
+        if (timer2 != null)
+        {
+            timer2.Dispose();
+            timer2 = null;
         }
     }
 /*
