@@ -420,7 +420,8 @@ else
     private async Task<bool> AfterDeleteInvoiceLine(GridDeleteComponent<InvoiceLine> component, InvoiceLine item)
     {
         Start2();
-//        GridItems();
+        //GridItems();
+        //OnRowClickedInvoice(invoice);
         return true;
     }
 
@@ -463,7 +464,7 @@ else
         if (timer2 == null)
         {
             timer2 = new Timer();
-            timer2.Interval = 500;
+            timer2.Interval = 2000;
             timer2.Elapsed += Timer2OnElapsed;
         }
 
