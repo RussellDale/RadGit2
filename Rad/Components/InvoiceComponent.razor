@@ -409,19 +409,30 @@ else
     {
         if (firstRender)
         {
-            //            gridComponent.BeforeInsert += BeforeInsertInvoiceLine;
-            //            gridComponent.BeforeUpdate += BeforeUpdateInvoiceLine;
+            gridComponent.AfterInsert += AfterInsertInvoiceLine;
+            gridComponent.AfterUpdate += AfterUpdateInvoiceLine;
             gridComponent.AfterDelete += AfterDeleteInvoiceLine;
 
             await Task.CompletedTask;
         }
     }
 
+    private async Task<bool> AfterInsertInvoiceLine(GridCreateComponent<InvoiceLine> component, InvoiceLine item)
+    {
+        OnRowClickedInvoice(invoice);
+        return true;
+    }
+
+    private async Task<bool> AfterUpdateInvoiceLine(GridUpdateComponent<InvoiceLine> component, InvoiceLine item)
+    {
+        OnRowClickedInvoice(invoice);
+        return true;
+    }
     private async Task<bool> AfterDeleteInvoiceLine(GridDeleteComponent<InvoiceLine> component, InvoiceLine item)
     {
-        Start2();
+        //Start2();
         //GridItems();
-        //OnRowClickedInvoice(invoice);
+        OnRowClickedInvoice(invoice);
         return true;
     }
 
