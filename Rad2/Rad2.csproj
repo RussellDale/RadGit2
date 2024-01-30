@@ -7,6 +7,10 @@
 	<ItemGroup>
 		<Content Remove="wwwroot\index.html" />
 	</ItemGroup>
+	
+	<ItemGroup>
+		<ProjectReference Include="..\Append.Blazor.Printing\Append.Blazor.Printing.csproj" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\GridBlazor\GridBlazor.csproj" />
