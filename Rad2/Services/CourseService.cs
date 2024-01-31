@@ -98,6 +98,14 @@ namespace Rad2.Services
                     .ToList();
             }
         }
+        public IEnumerable<Course> GetForCourse(int id)
+        {
+            using (var context = new dbContext(_options))
+            {
+                CourseRepository repository = new CourseRepository(context);
+                return repository.GetForDepartment(id).OrderBy(r => r.Title);
+            }
+        }
 
         public async Task<Course> Get(params object[] keys)
         {
@@ -171,5 +179,6 @@ namespace Rad2.Services
                                             QueryDictionary<StringValues> query, int departmentId);
         IEnumerable<SelectItem> GetAllCourse();
         IEnumerable<SelectItem> GetAllDepartmentId(int departmentId);
+        IEnumerable<Course> GetForCourse(int id);
     }
 }
