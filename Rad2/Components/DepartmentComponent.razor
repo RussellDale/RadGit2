@@ -60,12 +60,16 @@ else
 
             string startDate = string.Format("{0:d}", department.StartDate);
             string budget = string.Format("{0:C}", department.Budget);
+            string location = "n/a";
+
+            if(department.Instructor.OfficeAssignment != null)
+                location = department.Instructor.OfficeAssignment.Location;
 
             string rawHtml = string.Join(
               Environment.NewLine,
               "<h1>Department - " + department.Name + "</h1>",
-              "<h2>Instrutor: " + department.Instructor.FirstName + " " + department.Instructor.LastName +
-                   " - Location: " + department.Instructor.OfficeAssignment.Location + "</h2>",
+              "<h2>Instructor: " + department.Instructor.FirstName + " " + department.Instructor.LastName +
+                   " - Location: " + location + "</h2>",
               "<h2>Start Date: " + startDate + " - Budget: " + budget + "</h2>",
               rawHtml1
             );

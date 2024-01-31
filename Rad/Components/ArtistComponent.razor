@@ -163,9 +163,6 @@ else
             ;
 
             _clientTrack = subGridClient;
-
-//            timer.Start();
-
             await subGridClient.UpdateGrid();
             return subGridClient.Grid;
         };
@@ -223,43 +220,12 @@ else
     }
 
     Artist artist = new Artist();
-    InvoiceLine invoiceLine = new InvoiceLine();
 
     protected async void OnRowClicked(object item)
     {
-        Track track = null;
-
         if (item.GetType() == typeof(Artist))
         {
             artist = (Artist)item;
-        }
-
-        if (item.GetType() == typeof(Track))
-        {
-            track = (Track)item;
-
-            if (invoiceLine.TrackId == track.TrackId)
-            {
-                IModalReference modalRef = modal.Show<DialogComponent>("My Movies");
-
-                ModalResult result = await modalRef.Result;
-
-                if (result.Cancelled)
-                {
-                    Console.WriteLine("Modal was cancelled");
-                }
-                else
-                {
-                    Console.WriteLine(result.Data);
-                }
-            }
-            else
-            {
-                invoiceLine.TrackId = track.TrackId;
-                invoiceLine.UnitPrice = track.UnitPrice;
-                invoiceLine.Quantity = 1;
-                invoiceLine.InvoiceId = 4;  //to-do
-            }
         }
     }
 
@@ -268,7 +234,7 @@ else
         if (timer != null && _gridComponent != null)
         {
             timer.Stop();
-            timer.Dispose();
+            Dispose();
 
             _gridComponent.OnRowClicked = OnRowClicked;
         }
