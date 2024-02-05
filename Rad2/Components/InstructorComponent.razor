@@ -56,7 +56,7 @@ else
 
             foreach (var course in courses)
             {
-                rawHtml1 = rawHtml1 + "<h3>" + course.Title + "</h3>";
+                rawHtml1 = rawHtml1 + "<h3>" + course.Title + " - " + course.Credits + "</h3>";
             }
 
             string hireDate = string.Format("{0:d}", instructor.HireDate);
