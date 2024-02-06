@@ -11,6 +11,7 @@
 @using Microsoft.Extensions.Primitives
 @using System.Globalization
 @using System.Threading.Tasks
+@using System.Timers
 @using Rad2.Models.Domian
 @using Rad2.Services
 
@@ -20,6 +21,7 @@
 @inject ICourseAssignmentService courseAssignmentService
 @inject IDepartmentService departmentService
 @inject IInstructorService instructorService
+@inject IPrintingService printingService
 
 @if (_task.IsCompleted)
 {
@@ -28,6 +30,7 @@
             <GridComponent T="Student" Grid="@_grid"></GridComponent>
         </div>
     </div>
+    <button @onclick="Print">Print</button>
 }
 else
 {
@@ -38,8 +41,52 @@ else
 {
     private CGrid<Student> _grid;
     private Task _task;
-
+    Timer timer;
+    private GridComponent<Student> _gridComponent;
     private CGrid<Enrollment> subGridClientEnrollment;
+
+    private void Print()
+    {
+        string err = "You must select the row you want to print";
+
+        if (student.Id == 0)
+        {
+
+        }
+        else
+        {
+            string rawHtml1 = null;
+
+            IEnumerable<Enrollment> enrollments = enrollmentService.GetAllEnrollment(student.Id);
+
+            foreach (var enrollment in enrollments)
+            {
+                string grade = "n/a";
+
+                if (enrollment.Grade != null)
+                    grade = enrollment.Grade.ToString();
+
+                rawHtml1 = rawHtml1 + "<h2>" + enrollment.Course.CourseId + " " + enrollment.Course.Title + " (" + enrollment.Course.Credits + ") - " + grade + "</h2>";
+                
+//                IEnumerable<CourseAssignment> courseAssignment = courseAssignmentService.GetForInstructorId()
+            }
+
+            string enrollmentDate = string.Format("{0:d}", student.EnrollmentDate);
+/*
+            string location = "n/a";
+
+            if (instructor.OfficeAssignment != null)
+                location = instructor.OfficeAssignment.Location;
+*/
+            string rawHtml = string.Join(
+              Environment.NewLine,
+              "<h1>Instructor - " + student.FirstName + " " + student.LastName + " - Enrollment Date: " + enrollmentDate + "</h1>",
+              rawHtml1
+            );
+
+            printingService.Print(rawHtml, PrintType.RawHtml);
+        }
+    }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -190,5 +237,50 @@ else
         _grid = client.Grid;
         _task = client.UpdateGrid();
         await _task;
+
+        Start();
+    }
+
+    public void Start()
+    {
+        if (timer == null)
+        {
+            timer = new Timer();
+            timer.Interval = 500;
+            timer.Elapsed += TimerOnElapsed;
+        }
+
+        timer.Start();
+    }
+
+    private void TimerOnElapsed(object sender, ElapsedEventArgs e)
+    {
+        if (timer != null && _gridComponent != null)
+        {
+            timer.Stop();
+            Dispose();
+
+            _gridComponent.OnRowClicked = OnRowClicked;
+        }
+        else
+            _gridComponent = _grid.GridComponent;
+    }
+
+    public void Dispose()
+    {
+        if (timer != null)
+        {
+            timer.Dispose();
+            timer = null;
+        }
+    }
+
+    Student student = new Student();
+    protected async void OnRowClicked(object item)
+    {
+        if (item.GetType() == typeof(Student))
+        {
+            student = (Student)item;
+        }
     }
 }

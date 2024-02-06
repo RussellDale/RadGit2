@@ -56,16 +56,12 @@ namespace Rad2.Services
                 return items;
             }
         }
-
-        public IEnumerable<SelectItem> GetAllEnrollment()
+        public IEnumerable<Enrollment> GetAllEnrollment(int id)
         {
             using (var context = new dbContext(_options))
             {
                 EnrollmentRepository repository = new EnrollmentRepository(context);
-                return repository.GetAll()
-                     .Select(r => new SelectItem(r.EnrollmentId.ToString(), r.EnrollmentId.ToString() + " - "
-                       + r.Grade + "" + r.Grade))
-                    .ToList();
+                return repository.GetAll().Where(o => o.StudentId == id).ToList();
             }
         }
 
@@ -139,6 +135,6 @@ namespace Rad2.Services
                                                   QueryDictionary<StringValues> query);
         ItemsDTO<Enrollment> GetEnrollmentIdGridRow(Action<IGridColumnCollection<Enrollment>> columns,
                                                     QueryDictionary<StringValues> query, int Id);
-        IEnumerable<SelectItem> GetAllEnrollment();
+        IEnumerable<Enrollment> GetAllEnrollment(int id);
     }
 }

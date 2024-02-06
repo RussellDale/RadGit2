@@ -18,6 +18,8 @@ namespace Rad2.Models.Domian
                 .Include("Student")
                 .Include("Course")
                 .Include("Course.Department")
+                .Include("Course.CourseAssignment")
+                .Include("Course.CourseAssignment.Instructor")
                 ; 
         }
 
