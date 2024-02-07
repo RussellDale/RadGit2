@@ -59,12 +59,12 @@ namespace Rad2.Services
                 return items;
             }
         }
-        public IEnumerable<CourseAssignment> GetForInstructorId(int id)
+        public IEnumerable<CourseAssignment> GetForCourseId(int id)
         {
             using (var context = new dbContext(_options))
             {
                 CourseAssignmentRepository repository = new CourseAssignmentRepository(context);
-                return repository.GetAll().Where(o => o.InstructorId == id).ToList();
+                return repository.GetAll().Where(o => o.CourseId == id).ToList();
             }
         }
 
@@ -138,6 +138,6 @@ namespace Rad2.Services
         ItemsDTO<CourseAssignment> GetCourseAssignmentIdGridRow(Action<IGridColumnCollection<CourseAssignment>> columns,
                                                                 QueryDictionary<StringValues> query,
                                                                 int courseId);
-        IEnumerable<CourseAssignment> GetForInstructorId(int id);
+        IEnumerable<CourseAssignment> GetForCourseId(int id);
     }
 }
