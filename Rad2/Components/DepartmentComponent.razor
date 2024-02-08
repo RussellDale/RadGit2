@@ -91,7 +91,8 @@ else
         {
             c.Add(o => o.DepartmentId, true).SetPrimaryKey(true).Titled(SharedResource.Number).SetWidth(50).SetCrudHidden(true);
             c.Add(o => o.Name, false);
-            c.Add(o => o.Budget, false).Format("{0:C}");
+            c.Add().RenderValueAs(o => "$" + o.Budget).Titled("Budget").SetCrudHidden(true);//.Format("{0:C}");
+            c.Add(o => o.Budget, true);
             c.Add(o => o.StartDate, false).Titled("Start Date").Format("{0:yyyy-MM-dd}");
             c.Add(o => o.InstructorId, false).Titled("Instrutor")
                   .SetWidth(250).RenderValueAs(o => o.Instructor == null ? "" : o.Instructor.FirstName + " " + o.Instructor.LastName)
