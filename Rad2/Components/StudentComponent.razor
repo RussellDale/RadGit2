@@ -79,13 +79,14 @@ else
 
                     rawHtml1 = rawHtml1 + "<h3>" + courseAssignment.Instructor.FirstName + " " + courseAssignment.Instructor.LastName + " - " + location + "</h3>";
                 }
+                rawHtml1 = rawHtml1 + "<hr>";
             }
 
             string enrollmentDate = string.Format("{0:d}", student.EnrollmentDate);
 
             string rawHtml = string.Join(
               Environment.NewLine,
-              "<h1>Student - " + student.FirstName + " " + student.LastName + " - Enrollment Date: " + enrollmentDate + "</h1>",
+              "<h1>Student - " + student.FirstName + " " + student.LastName + " - Enrollment Date: " + enrollmentDate + "</h1><hr>",
               rawHtml1
             );
 

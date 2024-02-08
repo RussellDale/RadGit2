@@ -218,30 +218,24 @@ else
             c.Add(o => o.InvoiceId, true).SetPrimaryKey(true).Titled(SharedResource.Number).SetWidth(50).SetCrudHidden(true);
             //            c.Add().Encoded(false).Sanitized(false).RenderComponentAs<DialogComponentArtistCell>();
             c.Add(o => o.InvoiceDate, false).Format("{0:yyyy-MM-dd}");
-            c.Add(o => o.Total, false).Format("{0:C}");
+            c.Add().Titled("Total").RenderValueAs(o => "$" + o.Total).SetCrudHidden(true);
             c.Add().Titled("Billing")
                    .RenderValueAs(o => o.BillingAddress + ", " + o.BillingCity + " " + o.BillingState + ", " +
                                        o.BillingCountry + " " + o.BillingPostalCode)
-                ;
-
+            ;
             c.Add(o => o.BillingAddress, true);
             c.Add(o => o.BillingCity, true);
             c.Add(o => o.BillingState, true);
             c.Add(o => o.BillingCountry, true);
             c.Add(o => o.BillingPostalCode, true);
-
             c.Add(o => o.CustomerId, false)
                   .RenderValueAs(o => o.Customer == null ? "" : o.Customer.Email)
-                  //                  .SetSelectField(true, o => o.Customer == null ? "" : o.Customer.CustomerId.ToString() + " - " + o.Customer.Email,
                   .SetSelectField(true, o => o.Customer == null ? "" : o.Customer.Email,
                                   customerService.GetAllCustomer)
                   .SetListFilter(customerService.GetAllCustomer(), true, true)
             ;
-
             c.Add(o => o.InvoiceLines.Count, false).SetCrudHidden(true);
         };
-
-
 
         Func<object[], bool, bool, bool, bool, Task<IGrid>> subGrids2 = async (keys, create, read, update, delete) =>
         {
@@ -265,9 +259,6 @@ else
 
         };
 
-
-
-
         Action<IGridColumnCollection<InvoiceLine>> invoiceLineColumns = c =>
         {
             c.Add(o => o.InvoiceLineId, true).SetPrimaryKey(true).SetWidth(500).SetCrudHidden(true);
@@ -276,42 +267,14 @@ else
                    .RenderValueAs(o => o.Track.Name + " (" + o.Track.Album.Title + " - " +
                                        o.Track.Album.Artist.Name + ")" )
             ;
-
             c.Add(o => o.Quantity, false);
-            c.Add(o => o.UnitPrice, false).Titled("Price").Format("{0:C}");
+            c.Add(o => o.UnitPrice, true).Titled("Price");
+            c.Add().Titled("Price").RenderValueAs(o => "$" + o.UnitPrice).SetCrudHidden(true);
             c.Add().Titled("Total")
-               .RenderValueAs(o => "$" + (o.Quantity * o.UnitPrice).ToString())//.Format("{0:C}")
-            ;
+               .RenderValueAs(o => "$" + (o.Quantity * o.UnitPrice).ToString()).SetCrudHidden(true);//.Format("{0:C}");
             c.Add(o => o.Track.Genre.Name, false).SetCrudHidden(true);
             c.Add(o => o.Track.MediaType.Name, false).SetCrudHidden(true);
             c.Add(o => o.Track.UnitPrice, false).SetCrudHidden(true).Format("{0:C}");
-
-            /*
-            c.Add(o => o.Track.Album.Artist.Name, false)
-            .RenderValueAs(o => o.Track.Album.Artist.Name == null ? "" : o.Track.Album.Artist.Name)
-            .SetSelectField(true, o => o.Track.Album.Artist == null ? "" : o.Track.Album.Artist.ArtistId.ToString() + " - " + o.Track.Album.Artist.Name,
-            artistService.GetAllArtist)
-            .SetListFilter(artistService.GetAllArtist(), true, true)
-            ;
-
-            c.Add()
-            .SubGrid(subGrids2, ("InvoiceLineId", "InvoiceLineId"))
-            ;
-
-            c.Add(o => o.Track.Album.Title, false)
-            .RenderValueAs(o => o.Track.Album.Title == null ? "" : o.Track.Album.Title)
-            .SetSelectField(true, o => o.Track.Album == null ? "" : o.Track.Album.AlbumId.ToString() + " - " + o.Track.Album.Title,
-            albumService.GetAllAlbum)
-            .SetListFilter(albumService.GetAllAlbum(), true, true)
-            ;
-
-            c.Add(o => o.Track.Name, false)
-            .RenderValueAs(o => o.Track.Name == null ? "" : o.Track.Name)
-            .SetSelectField(true, o => o.Track == null ? "" : o.Track.TrackId.ToString() + " - " + o.Track.Name,
-            trackService.GetAllTrack)
-            .SetListFilter(trackService.GetAllTrack(), true, true)
-        ;
-        */
         };
 
         var locale = CultureInfo.CurrentCulture;
