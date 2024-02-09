@@ -9,6 +9,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\Append.Blazor.Printing\Append.Blazor.Printing.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\GridBlazor\GridBlazor.csproj" />
 		<ProjectReference Include="..\GridCore\GridCore.csproj" />
 		<ProjectReference Include="..\GridMvc\GridMvc.csproj" />

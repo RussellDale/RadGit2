@@ -10,15 +10,17 @@
 @using Microsoft.Extensions.Primitives
 @using System.Globalization
 @using System.Threading.Tasks
+@using System.Timers
 @using Rad3.Models.Domian
 @using Rad3.Services
 
-@inject IOrdersService ordersService
+@inject IOrdersService       ordersService
 @inject IOrderDetailsService orderDetailsService
-@inject IEmployeesService employeesService
-@inject ICustomersService customersService
-@inject IProductsService productsService
-@inject IShippersService shippersService
+@inject IEmployeesService    employeesService
+@inject ICustomersService    customersService
+@inject IProductsService     productsService
+@inject IShippersService     shippersService
+@inject IPrintingService     printingService
 
 @if (_task.IsCompleted)
 {
@@ -27,6 +29,7 @@
             <GridComponent T="Orders" Grid="@_grid"></GridComponent>
         </div>
     </div>
+    <button @onclick="Print">Print</button>
 }
 else
 {
@@ -34,15 +37,107 @@ else
 }
 @code
 {
+    private void Print()
+    {
+        string err = "You must select the row you want to print";
+
+        if (orders.OrderId == 0)
+        {
+
+        }
+        else
+        {
+            string head = "<head><style>table {width: 100%;} th {text-align: left;}</style></head>";
+
+            //            List<InvoiceLine> invoiceLines = (List<InvoiceLine>)invoice.InvoiceLines;
+
+            string orderDate    = string.Format("{0:d}", orders.OrderDate);
+            string requiredDate = string.Format("{0:d}", orders.RequiredDate);
+            string shippedDate  = string.Format("{0:d}", orders.ShippedDate);
+
+            string rawHtml1 = string.Join(
+              Environment.NewLine,
+              head,
+              "<h1>Order: " + orders.OrderId + " - " + orderDate + "</h1>",
+              "<h2>Required Date: " + requiredDate + " Shipped Date: " + shippedDate + "</h2>",
+              "");
+/*
+            invoice.Customer.FirstName + " " + invoice.Customer.LastName + " (" + invoice.Customer.Email + ")",
+              "<table><tr><td><h4>Bill To:</h4></td><td>" + invoice.Customer.Address + " </br> ",
+              invoice.Customer.City + " " + invoice.Customer.State + ", " + invoice.Customer.Country + " " + invoice.Customer.PostalCode + "</td>",
+              "<td><h4>Ship To:</h4></td><td>" + invoice.BillingAddress + "</br>",
+              invoice.BillingCity + " " + invoice.BillingState + ", " + invoice.BillingCountry + " " + invoice.BillingPostalCode + "</td></tr></table>",
+            "");
+
+              "<table><tr><th>Track (Album - Artist)</th><th>Unit</br>Price</th><th>Quantity</th><th>Total</th></tr>");
+
+
+            c.Add(o => o.CustomerId, false).Titled("Customer")
+                  .SetWidth(250).RenderValueAs(o => o.CustomerId == null ? "" : o.Customer.CompanyName)
+                  .SetSelectField(true, o => o.CustomerId == null ? "" : o.CustomerId.ToString() + " - " + o.Customer.CompanyName,
+                                   customersService.GetAllCustomers)
+                  .SetListFilter(customersService.GetAllCustomers(), true, true);
+            c.Add(o => o.EmployeeId, false).Titled("Employee")
+                  .SetWidth(250).RenderValueAs(o => o.EmployeeId == null ? "" : o.Employee.FirstName + " " + o.Employee.LastName)
+                  .SetSelectField(true, o => o.EmployeeId == null ? "" : o.EmployeeId.ToString() + " - " +
+                                   o.Employee.FirstName + " " + o.Employee.LastName,
+                                   employeesService.GetAllEmployees)
+                  .SetListFilter(employeesService.GetAllEmployees(), true, true);
+            c.Add(o => o.ShippedDate, false).Format("{0:yyyy-MM-dd}");
+            c.Add(o => o.ShipVia, false).Titled("Ship Via")
+                  .SetWidth(250).RenderValueAs(o => o.ShipVia == null ? "" : o.ShipViaNavigation.CompanyName)
+                  .SetSelectField(true, o => o.ShipVia == null ? "" : o.ShipVia.ToString() + " - " + o.ShipViaNavigation.CompanyName,
+                                   shippersService.GetAllShippers)
+                  .SetListFilter(shippersService.GetAllShippers(), true, true);
+            c.Add(o => o.Freight, false);
+            c.Add(o => o.ShipName, false);
+            c.Add(o => o.ShipAddress, false);
+            c.Add(o => o.ShipCity, false);
+            c.Add(o => o.ShipRegion, false);
+            c.Add(o => o.ShipPostalCode, false);
+            c.Add(o => o.ShipCountry, false);
+
+            string rawHtml2 = null;
+
+            foreach (var invoiceLine in invoiceLines)
+            {
+                rawHtml2 = rawHtml2 +
+                "<tr><td>" +
+                invoiceLine.Track.Name + " (" +
+                invoiceLine.Track.Album.Title + " - " +
+                invoiceLine.Track.Album.Artist.Name + ")</td><td>" +
+                invoiceLine.UnitPrice + "</td><td>" +
+                invoiceLine.Quantity + "</td><td>" +
+                invoiceLine.UnitPrice * invoiceLine.Quantity + "</td>" +
+                "</tr>";
+            }
+
+            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td>----------</td></tr>";
+            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td>Total</td><td>" + invoiceTotal + "</td></tr>";
+            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td>======</td></tr>";
+            rawHtml2 = rawHtml2 + "</table>";
+*/
+            string rawHtml = String.Join(
+              Environment.NewLine,
+              rawHtml1
+            );
+
+            printingService.Print(rawHtml, PrintType.RawHtml);
+        }
+
+    }
+
     private CGrid<Orders> _grid;
     private Task _task;
     Func<object[], Task<ICGrid>> subEx;
+    Timer timer;
+    private GridComponent<Orders> _gridComponent;
 
     protected override async Task OnParametersSetAsync()
     {
         Action<IGridColumnCollection<Orders>> ordersColumns = c =>
         {
-            c.Add(o => o.OrderId, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.OrderId, false).Titled("Order").SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
             c.Add(o => o.OrderDetails.Count, false).Titled("Details").SetCrudHidden(true);
             c.Add(o => o.OrderDate, false).Format("{0:yyyy-MM-dd}");
             c.Add(o => o.RequiredDate, false).Format("{0:yyyy-MM-dd}");
@@ -120,6 +215,8 @@ else
         _grid = client.Grid;
         _task = client.UpdateGrid();
         await _task;
+
+        Start();
     }
 
     IGridClient<Orders> GridClient(Action<IGridColumnCollection<Orders>> ordersColumns, 
@@ -144,5 +241,49 @@ else
            ;
 
         return subGridClient;
+    }
+
+    public void Start()
+    {
+        if (timer == null)
+        {
+            timer = new Timer();
+            timer.Interval = 500;
+            timer.Elapsed += TimerOnElapsed;
+        }
+
+        timer.Start();
+    }
+
+    Orders orders = new Orders();
+
+    protected async void OnRowClicked(object item)
+    {
+        if (item.GetType() == typeof(Orders))
+        {
+            orders = (Orders)item;
+        }
+    }
+
+    private void TimerOnElapsed(object sender, ElapsedEventArgs e)
+    {
+        if (timer != null && _gridComponent != null)
+        {
+            timer.Stop();
+            Dispose();
+
+            _gridComponent.OnRowClicked = OnRowClicked;
+        }
+        else
+            _gridComponent = _grid.GridComponent;
+    }
+
+    public void Dispose()
+    {
+        if (timer != null)
+        {
+            timer.Dispose();
+            timer = null;
+        }
     }
 }

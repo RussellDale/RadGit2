@@ -23,6 +23,7 @@ using GridMvc;
 using RadShared.Data;
 using Rad3.Services;
 using Blazored.Modal;
+using Append.Blazor.Printing;
 
 namespace Rad3
 {
@@ -82,6 +83,8 @@ namespace Rad3
             services.AddScoped<IOrdersService, OrdersService>();
             services.AddScoped<IOrderDetailsService, OrderDetailsService>();
             services.AddScoped<IEmployeeTerritoriesService, EmployeeTerritoriesService>();
+
+            services.AddScoped<IPrintingService, PrintingService>();
 
             services.AddBlazoredModal();
 
