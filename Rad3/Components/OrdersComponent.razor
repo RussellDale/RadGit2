@@ -41,7 +41,7 @@ else
     {
         string err = "You must select the row you want to print";
 
-        if (orders.OrderId == 0)
+        if (order.OrderId == 0)
         {
 
         }
@@ -51,51 +51,30 @@ else
 
             //            List<InvoiceLine> invoiceLines = (List<InvoiceLine>)invoice.InvoiceLines;
 
-            string orderDate    = string.Format("{0:d}", orders.OrderDate);
-            string requiredDate = string.Format("{0:d}", orders.RequiredDate);
-            string shippedDate  = string.Format("{0:d}", orders.ShippedDate);
+            string orderDate    = string.Format("{0:d}", order.OrderDate);
+            string requiredDate = string.Format("{0:d}", order.RequiredDate);
+            string shippedDate  = string.Format("{0:d}", order.ShippedDate);
+            string orderFreight = string.Format("{0,0:C}", order.Freight);
 
             string rawHtml1 = string.Join(
               Environment.NewLine,
               head,
-              "<h1>Order: " + orders.OrderId + " - " + orderDate + "</h1>",
+              "<h1>Order: " + order.OrderId + " - " + orderDate + "</h1>",
               "<h2>Required Date: " + requiredDate + " Shipped Date: " + shippedDate + "</h2>",
-              "");
-/*
-            invoice.Customer.FirstName + " " + invoice.Customer.LastName + " (" + invoice.Customer.Email + ")",
-              "<table><tr><td><h4>Bill To:</h4></td><td>" + invoice.Customer.Address + " </br> ",
-              invoice.Customer.City + " " + invoice.Customer.State + ", " + invoice.Customer.Country + " " + invoice.Customer.PostalCode + "</td>",
-              "<td><h4>Ship To:</h4></td><td>" + invoice.BillingAddress + "</br>",
-              invoice.BillingCity + " " + invoice.BillingState + ", " + invoice.BillingCountry + " " + invoice.BillingPostalCode + "</td></tr></table>",
+              order.ShipViaNavigation.CompanyName + " - Freight: " + orderFreight + "</br></br>",
+              order.Customer.ContactName + " (" + order.Customer.ContactTitle + ")</br>",
+              "Phone: " + order.Customer.Phone + " Fax: " + order.Customer.Fax + "</br>",
+              " Employee: " + order.Employee.TitleOfCourtesy + " " + order.Employee.FirstName + " " + order.Employee.LastName,
+              "<table><tr><td><h4>Bill To:</h4></td><td>" + order.Customer.CompanyName + "</br>" + order.Customer.Address + " </br> ",
+              order.Customer.City + " (" + order.Customer.Region + ") " + order.Customer.Country + " " + order.Customer.PostalCode + "</td>",
+              "<td><h4>Ship To:</h4></td><td>" + order.ShipName + "</br>" + order.ShipAddress + "</br>",
+              order.ShipCity + " (" + order.ShipRegion + ") " + order.ShipCountry + " " + order.ShipPostalCode + "</td></tr></table>",
             "");
-
+/*
               "<table><tr><th>Track (Album - Artist)</th><th>Unit</br>Price</th><th>Quantity</th><th>Total</th></tr>");
 
 
-            c.Add(o => o.CustomerId, false).Titled("Customer")
-                  .SetWidth(250).RenderValueAs(o => o.CustomerId == null ? "" : o.Customer.CompanyName)
-                  .SetSelectField(true, o => o.CustomerId == null ? "" : o.CustomerId.ToString() + " - " + o.Customer.CompanyName,
-                                   customersService.GetAllCustomers)
-                  .SetListFilter(customersService.GetAllCustomers(), true, true);
             c.Add(o => o.EmployeeId, false).Titled("Employee")
-                  .SetWidth(250).RenderValueAs(o => o.EmployeeId == null ? "" : o.Employee.FirstName + " " + o.Employee.LastName)
-                  .SetSelectField(true, o => o.EmployeeId == null ? "" : o.EmployeeId.ToString() + " - " +
-                                   o.Employee.FirstName + " " + o.Employee.LastName,
-                                   employeesService.GetAllEmployees)
-                  .SetListFilter(employeesService.GetAllEmployees(), true, true);
-            c.Add(o => o.ShippedDate, false).Format("{0:yyyy-MM-dd}");
-            c.Add(o => o.ShipVia, false).Titled("Ship Via")
-                  .SetWidth(250).RenderValueAs(o => o.ShipVia == null ? "" : o.ShipViaNavigation.CompanyName)
-                  .SetSelectField(true, o => o.ShipVia == null ? "" : o.ShipVia.ToString() + " - " + o.ShipViaNavigation.CompanyName,
-                                   shippersService.GetAllShippers)
-                  .SetListFilter(shippersService.GetAllShippers(), true, true);
-            c.Add(o => o.Freight, false);
-            c.Add(o => o.ShipName, false);
-            c.Add(o => o.ShipAddress, false);
-            c.Add(o => o.ShipCity, false);
-            c.Add(o => o.ShipRegion, false);
-            c.Add(o => o.ShipPostalCode, false);
-            c.Add(o => o.ShipCountry, false);
 
             string rawHtml2 = null;
 
@@ -255,13 +234,13 @@ else
         timer.Start();
     }
 
-    Orders orders = new Orders();
+    Orders order = new Orders();
 
     protected async void OnRowClicked(object item)
     {
         if (item.GetType() == typeof(Orders))
         {
-            orders = (Orders)item;
+            order = (Orders)item;
         }
     }
 
