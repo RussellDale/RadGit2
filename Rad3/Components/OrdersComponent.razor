@@ -48,7 +48,7 @@ else
         else
         {
             //left right
-            string head = "<head><style>table {width: 100%;} th {text-align: left;}</style></head>";
+            string head = "<head><style>table {width: 100%;} td {text-align: right;}</style></head>";
 
             IEnumerable<OrderDetails> orderDetails = orderDetailsService.GetForOrderDetails(order.OrderId);
 
@@ -98,7 +98,7 @@ else
               order.Customer.City + ", " + order.Customer.Country + " " + order.Customer.PostalCode + " (" + order.Customer.Region + ")</td>",
               "<td><h4>Ship To:</h4></td><td>" + order.ShipName + "</br>" + order.ShipAddress + "</br>",
               order.ShipCity + ", " + order.ShipCountry + " " + order.ShipPostalCode + " (" + order.ShipRegion + ")</td></tr></table>",
-              "<table><tr><th>Product</th><th>Unit</br>Price</th><th>Quantity</th><th>Selling</br>Price</th><th>Discount</th><th>Total</th></tr>");
+              "<table><tr><th>Product</th><th >Unit</br>Price</th><th>Quantity</th><th>Selling</br>Price</th><th>Discount</th><th>Total</th></tr>");
 
             rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td></td><td></td><td>----------</td></tr>";
             rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td></td><td>Sub Total</td><td>" + orderTotal + "</td></tr>";
