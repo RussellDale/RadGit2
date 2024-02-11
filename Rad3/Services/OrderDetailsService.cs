@@ -52,6 +52,14 @@ namespace Rad3.Services
                                                .ToList();
             }
         }
+        public IEnumerable<OrderDetails> GetForOrderDetails(int id)
+        {
+            using (var context = new dbContext(_options))
+            {
+                OrderDetailsRepository repository = new OrderDetailsRepository(context);            
+                return repository.GetForOrderDetails(id);
+            }
+        }
 
         public async Task<OrderDetails> Get(params object[] keys)
         {
@@ -120,5 +128,6 @@ namespace Rad3.Services
         ItemsDTO<OrderDetails> GetOrderDetailsGridRow(Action<IGridColumnCollection<OrderDetails>> columns,
                                           QueryDictionary<StringValues> query, int Id);
         IEnumerable<SelectItem> GetAllOrderDetails();
+        IEnumerable<OrderDetails> GetForOrderDetails(int id);
     }
 }

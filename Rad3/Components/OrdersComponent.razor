@@ -1,4 +1,4 @@
-@page "/orderscomponent"
+﻿@page "/orderscomponent"
 
 @using GridMvc.Demo.Resources
 @using GridBlazor
@@ -47,63 +47,75 @@ else
         }
         else
         {
+            //left right
             string head = "<head><style>table {width: 100%;} th {text-align: left;}</style></head>";
 
-            //            List<InvoiceLine> invoiceLines = (List<InvoiceLine>)invoice.InvoiceLines;
+            IEnumerable<OrderDetails> orderDetails = orderDetailsService.GetForOrderDetails(order.OrderId);
 
-            string orderDate    = string.Format("{0:d}", order.OrderDate);
+            string rawHtml2 = null;
+            double dOrderTotal = 0;
+
+            foreach (var orderDetail in orderDetails)
+            {
+                double dOriginalPrice = orderDetail.UnitPrice * orderDetail.Quantity;
+                double dDiscountPrice = dOriginalPrice * orderDetail.Discount;
+                double dListPrice = dOriginalPrice - dDiscountPrice;
+                string unitPrice = string.Format("{0,0:C}", orderDetail.UnitPrice);
+                string originalPrice = string.Format("{0,0:C}", dOriginalPrice);
+                string listPrice = string.Format("{0,0:C}", dListPrice);
+
+                dOrderTotal = dOrderTotal + dListPrice;
+
+                rawHtml2 = rawHtml2 +
+                "<tr><td>" + 
+                orderDetail.Product.ProductName + "</td><td>" +
+                unitPrice + "</td><td>" +
+                orderDetail.Quantity + "</td><td>" +
+                originalPrice + "</td><td>" +
+                orderDetail.Discount + "</td><td>" +
+                listPrice + "</td>" +
+                "</tr>";
+            }
+
+            string orderDate = string.Format("{0:d}", order.OrderDate);
             string requiredDate = string.Format("{0:d}", order.RequiredDate);
-            string shippedDate  = string.Format("{0:d}", order.ShippedDate);
+            string shippedDate = string.Format("{0:d}", order.ShippedDate);
+
+            string orderTotal = string.Format("{0,0:C}", dOrderTotal);
             string orderFreight = string.Format("{0,0:C}", order.Freight);
+            string total = string.Format("{0,0:C}", dOrderTotal + order.Freight);
 
             string rawHtml1 = string.Join(
               Environment.NewLine,
               head,
               "<h1>Order: " + order.OrderId + " - " + orderDate + "</h1>",
+              "<h1>Total: " + total + "</h1>",
               "<h2>Required Date: " + requiredDate + " Shipped Date: " + shippedDate + "</h2>",
-              order.ShipViaNavigation.CompanyName + " - Freight: " + orderFreight + "</br></br>",
               order.Customer.ContactName + " (" + order.Customer.ContactTitle + ")</br>",
               "Phone: " + order.Customer.Phone + " Fax: " + order.Customer.Fax + "</br>",
-              " Employee: " + order.Employee.TitleOfCourtesy + " " + order.Employee.FirstName + " " + order.Employee.LastName,
+              " Employee: " + order.Employee.TitleOfCourtesy + " " + order.Employee.FirstName + " " + order.Employee.LastName + "</br>",
               "<table><tr><td><h4>Bill To:</h4></td><td>" + order.Customer.CompanyName + "</br>" + order.Customer.Address + " </br> ",
-              order.Customer.City + " (" + order.Customer.Region + ") " + order.Customer.Country + " " + order.Customer.PostalCode + "</td>",
+              order.Customer.City + ", " + order.Customer.Country + " " + order.Customer.PostalCode + " (" + order.Customer.Region + ")</td>",
               "<td><h4>Ship To:</h4></td><td>" + order.ShipName + "</br>" + order.ShipAddress + "</br>",
-              order.ShipCity + " (" + order.ShipRegion + ") " + order.ShipCountry + " " + order.ShipPostalCode + "</td></tr></table>",
-            "");
-/*
-              "<table><tr><th>Track (Album - Artist)</th><th>Unit</br>Price</th><th>Quantity</th><th>Total</th></tr>");
+              order.ShipCity + ", " + order.ShipCountry + " " + order.ShipPostalCode + " (" + order.ShipRegion + ")</td></tr></table>",
+              "<table><tr><th>Product</th><th>Unit</br>Price</th><th>Quantity</th><th>Selling</br>Price</th><th>Discount</th><th>Total</th></tr>");
 
-
-            c.Add(o => o.EmployeeId, false).Titled("Employee")
-
-            string rawHtml2 = null;
-
-            foreach (var invoiceLine in invoiceLines)
-            {
-                rawHtml2 = rawHtml2 +
-                "<tr><td>" +
-                invoiceLine.Track.Name + " (" +
-                invoiceLine.Track.Album.Title + " - " +
-                invoiceLine.Track.Album.Artist.Name + ")</td><td>" +
-                invoiceLine.UnitPrice + "</td><td>" +
-                invoiceLine.Quantity + "</td><td>" +
-                invoiceLine.UnitPrice * invoiceLine.Quantity + "</td>" +
-                "</tr>";
-            }
-
-            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td>----------</td></tr>";
-            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td>Total</td><td>" + invoiceTotal + "</td></tr>";
-            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td>======</td></tr>";
+            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td></td><td></td><td>----------</td></tr>";
+            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td></td><td>Sub Total</td><td>" + orderTotal + "</td></tr>";
+            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td></td><td>" + order.ShipViaNavigation.CompanyName + " - Freight</td><td>" + orderFreight + " </td></tr>";
+            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td></td><td></td><td>----------</td></tr>";
+            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td></td><td>Total</td><td>" + total + "</td></tr>";
+            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td></td><td></td><td>======</td></tr>";
             rawHtml2 = rawHtml2 + "</table>";
-*/
+
             string rawHtml = String.Join(
               Environment.NewLine,
-              rawHtml1
+              rawHtml1,
+              rawHtml2
             );
 
             printingService.Print(rawHtml, PrintType.RawHtml);
         }
-
     }
 
     private CGrid<Orders> _grid;
