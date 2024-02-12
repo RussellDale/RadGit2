@@ -48,8 +48,6 @@ else
         else
         {
             //left right
-            string head = "<head><style>table {width: 100%;} td {text-align: right;}</style></head>";
-
             IEnumerable<OrderDetails> orderDetails = orderDetailsService.GetForOrderDetails(order.OrderId);
 
             string rawHtml2 = null;
@@ -62,17 +60,19 @@ else
                 double dListPrice = dOriginalPrice - dDiscountPrice;
                 string unitPrice = string.Format("{0,0:C}", orderDetail.UnitPrice);
                 string originalPrice = string.Format("{0,0:C}", dOriginalPrice);
+                string discountPrice = string.Format("{0,0:C}", dDiscountPrice);
                 string listPrice = string.Format("{0,0:C}", dListPrice);
 
                 dOrderTotal = dOrderTotal + dListPrice;
 
                 rawHtml2 = rawHtml2 +
-                "<tr><td>" + 
+                "<tr><td scope=\"row\">" +
                 orderDetail.Product.ProductName + "</td><td>" +
                 unitPrice + "</td><td>" +
                 orderDetail.Quantity + "</td><td>" +
                 originalPrice + "</td><td>" +
                 orderDetail.Discount + "</td><td>" +
+                discountPrice + "</td><td>" +
                 listPrice + "</td>" +
                 "</tr>";
             }
@@ -87,31 +87,38 @@ else
 
             string rawHtml1 = string.Join(
               Environment.NewLine,
-              head,
+              "<!doctype html>",
+              "<html lang=\"en-US\">",
+              "<head>",
+                 "<meta charset=\"UTF-8\" />",
+                 "<style>table {width: 100%;} td {text-align: right;} td[scope='row'] {text-align: left;}</style>",
+              "</head>",
+              "<body>",
               "<h1>Order: " + order.OrderId + " - " + orderDate + "</h1>",
               "<h1>Total: " + total + "</h1>",
               "<h2>Required Date: " + requiredDate + " Shipped Date: " + shippedDate + "</h2>",
               order.Customer.ContactName + " (" + order.Customer.ContactTitle + ")</br>",
               "Phone: " + order.Customer.Phone + " Fax: " + order.Customer.Fax + "</br>",
-              " Employee: " + order.Employee.TitleOfCourtesy + " " + order.Employee.FirstName + " " + order.Employee.LastName + "</br>",
-              "<table><tr><td><h4>Bill To:</h4></td><td>" + order.Customer.CompanyName + "</br>" + order.Customer.Address + " </br> ",
+              "Employee: " + order.Employee.TitleOfCourtesy + " " + order.Employee.FirstName + " " + order.Employee.LastName + "</br>",
+              "<table><tr><td><h4>Bill To:</h4></td><td scope=\"row\">" + order.Customer.CompanyName + "</br>" + order.Customer.Address + "</br> ",
               order.Customer.City + ", " + order.Customer.Country + " " + order.Customer.PostalCode + " (" + order.Customer.Region + ")</td>",
-              "<td><h4>Ship To:</h4></td><td>" + order.ShipName + "</br>" + order.ShipAddress + "</br>",
+              "<td><h4>Ship To:</h4></td><td scope=\"row\">" + order.ShipName + "</br>" + order.ShipAddress + "</br>",
               order.ShipCity + ", " + order.ShipCountry + " " + order.ShipPostalCode + " (" + order.ShipRegion + ")</td></tr></table>",
-              "<table><tr><th>Product</th><th >Unit</br>Price</th><th>Quantity</th><th>Selling</br>Price</th><th>Discount</th><th>Total</th></tr>");
+              "<table><tr><th>Product</th><th>Unit</br>Price</th><th>Quantity</th><th>Selling</br>Price</th><th>Discount</th><th>Discount</br>Price</th><th>Total</th></tr>");
 
-            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td></td><td></td><td>----------</td></tr>";
-            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td></td><td>Sub Total</td><td>" + orderTotal + "</td></tr>";
-            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td></td><td>" + order.ShipViaNavigation.CompanyName + " - Freight</td><td>" + orderFreight + " </td></tr>";
-            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td></td><td></td><td>----------</td></tr>";
-            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td></td><td>Total</td><td>" + total + "</td></tr>";
-            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td></td><td></td><td>======</td></tr>";
+            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td></td><td></td><td></td><td>----------</td></tr>";
+            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td></td><td></td><td>Sub Total</td><td>" + orderTotal + "</td></tr>";
+            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td></td><td></td><td>" + order.ShipViaNavigation.CompanyName + " - Freight</td><td>" + orderFreight + " </td></tr>";
+            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td></td><td></td><td></td><td>----------</td></tr>";
+            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td></td><td></td><td>Total</td><td>" + total + "</td></tr>";
+            rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td></td><td></td><td></td><td>======</td></tr>";
             rawHtml2 = rawHtml2 + "</table>";
 
             string rawHtml = String.Join(
               Environment.NewLine,
               rawHtml1,
-              rawHtml2
+              rawHtml2,
+              "</body></html>"
             );
 
             printingService.Print(rawHtml, PrintType.RawHtml);
