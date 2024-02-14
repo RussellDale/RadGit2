@@ -144,9 +144,12 @@ else
 
     protected void OnRowClickedEmployee(object item)
     {
-        if (item.GetType() == typeof(Employee))
+        if (item != null)
         {
-            employee = (Employee)item;
+            if (item.GetType() == typeof(Employee))
+            {
+                employee = (Employee)item;
+            }
         }
     }
 

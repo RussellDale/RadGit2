@@ -104,16 +104,16 @@ else
         };
         /*
 
-        Func<Enrollment, GridMode, Task> afterChangeEnrollmentId = async (enrollment, mode) =>
-        {
-            if (mode == GridMode.Create || mode == GridMode.Update)
+            Func<Enrollment, GridMode, Task> afterChangeEnrollmentId = async (enrollment, mode) =>
+                {
+                if (mode == GridMode.Create || mode == GridMode.Update)
             {
                 int departmentId = enrollment.Course.DepartmentId;
 
 //                IGridColumn targetColumn(), insertingColumn();
 //                bool icSucceded = false;
 //                icSucceded = await subGridClientEnrollment.InsertColumn(targetColumn, insertingColumn);
-//                subGridClientEnrollment.Columns.Insert
+                //                subGridClientEnrollment.Columns.Insert
 
                 IGridColumn courseId = subGridClientEnrollment.Columns.Get("CourseId");
 
@@ -124,7 +124,7 @@ else
 //                ListFilterOptions obj3 = (ListFilterOptions)courseId.FilterWidgetData;
 //                IEnumerable obj4 = (IEnumerable)courseId.FilterWidgetData;
 
-                subGridClientEnrollment.Columns.Add()
+                    subGridClientEnrollment.Columns.Add()
                     .RenderValueAs(o => o.Course == null ? "" : o.Course.Title)
                     .SetSelectField(true, o => o.Course == null ? "" : o.Course.CourseId.ToString() + " - " +
                                         o.Course.Title,
@@ -133,22 +133,22 @@ else
 
 //                StateHasChanged();
                 await Task.CompletedTask;
-           }
+        }
         };
 */
 
         Action<IGridColumnCollection<Enrollment>> enrollmentColumns = c =>
         {
             c.Add(o => o.EnrollmentId, true).SetPrimaryKey(true).SetCrudHidden(true);//.Titled(SharedResource.Number).SetWidth(50);
-/*
-            c.Add(o => o.Course.DepartmentId, false).Titled("Department")
-                            .SetWidth(250).RenderValueAs(o => o.Course.Department == null ? "" : o.Course.Department.Name)
-                            .SetSelectField(true, o => o.Course.Department == null ? "" : o.Course.Department.DepartmentId.ToString() + " - " +
-                                              o.Course.Department.Name,
-                                              departmentService.GetAllDepartment)
-                            .SetListFilter(departmentService.GetAllDepartment(), true, true)
-                            .SetAfterChangeValue(afterChangeEnrollmentId);
-*/
+                                        /*
+                                        c.Add(o => o.Course.DepartmentId, false).Titled("Department")
+                                        .SetWidth(250).RenderValueAs(o => o.Course.Department == null ? "" : o.Course.Department.Name)
+                                        .SetSelectField(true, o => o.Course.Department == null ? "" : o.Course.Department.DepartmentId.ToString() + " - " +
+                                                          o.Course.Department.Name,
+                                        departmentService.GetAllDepartment)
+                                        .SetListFilter(departmentService.GetAllDepartment(), true, true)
+                                        .SetAfterChangeValue(afterChangeEnrollmentId);
+            */
             c.Add(o => o.CourseId, false).Titled("Course")
                              .SetWidth(250).RenderValueAs(o => o.Course == null ? "" : o.Course.CourseId + " " + o.Course.Title)
                              .SetSelectField(true, o => o.Course == null ? "" : o.Course.CourseId.ToString() + " - " +
@@ -161,17 +161,17 @@ else
             c.Add(o => o.Grade, false);
             c.Add(o => o.Course.Credits, false).Titled("Credits").SetCrudHidden(true);
         };
-/*
-        Func<Student, GridMode, Task> afterChangeStudentId = async (student, mode) =>
-        {
-            if (mode == GridMode.Create)
-            {
-                student.EnrollmentDate = DateTime.Now;
-                StateHasChanged();
-                await Task.CompletedTask;
-            }
+                /*
+                    Func<Student, GridMode, Task> afterChangeStudentId = async (student, mode) =>
+                        {
+                        if (mode == GridMode.Create)
+                        {
+                        student.EnrollmentDate = DateTime.Now;
+                        StateHasChanged();
+                    await Task.CompletedTask;
+        }
         };
-*/
+        */
         Action<IGridColumnCollection<Student>> studentColumns = c =>
         {
             c.Add(o => o.Id, true).SetPrimaryKey(true).Titled(SharedResource.Number).SetWidth(50).SetCrudHidden(true);
@@ -284,9 +284,12 @@ else
     Student student = new Student();
     protected async void OnRowClicked(object item)
     {
-        if (item.GetType() == typeof(Student))
+        if (item != null)
         {
-            student = (Student)item;
+            if (item.GetType() == typeof(Student))
+            {
+                student = (Student)item;
+            }
         }
     }
 }

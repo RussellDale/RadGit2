@@ -177,7 +177,7 @@ else
                 .Selectable(true)
                 .SetHeaderCrudButtons(true)
                 .Crud(true, false, false, true, playlistTrackService)
-//                .AddButtonComponent<DialogComponentArtist>("Artist N", "Artist L", null, null, null, playlistId)
+                //                .AddButtonComponent<DialogComponentArtist>("Artist N", "Artist L", null, null, null, playlistId)
                 .SetStriped(true)
             ;
 
@@ -218,10 +218,13 @@ else
 
     protected void OnRowClickedPlaylist(object item)
     {
-        if (item.GetType() == typeof(Playlist))
+        if (item != null)
         {
-            playlist = (Playlist)item;
-            artistComponentSearch.PlaylistId = playlist.PlaylistId;
+            if (item.GetType() == typeof(Playlist))
+            {
+                playlist = (Playlist)item;
+                artistComponentSearch.PlaylistId = playlist.PlaylistId;
+            }
         }
     }
 

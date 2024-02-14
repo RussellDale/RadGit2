@@ -223,9 +223,12 @@ else
 
     protected async void OnRowClicked(object item)
     {
-        if (item.GetType() == typeof(Artist))
+        if (item != null)
         {
-            artist = (Artist)item;
+            if (item.GetType() == typeof(Artist))
+            {
+                artist = (Artist)item;
+            }
         }
     }
 

@@ -185,25 +185,25 @@ else
 
         Func<object[], Task<ICGrid>> subGrids = async keys =>
         {
-           int orderId = Int32.Parse(keys[0].ToString());
+            int orderId = Int32.Parse(keys[0].ToString());
 
-           var subGridClient = new GridClient<OrderDetails>(q => orderDetailsService.GetOrderDetailsGridRow(orderDetailsColumns, query, orderId),
-              query, false, "orderDetailsGrid", orderDetailsColumns, locale)
-           .Sortable()
-           .Filterable()
-           .SetKeyboard(true)
-           .SetStriped(true)
-           .WithMultipleFilters()
-           .Searchable(true, false)
-           .WithGridItemsCount()
-           .ChangePageSize(true)
-           .Selectable(true)
-           .SetHeaderCrudButtons(true)
-           .Crud(true, false, true, true, orderDetailsService)
-           ;
+            var subGridClient = new GridClient<OrderDetails>(q => orderDetailsService.GetOrderDetailsGridRow(orderDetailsColumns, query, orderId),
+           query, false, "orderDetailsGrid", orderDetailsColumns, locale)
+        .Sortable()
+        .Filterable()
+        .SetKeyboard(true)
+        .SetStriped(true)
+        .WithMultipleFilters()
+        .Searchable(true, false)
+        .WithGridItemsCount()
+        .ChangePageSize(true)
+        .Selectable(true)
+        .SetHeaderCrudButtons(true)
+        .Crud(true, false, true, true, orderDetailsService)
+        ;
 
-           await subGridClient.UpdateGrid();
-           return subGridClient.Grid;
+            await subGridClient.UpdateGrid();
+            return subGridClient.Grid;
         };
 
         subEx = subGrids;
@@ -257,9 +257,12 @@ else
 
     protected async void OnRowClicked(object item)
     {
-        if (item.GetType() == typeof(Orders))
+        if (item != null)
         {
-            order = (Orders)item;
+            if (item.GetType() == typeof(Orders))
+            {
+                order = (Orders)item;
+            }
         }
     }
 

@@ -80,14 +80,14 @@ else
     {
         Action<IGridColumnCollection<CourseAssignment>> courseAssignmentColumns = c =>
         {
-/*
-            c.Add(o => o.Course.DepartmentId, false).Titled("Department")
-                            .SetWidth(250).RenderValueAs(o => o.Course.Department == null ? "" : o.Course.Department.Name)
-                            .SetSelectField(true, o => o.Course.DepartmentId == null ? "" : o.Course.Department.DepartmentId.ToString() + " - " +
-                                              o.Course.Department.Name,
-                                              departmentService.GetAllDepartment)
-                            .SetListFilter(departmentService.GetAllDepartment(), true, true);
-*/
+                                        /*
+                                        c.Add(o => o.Course.DepartmentId, false).Titled("Department")
+                                        .SetWidth(250).RenderValueAs(o => o.Course.Department == null ? "" : o.Course.Department.Name)
+                                        .SetSelectField(true, o => o.Course.DepartmentId == null ? "" : o.Course.Department.DepartmentId.ToString() + " - " +
+                                                          o.Course.Department.Name,
+                                                          departmentService.GetAllDepartment)
+                                        .SetListFilter(departmentService.GetAllDepartment(), true, true);
+            */
             c.Add(o => o.CourseId, true).Titled("Title").SetPrimaryKey(true)//.SetWidth(50)
                 .SetWidth(250).RenderValueAs(o => o.Course == null ? "" : o.Course.Title)
                 .SetSelectField(true, o => o.Course == null ? "" : o.Course.CourseId.ToString() + " - " +
@@ -96,8 +96,8 @@ else
                 .SetListFilter(courseService.GetAllCourse(), true, false);
             c.Add(o => o.InstructorId, true).SetPrimaryKey(true, false).SetCrudHidden(true);
             c.Add(o => o.Course.Title, false).Titled("Title").SetCrudHidden(true);
-         };
- 
+        };
+
         Action<IGridColumnCollection<Instructor>> instructorColumns = c =>
         {
             c.Add(o => o.Id, true).SetPrimaryKey(true).Titled(SharedResource.Number).SetWidth(50).SetCrudHidden(true);
@@ -192,9 +192,12 @@ else
     Instructor instructor = new Instructor();
     protected async void OnRowClicked(object item)
     {
-        if (item.GetType() == typeof(Instructor))
+        if (item != null)
         {
-            instructor = (Instructor)item;
+            if (item.GetType() == typeof(Instructor))
+            {
+                instructor = (Instructor)item;
+            }
         }
     }
 }

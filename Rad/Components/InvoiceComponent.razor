@@ -133,12 +133,15 @@ else
 
     protected void OnRowClickedInvoice(object item)
     {
-        if (item.GetType() == typeof(Invoice))
+        if (item != null)
         {
-            invoice = (Invoice)item;
-            artistComponentSearch.InvoiceId = invoice.InvoiceId;
+            if (item.GetType() == typeof(Invoice))
+            {
+                invoice = (Invoice)item;
+                artistComponentSearch.InvoiceId = invoice.InvoiceId;
 
-            GridItems();
+                GridItems();
+            }
         }
     }
 
@@ -160,39 +163,47 @@ else
         }
         else
         {
-            string head = "<head><style>table {width: 100%;} th {text-align: left;}</style></head>";
             GridItems();
             List<InvoiceLine> invoiceLines = (List<InvoiceLine>)invoice.InvoiceLines;
+
+            string rawHtml2 = null;
+
+            foreach (var invoiceLine in invoiceLines)
+            {
+                string unitPrice = string.Format("{0,0:C}", invoiceLine.UnitPrice);
+                string total = string.Format("{0,0:C}", invoiceLine.UnitPrice * invoiceLine.Quantity);
+
+                rawHtml2 = rawHtml2 +
+                "<tr><td scope=\"row\">" +
+                invoiceLine.Track.Name + " (" +
+                invoiceLine.Track.Album.Title + " - " +
+                invoiceLine.Track.Album.Artist.Name + ")</td><td>" +
+                unitPrice + "</td><td>" +
+                invoiceLine.Quantity + "</td><td>" +
+                total + "</td>" +
+                "</tr>";
+            }
 
             string invoiceDate = string.Format("{0:d}", invoice.InvoiceDate);
             string invoiceTotal = string.Format("{0,0:C}", invoice.Total);
 
             string rawHtml1 = string.Join(
               Environment.NewLine,
-              head,
-              "<h1>Invoice - " + invoiceDate + "</h1>",
+              "<!doctype html>",
+              "<html lang=\"en-US\">",
+              "<head>",
+                 "<meta charset=\"UTF-8\" />",
+                 "<style>table {width: 100%;} td {text-align: right;} td[scope='row'] {text-align: left;}</style>",
+              "</head>",
+              "<body>",
+              "<h1>Invoice: " + invoice.InvoiceId + " - " + invoiceDate + "</h1>",
               "<h1>Total: " + invoiceTotal + "</h1>",
-              invoice.Customer.FirstName + " " + invoice.Customer.LastName + " (" + invoice.Customer.Email + ")",
-              "<table><tr><td><h4>Bill To:</h4></td><td>" + invoice.Customer.Address + " </br> ",
+              "<table><tr><td scope=\"row\">" + invoice.Customer.FirstName + " " + invoice.Customer.LastName + " (" + invoice.Customer.Email + ")</td></tr></table>",
+              "<table><tr><td scope=\"row\"><strong>Bill To:</strong></td><td scope=\"row\">" + invoice.Customer.Address + " </br> ",
               invoice.Customer.City + " " + invoice.Customer.State + ", " + invoice.Customer.Country + " " + invoice.Customer.PostalCode + "</td>",
-              "<td><h4>Ship To:</h4></td><td>" + invoice.BillingAddress + "</br>",
+              "<td scope=\"row\"><strong>Ship To:</strong></td><td scope=\"row\">" + invoice.BillingAddress + "</br>",
               invoice.BillingCity + " " + invoice.BillingState + ", " + invoice.BillingCountry + " " + invoice.BillingPostalCode + "</td></tr></table>",
               "<table><tr><th>Track (Album - Artist)</th><th>Unit</br>Price</th><th>Quantity</th><th>Total</th></tr>");
-
-            string rawHtml2 = null;
-
-            foreach (var invoiceLine in invoiceLines)
-            {
-                rawHtml2 = rawHtml2 +
-                "<tr><td>" +
-                invoiceLine.Track.Name + " (" +
-                invoiceLine.Track.Album.Title + " - " +
-                invoiceLine.Track.Album.Artist.Name + ")</td><td>" +
-                invoiceLine.UnitPrice + "</td><td>" +
-                invoiceLine.Quantity + "</td><td>" +
-                invoiceLine.UnitPrice * invoiceLine.Quantity + "</td>" +
-                "</tr>";
-            }
 
             rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td></td><td>----------</td></tr>";
             rawHtml2 = rawHtml2 + "<tr><td></td><td></td><td>Total</td><td>" + invoiceTotal + "</td></tr>";
@@ -202,7 +213,8 @@ else
             string rawHtml = String.Join(
               Environment.NewLine,
               rawHtml1,
-              rawHtml2
+              rawHtml2,
+              "</body></html>"
             );
 
             invoice = new Invoice();
@@ -215,10 +227,10 @@ else
     {
         Action<IGridColumnCollection<Invoice>> invoiceColumns = c =>
         {
-            c.Add(o => o.InvoiceId, true).SetPrimaryKey(true).Titled(SharedResource.Number).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.InvoiceId, false).SetPrimaryKey(true).Titled(SharedResource.Number).SetWidth(50).SetCrudHidden(true);
             //            c.Add().Encoded(false).Sanitized(false).RenderComponentAs<DialogComponentArtistCell>();
             c.Add(o => o.InvoiceDate, false).Format("{0:yyyy-MM-dd}");
-            c.Add().Titled("Total").RenderValueAs(o => "$" + o.Total).SetCrudHidden(true);
+            c.Add(o => o.Total, false).Titled("Total").Format("{0,0:C}").SetCrudHidden(true);
             c.Add().Titled("Billing")
                    .RenderValueAs(o => o.BillingAddress + ", " + o.BillingCity + " " + o.BillingState + ", " +
                                        o.BillingCountry + " " + o.BillingPostalCode)

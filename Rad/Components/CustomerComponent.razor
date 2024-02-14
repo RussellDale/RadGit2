@@ -84,7 +84,7 @@ else
             c.Add(o => o.PostalCode, false);
             c.Add(o => o.Phone, false);
             c.Add(o => o.Fax, false);
-           
+
             c.Add(o => o.SupportRepId, false)
                    .SetWidth(250).RenderValueAs(o => o.SupportRepId == null ? "" : o.Employee.FirstName + " " + o.Employee.LastName)
                    .SetSelectField(true, o => o.SupportRepId == null ? "" : o.Employee.EmployeeId.ToString() + " - " + 
@@ -140,9 +140,12 @@ else
 
     protected void OnRowClickedCustomer(object item)
     {
-        if (item.GetType() == typeof(Customer))
+        if (item != null)
         {
-            customer = (Customer)item;
+            if (item.GetType() == typeof(Customer))
+            {
+                customer = (Customer)item;
+            }
         }
     }
 

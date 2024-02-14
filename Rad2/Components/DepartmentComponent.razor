@@ -189,9 +189,12 @@ else
     Department department = new Department();
     protected async void OnRowClicked(object item)
     {
-        if (item.GetType() == typeof(Department))
+        if (item != null)
         {
-            department = (Department)item;
+            if (item.GetType() == typeof(Department))
+            {
+                department = (Department)item;
+            }
         }
     }
 
