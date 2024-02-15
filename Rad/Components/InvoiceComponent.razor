@@ -227,10 +227,10 @@ else
     {
         Action<IGridColumnCollection<Invoice>> invoiceColumns = c =>
         {
+            //c.Add().Encoded(false).Sanitized(false).RenderComponentAs<DialogComponentArtistCell>();
             c.Add(o => o.InvoiceId, false).SetPrimaryKey(true).Titled(SharedResource.Number).SetWidth(50).SetCrudHidden(true);
-            //            c.Add().Encoded(false).Sanitized(false).RenderComponentAs<DialogComponentArtistCell>();
             c.Add(o => o.InvoiceDate, false).Format("{0:yyyy-MM-dd}");
-            c.Add(o => o.Total, false).Titled("Total").Format("{0,0:C}").SetCrudHidden(true);
+            c.Add().Titled("Total").RenderValueAs(o => string.Format("{0,0:C}", o.Total));
             c.Add().Titled("Billing")
                    .RenderValueAs(o => o.BillingAddress + ", " + o.BillingCity + " " + o.BillingState + ", " +
                                        o.BillingCountry + " " + o.BillingPostalCode)
@@ -247,6 +247,23 @@ else
                   .SetListFilter(customerService.GetAllCustomer(), true, true)
             ;
             c.Add(o => o.InvoiceLines.Count, false).SetCrudHidden(true);
+        };
+
+        Action<IGridColumnCollection<InvoiceLine>> invoiceLineColumns = c =>
+        {
+            c.Add(o => o.InvoiceLineId, true).SetPrimaryKey(true).SetWidth(500).SetCrudHidden(true);
+            c.Add(o => o.TrackId, true);
+            c.Add(false).Titled("Track")
+                   .RenderValueAs(o => o.Track.Name + " (" + o.Track.Album.Title + " - " +
+                                       o.Track.Album.Artist.Name + ")" )
+            ;
+            c.Add(o => o.Quantity, false);
+            c.Add(o => o.UnitPrice, true).Titled("Price");
+            c.Add().Titled("Price").RenderValueAs(o => string.Format("{0,0:C}", o.UnitPrice));
+            c.Add().Titled("Total").RenderValueAs(o => string.Format("{0,0:C}", o.Quantity * o.UnitPrice));
+            c.Add(o => o.Track.Genre.Name, false).SetCrudHidden(true);
+            c.Add(o => o.Track.MediaType.Name, false).SetCrudHidden(true);
+            c.Add(o => o.Track.UnitPrice, false).SetCrudHidden(true).Format("{0:C}");
         };
 
         Func<object[], bool, bool, bool, bool, Task<IGrid>> subGrids2 = async (keys, create, read, update, delete) =>
@@ -269,24 +286,6 @@ else
             */
             return null;
 
-        };
-
-        Action<IGridColumnCollection<InvoiceLine>> invoiceLineColumns = c =>
-        {
-            c.Add(o => o.InvoiceLineId, true).SetPrimaryKey(true).SetWidth(500).SetCrudHidden(true);
-            c.Add(o => o.TrackId, true);
-            c.Add(false).Titled("Track")
-                   .RenderValueAs(o => o.Track.Name + " (" + o.Track.Album.Title + " - " +
-                                       o.Track.Album.Artist.Name + ")" )
-            ;
-            c.Add(o => o.Quantity, false);
-            c.Add(o => o.UnitPrice, true).Titled("Price");
-            c.Add().Titled("Price").RenderValueAs(o => "$" + o.UnitPrice).SetCrudHidden(true);
-            c.Add().Titled("Total")
-               .RenderValueAs(o => "$" + (o.Quantity * o.UnitPrice).ToString()).SetCrudHidden(true);//.Format("{0:C}");
-            c.Add(o => o.Track.Genre.Name, false).SetCrudHidden(true);
-            c.Add(o => o.Track.MediaType.Name, false).SetCrudHidden(true);
-            c.Add(o => o.Track.UnitPrice, false).SetCrudHidden(true).Format("{0:C}");
         };
 
         var locale = CultureInfo.CurrentCulture;

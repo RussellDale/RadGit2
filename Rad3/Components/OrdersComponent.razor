@@ -156,7 +156,8 @@ else
                   .SetSelectField(true, o => o.ShipVia == null ? "" : o.ShipVia.ToString() + " - " + o.ShipViaNavigation.CompanyName,
                                    shippersService.GetAllShippers)
                   .SetListFilter(shippersService.GetAllShippers(), true, true);
-            c.Add(o => o.Freight, false);
+            c.Add(o => o.Freight, true);
+            c.Add().Titled("Freight").RenderValueAs(o => string.Format("{0,0:C}", o.Freight));
             c.Add(o => o.ShipName, false);
             c.Add(o => o.ShipAddress, false);
             c.Add(o => o.ShipCity, false);
@@ -175,7 +176,8 @@ else
                                   productsService.GetAllProducts)
                   .SetListFilter(productsService.GetAllProducts(), true, true);
             c.Add(o => o.UnitPrice, false);
-            c.Add(o => o.Quantity, false);
+            c.Add(o => o.Quantity, true);
+            c.Add().Titled("Quantity").RenderValueAs(o => string.Format("{0,0:C}", o.Quantity));
             c.Add(o => o.Discount, false);
         };
 
