@@ -225,6 +225,28 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
+        Func<object[], bool, bool, bool, bool, Task<IGrid>> subGrids2 = async (keys, create, read, update, delete) =>
+        {
+            /*
+            int invoiceId = Int32.Parse(keys[0].ToString());
+
+            var subGridClient = new GridClient<InvoiceLine>(q => invoiceLineService.GetInvoiceLineId(invoiceLineColumns, query, invoiceId),
+                query, false, "invoiceLineGrid" + invoiceId, invoiceLineColumns, locale)
+                .WithGridItemsCount()
+                .Selectable(true)
+                .SetHeaderCrudButtons(true)
+                .Crud(true, false, true, true, invoiceLineService)
+                //                .SetEditAfterInsert(true)
+            //                .SetUpdateComponent<Invoice>()
+            ;
+
+            await subGridClient.UpdateGrid();
+            return subGridClient.Grid;
+            */
+        return null;
+
+        };
+
         Action<IGridColumnCollection<Invoice>> invoiceColumns = c =>
         {
             //c.Add().Encoded(false).Sanitized(false).RenderComponentAs<DialogComponentArtistCell>();
@@ -246,7 +268,7 @@ else
                                   customerService.GetAllCustomer)
                   .SetListFilter(customerService.GetAllCustomer(), true, true)
             ;
-            c.Add(o => o.InvoiceLines.Count, false).SetCrudHidden(true);
+            c.Add(o => o.InvoiceLines.Count, false).SetCrudHidden(true);//.SubGrid(subGrids2, ("InvoiceLineId", "InvoiceLineId"));
         };
 
         Action<IGridColumnCollection<InvoiceLine>> invoiceLineColumns = c =>
@@ -266,27 +288,6 @@ else
             c.Add(o => o.Track.UnitPrice, false).SetCrudHidden(true).Format("{0:C}");
         };
 
-        Func<object[], bool, bool, bool, bool, Task<IGrid>> subGrids2 = async (keys, create, read, update, delete) =>
-        {
-            /*
-            int invoiceId = Int32.Parse(keys[0].ToString());
-
-            var subGridClient = new GridClient<InvoiceLine>(q => invoiceLineService.GetInvoiceLineId(invoiceLineColumns, query, invoiceId),
-                query, false, "invoiceLineGrid" + invoiceId, invoiceLineColumns, locale)
-                .WithGridItemsCount()
-                .Selectable(true)
-                .SetHeaderCrudButtons(true)
-                .Crud(true, false, true, true, invoiceLineService)
-                //                .SetEditAfterInsert(true)
-            //                .SetUpdateComponent<Invoice>()
-            ;
-
-            await subGridClient.UpdateGrid();
-            return subGridClient.Grid;
-            */
-            return null;
-
-        };
 
         var locale = CultureInfo.CurrentCulture;
         SharedResource.Culture = locale;

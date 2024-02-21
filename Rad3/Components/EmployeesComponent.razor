@@ -116,9 +116,16 @@ else
                                  o.Territory.TerritoryDescription);
         };
 
+        Func<object[], bool, bool, bool, bool, Task<IGrid>> subGrids4 = async (keys, create, read, update, delete) =>
+        {
+            return null;
+
+        };
+
         Action<IGridColumnCollection<Employees>> employeesColumns = c =>
         {
             c.Add(o => o.EmployeeId, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
+//            c.Add().Titled("Orders").RenderValueAs(o => o.EmployeeId + "").SubGrid(subGrids4, ("EmployeeId", "EmployeeId"));
             c.Add(o => o.FirstName, false);
             c.Add(o => o.LastName, false);
             c.Add(o => o.Title, false);

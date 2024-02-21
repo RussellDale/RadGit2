@@ -177,7 +177,7 @@ else
                   .SetListFilter(productsService.GetAllProducts(), true, true);
             c.Add(o => o.UnitPrice, false);
             c.Add(o => o.Quantity, true);
-            c.Add().Titled("Quantity").RenderValueAs(o => string.Format("{0,0:C}", o.Quantity));
+            c.Add().Titled("Quantity").RenderValueAs(o => string.Format("{0,0:C}", o.Quantity)).Css("text-align: right");
             c.Add(o => o.Discount, false);
         };
 
@@ -190,19 +190,19 @@ else
             int orderId = Int32.Parse(keys[0].ToString());
 
             var subGridClient = new GridClient<OrderDetails>(q => orderDetailsService.GetOrderDetailsGridRow(orderDetailsColumns, query, orderId),
-           query, false, "orderDetailsGrid", orderDetailsColumns, locale)
-        .Sortable()
-        .Filterable()
-        .SetKeyboard(true)
-        .SetStriped(true)
-        .WithMultipleFilters()
-        .Searchable(true, false)
-        .WithGridItemsCount()
-        .ChangePageSize(true)
-        .Selectable(true)
-        .SetHeaderCrudButtons(true)
-        .Crud(true, false, true, true, orderDetailsService)
-        ;
+                   query, false, "orderDetailsGrid", orderDetailsColumns, locale)
+                .Sortable()
+                .Filterable()
+                .SetKeyboard(true)
+                .SetStriped(true)
+                .WithMultipleFilters()
+                .Searchable(true, false)
+                .WithGridItemsCount()
+                .ChangePageSize(true)
+                .Selectable(true)
+                .SetHeaderCrudButtons(true)
+                .Crud(true, false, true, true, orderDetailsService)
+                ;
 
             await subGridClient.UpdateGrid();
             return subGridClient.Grid;
