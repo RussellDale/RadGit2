@@ -43,6 +43,7 @@ else
     Func<object[], Task<ICGrid>> subEx2;
     Func<object[], Task<ICGrid>> subEx3;
     Func<object[], bool, bool, bool, bool, Task<IGrid>> subEx4;
+    Func<object[], bool, bool, bool, bool, Task<IGrid>> subEx5;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -120,7 +121,6 @@ else
         Action<IGridColumnCollection<Employees>> employeesColumns = c =>
         {
             c.Add(o => o.EmployeeId, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
-            c.Add().Titled("Orders").RenderValueAs(o => o.EmployeeId + "").SubGrid(subEx4, ("EmployeeId", "EmployeeId"));
             c.Add(o => o.FirstName, false);
             c.Add(o => o.LastName, false);
             c.Add(o => o.Title, false);
@@ -146,6 +146,8 @@ else
             ;
 
             c.Add(o => o.PhotoPath, false);
+            c.Add().Titled("Orders").RenderValueAs(o => o.EmployeeId + "").SubGrid(subEx4, ("EmployeeId", "EmployeeId"));
+            c.Add().Titled("Employee Territories").RenderValueAs(o => o.EmployeeId + "").SubGrid(subEx5, ("EmployeeId", "EmployeeId"));
         };
 
         var locale = CultureInfo.CurrentCulture;
@@ -154,20 +156,37 @@ else
 
         Func<object[], bool, bool, bool, bool, Task<IGrid>> subGrids4 = async (keys, create, read, update, delete) =>
         {
-            int employeeId = Int32.Parse(keys[0].ToString());
+            var subGridClient = GridClientOrders(keys);
 
-            var client = GridClient(employeesColumns, query, locale);
-
-            return client.Grid;
+            await subGridClient.UpdateGrid();
+            return subGridClient.Grid;
         };
 
-        subEx4 = subGrids4;
+        Func<object[], bool, bool, bool, bool, Task<IGrid>> subGrids5 = async (keys, create, read, update, delete) =>
+        {
+            int employeeId = Int32.Parse(keys[0].ToString());
+
+            var subGridClient = GridClientTerritories(keys);
+
+            await subGridClient.UpdateGrid();
+            return subGridClient.Grid;
+        };
 
         Func<object[], Task<ICGrid>> subGrids2 = async keys =>
         {
             int employeeId = Int32.Parse(keys[0].ToString());
 
-            var subGridClient = new GridClient<EmployeeTerritories>(q => 
+            var subGridClient = GridClientTerritories(keys);
+
+            await subGridClient.UpdateGrid();
+            return subGridClient.Grid;
+        };
+
+        IGridClient<EmployeeTerritories> GridClientTerritories(object[] keys)
+        {
+            int employeeId = Int32.Parse(keys[0].ToString());
+
+            var subGridClient = new GridClient<EmployeeTerritories>(q =>
                    employeeTerritoriesService.GetTerritoriesGridRowId(employeeTerritoriesColumns, query, employeeId),
                    query, false, "employeeTerritoriesGrid", employeeTerritoriesColumns, locale)
                 .Sortable()
@@ -183,8 +202,7 @@ else
                 .Crud(true, false, false, true, employeeTerritoriesService)
                 ;
 
-            await subGridClient.UpdateGrid();
-            return subGridClient.Grid;
+            return subGridClient;
         };
 
         Func<object[], Task<ICGrid>> subGrids3 = async keys =>
@@ -212,6 +230,14 @@ else
 
         Func<object[], Task<ICGrid>> subGrids1 = async keys =>
         {
+            var subGridClient = GridClientOrders(keys);
+
+            await subGridClient.UpdateGrid();
+            return subGridClient.Grid;
+        };
+
+        IGridClient<Orders> GridClientOrders(object[] keys)
+        {
             int employeeId = Int32.Parse(keys[0].ToString());
 
             var subGridClient = new GridClient<Orders>(q =>
@@ -231,13 +257,14 @@ else
                 .SubGrid(subEx3, ("OrderId", "OrderId"))
                 ;
 
-            await subGridClient.UpdateGrid();
-            return subGridClient.Grid;
+            return subGridClient;
         };
 
         subEx1 = subGrids1;
         subEx2 = subGrids2;
         subEx3 = subGrids3;
+        subEx4 = subGrids4;
+        subEx5 = subGrids5;
 
         IGridClient<Employees> subGridClient;
         IGridClient<Employees> subGridClient1;
