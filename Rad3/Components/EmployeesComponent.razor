@@ -42,6 +42,7 @@ else
     Func<object[], Task<ICGrid>> subEx1;
     Func<object[], Task<ICGrid>> subEx2;
     Func<object[], Task<ICGrid>> subEx3;
+    Func<object[], bool, bool, bool, bool, Task<IGrid>> subEx4;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -116,16 +117,10 @@ else
                                  o.Territory.TerritoryDescription);
         };
 
-        Func<object[], bool, bool, bool, bool, Task<IGrid>> subGrids4 = async (keys, create, read, update, delete) =>
-        {
-            return null;
-
-        };
-
         Action<IGridColumnCollection<Employees>> employeesColumns = c =>
         {
             c.Add(o => o.EmployeeId, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
-//            c.Add().Titled("Orders").RenderValueAs(o => o.EmployeeId + "").SubGrid(subGrids4, ("EmployeeId", "EmployeeId"));
+            c.Add().Titled("Orders").RenderValueAs(o => o.EmployeeId + "").SubGrid(subEx4, ("EmployeeId", "EmployeeId"));
             c.Add(o => o.FirstName, false);
             c.Add(o => o.LastName, false);
             c.Add(o => o.Title, false);
@@ -156,6 +151,17 @@ else
         var locale = CultureInfo.CurrentCulture;
         SharedResource.Culture = locale;
         var query = new QueryDictionary<StringValues>();
+
+        Func<object[], bool, bool, bool, bool, Task<IGrid>> subGrids4 = async (keys, create, read, update, delete) =>
+        {
+            int employeeId = Int32.Parse(keys[0].ToString());
+
+            var client = GridClient(employeesColumns, query, locale);
+
+            return client.Grid;
+        };
+
+        subEx4 = subGrids4;
 
         Func<object[], Task<ICGrid>> subGrids2 = async keys =>
         {
