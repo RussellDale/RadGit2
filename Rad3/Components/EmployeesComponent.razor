@@ -164,8 +164,6 @@ else
 
         Func<object[], bool, bool, bool, bool, Task<IGrid>> subGrids5 = async (keys, create, read, update, delete) =>
         {
-            int employeeId = Int32.Parse(keys[0].ToString());
-
             var subGridClient = GridClientTerritories(keys);
 
             await subGridClient.UpdateGrid();
@@ -174,8 +172,6 @@ else
 
         Func<object[], Task<ICGrid>> subGrids2 = async keys =>
         {
-            int employeeId = Int32.Parse(keys[0].ToString());
-
             var subGridClient = GridClientTerritories(keys);
 
             await subGridClient.UpdateGrid();
