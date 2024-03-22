@@ -1,0 +1,31 @@
+﻿@inherits LayoutComponentBase
+
+<div class="sidebar">
+    <NavMenu />
+</div>
+
+@code {
+    protected override void OnAfterRender(bool firstRender)
+    {
+    }
+}
+
+<div class="main">
+    <div class="top-row px-4">
+
+            <a href="departmentcomponent">Department</a>
+            <a href="instructorcomponent">Instructor</a>
+            <a href="studentcomponent">Student</a>
+            <a href="officeassignmentcomponent">Office Assignment</a>
+            <a href="foocomponent">Foo Assignment</a>
+            <a href="titlescomponent">Titles Assignment</a>
+            <a href="titlescrudcomponent">Titles Crud Assignment</a>
+<!--
+        <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+    </div>
+
+    <div class="content px-4">
+-->
+        @Body
+    </div>
+</div>

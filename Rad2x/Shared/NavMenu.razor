@@ -1,0 +1,74 @@
+﻿@inject IModalService modal
+
+<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">Rad2 - Contoso</a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="counter">
+                <span class="oi oi-plus" aria-hidden="true"></span> Counter
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="fetchdata">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="departmentcomponent">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Department Component
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="instructorcomponent">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Instructor Component
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="studentcomponent">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Student Component
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="officeassignmentcomponent">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Office Assignment Component
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="foocomponent">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Foo Component
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="titlescomponent">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Titles Component
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="titlescrudcomponent">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Titles Crud Component
+            </NavLink>
+        </li>
+    </ul>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}
