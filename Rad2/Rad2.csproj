@@ -11,9 +11,23 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.27" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.27" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.27" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.27" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.27" />
   </ItemGroup>
+	
+	<ItemGroup>
+		<ProjectReference Include="..\Append.Blazor.Printing\Append.Blazor.Printing.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\GridBlazor\GridBlazor.csproj" />
+		<ProjectReference Include="..\GridCore\GridCore.csproj" />
+		<ProjectReference Include="..\GridMvc\GridMvc.csproj" />
+		<ProjectReference Include="..\GridMvc.Demo\GridMvc.Demo.csproj" />
+		<ProjectReference Include="..\GridSharedData\GridSharedData.csproj" />
+		<ProjectReference Include="..\GridShared\GridShared.csproj" />
+		<ProjectReference Include="..\RadSharedData\RadSharedData.csproj" />
+	</ItemGroup>
 
 </Project>
