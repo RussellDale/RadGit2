@@ -121,7 +121,7 @@ BEGIN TRANSACTION;
 GO
 
 INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20240322155925_sqlite.local_migration_427', N'6.0.27');
+VALUES (N'20240325183749_sqlite.local_migration_266', N'6.0.27');
 GO
 
 COMMIT;

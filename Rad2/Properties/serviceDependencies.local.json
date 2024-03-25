@@ -3,8 +3,7 @@
     "sqlite1": {
       "secretStore": "LocalSecretsFile",
       "type": "sqlite.local",
-      "connectionId": "ConnectionStrings:Contoso",
-      "dynamicId": null
+      "connectionId": "ConnectionStrings:Contoso"
     }
   }
 }

@@ -12,8 +12,8 @@ using Rad2.Data;
 namespace Rad2.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240322155925_sqlite.local_migration_427")]
-    partial class sqlitelocal_migration_427
+    [Migration("20240325183749_sqlite.local_migration_266")]
+    partial class sqlitelocal_migration_266
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

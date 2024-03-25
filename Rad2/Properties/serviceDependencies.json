@@ -7,8 +7,7 @@
     },
     "sqlite1": {
       "type": "sqlite",
-      "connectionId": "ConnectionStrings:Contoso",
-      "dynamicId": null
+      "connectionId": "ConnectionStrings:Contoso"
     }
   }
 }

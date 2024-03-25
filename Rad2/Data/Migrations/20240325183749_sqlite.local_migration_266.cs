@@ -4,7 +4,7 @@
 
 namespace Rad2.Data.Migrations
 {
-    public partial class sqlitelocal_migration_427 : Migration
+    public partial class sqlitelocal_migration_266 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
