@@ -4,6 +4,12 @@
       "secretStore": "LocalSecretsFile",
       "type": "sqlite.local",
       "connectionId": "ConnectionStrings:Contoso"
+    },
+    "secrets1": {
+      "secretStore": null,
+      "resourceId": null,
+      "type": "secrets.user",
+      "connectionId": null
     }
   }
 }
