@@ -1,0 +1,112 @@
+@page "/titlescrudcomponent"
+
+@using GridMvc.Demo.Resources
+@using GridBlazor
+@using GridBlazor.Pages
+@using GridShared
+@using GridShared.Sorting
+@using GridShared.Utility
+@using System
+@using Microsoft.Extensions.Primitives
+@using System.Globalization
+@using System.Threading.Tasks
+@using Rad2.Models.Domian
+@using Rad2.Services
+
+@inject ITitlesService titlesService
+
+@if (_task.IsCompleted)
+{
+    <p><input type="checkbox" checked="@isCrud" @oninput="CrudChanged"> <em>Crud - @isCrud</em></p>
+    <div class="font-italic small">
+        <div class="col-sm-12 table-sm">
+            <GridComponent T="Titles" Grid="@_grid"></GridComponent>
+        </div>
+    </div>
+}
+else
+{
+    <p><em>Loading...</em></p>
+}
+@code
+{
+    [Parameter]
+    public bool IsCrud { get; set; } = true;
+
+    private bool isCrud;
+
+    protected override void OnParametersSet()
+    {
+        isCrud = this.IsCrud;
+    }
+
+    private void CrudChanged(ChangeEventArgs e)
+    {
+        isCrud = ((bool)e.Value == true) ? true : false;
+    }
+
+    private CGrid<Titles> _grid;
+    private Task _task;
+    Func<object[], Task<ICGrid>> subEx;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Action<IGridColumnCollection<Titles>> titlesColumns = c =>
+        {
+            c.Add(o => o.Id, true).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);
+            c.Add(o => o.Id2, true)
+             .SetSelectField(true, o => o.Id.ToString() + " - " + o.Id2.ToString() + " - " +             
+                             o.Title, titlesService.GetAllTitles)
+             .SetListFilter(titlesService.GetAllTitles(), true, true);
+            c.Add(o => o.Title, false);
+            c.Add(o => o.TitleAsc, true)
+             .Sortable(true)
+             .SortInitialDirection(GridSortDirection.Ascending);
+        };
+
+        var locale = CultureInfo.CurrentCulture;
+        SharedResource.Culture = locale;
+        var query = new QueryDictionary<StringValues>();
+
+        Func<object[], Task<ICGrid>> subGrids = async keys =>
+         {
+             int Id = Int32.Parse(keys[0].ToString());
+
+             var subGridClient = GridClient(Id, titlesColumns, query, locale);
+
+             await subGridClient.UpdateGrid();
+             return subGridClient.Grid;
+         };
+
+        subEx = subGrids;
+
+        var client = GridClient(0, titlesColumns, query, locale);
+
+        _grid = client.Grid;
+        _task = client.UpdateGrid();
+        await _task;
+    }
+
+    IGridClient<Titles> GridClient(int Id, Action<IGridColumnCollection<Titles>> titlesColumns, 
+                                           QueryDictionary<StringValues> query,
+                                           CultureInfo locale)
+    {
+        IGridClient<Titles> subGridClient = new GridClient<Titles>(q => titlesService.GetTitlesGridRow(titlesColumns, query, Id),
+        query, false, "titlesGrid" + Id, titlesColumns, locale)
+           .Sortable()
+           .Filterable()
+           .SetKeyboard(true)
+           .SetStriped(true)
+           .WithMultipleFilters()
+           .Searchable(true, false)
+           .WithGridItemsCount()
+           .ChangePageSize(true)
+           .Selectable(true)
+           .SetHeaderCrudButtons(true)
+           .Crud(true, false, true, true, titlesService)
+           .SubGrid(subEx, ("Id", "Id2"))
+           ;
+
+        return subGridClient;
+    }
+}
