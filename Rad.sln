@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rad4", "Rad4\Rad4.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Append.Blazor.Printing", "Append.Blazor.Printing\Append.Blazor.Printing.csproj", "{4E51A12B-9D13-4F83-96C3-98F5A5831C4A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rad2", "Rad2\Rad2.csproj", "{DF7D942A-7BA2-40D3-9215-92DCE9EF2A07}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rad2", "Rad2\Rad2.csproj", "{6A2B3EF0-55B9-467B-A6D6-DA11C4C95D5F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,10 +83,10 @@ Global
 		{4E51A12B-9D13-4F83-96C3-98F5A5831C4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E51A12B-9D13-4F83-96C3-98F5A5831C4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E51A12B-9D13-4F83-96C3-98F5A5831C4A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DF7D942A-7BA2-40D3-9215-92DCE9EF2A07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DF7D942A-7BA2-40D3-9215-92DCE9EF2A07}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DF7D942A-7BA2-40D3-9215-92DCE9EF2A07}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DF7D942A-7BA2-40D3-9215-92DCE9EF2A07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A2B3EF0-55B9-467B-A6D6-DA11C4C95D5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A2B3EF0-55B9-467B-A6D6-DA11C4C95D5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A2B3EF0-55B9-467B-A6D6-DA11C4C95D5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A2B3EF0-55B9-467B-A6D6-DA11C4C95D5F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
