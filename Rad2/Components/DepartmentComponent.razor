@@ -17,21 +17,29 @@
 @inject ICourseService      courseService
 @inject IInstructorService  instructorService
 @inject IPrintingService    printingService
-
-@if (_task.IsCompleted)
-{
-    <div class="font-italic small">
-        <div class="col-sm-12 table-sm">
-            <GridComponent T="Department" Grid="@_grid"></GridComponent>
-        </div>
-    </div>
-    <button @onclick="Print">Print</button>
-}
-else
-{
-    <p><em>Loading...</em></p>
-}
-
+<AuthorizeView>
+    <NotAuthorized>
+        <a href="Identity/Account/Login">Log in</a>
+    </NotAuthorized>
+    <Authorizing>
+        <p><em>Loading...</em></p>
+    </Authorizing>
+    <Authorized>
+        @if (_task.IsCompleted)
+        {
+            <div class="font-italic small">
+                <div class="col-sm-12 table-sm">
+                    <GridComponent T="Department" Grid="@_grid"></GridComponent>
+                </div>
+            </div>
+            <button @onclick="Print">Print</button>
+        }
+        else
+        {
+            <p><em>Loading...</em></p>
+        }
+    </Authorized>
+</AuthorizeView>
 @code
 {
     private CGrid<Department> _grid;

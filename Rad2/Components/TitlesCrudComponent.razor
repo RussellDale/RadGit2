@@ -14,20 +14,29 @@
 @using Rad2.Services
 
 @inject ITitlesService titlesService
-
-@if (_task.IsCompleted)
-{
-    <p><input type="checkbox" checked="@isCrud" @oninput="CrudChanged"> <em>Crud - @isCrud</em></p>
-    <div class="font-italic small">
-        <div class="col-sm-12 table-sm">
-            <GridComponent T="Titles" Grid="@_grid"></GridComponent>
-        </div>
-    </div>
-}
-else
-{
-    <p><em>Loading...</em></p>
-}
+<AuthorizeView>
+    <NotAuthorized>
+        <a href="Identity/Account/Login">Log in</a>
+    </NotAuthorized>
+    <Authorizing>
+        <p><em>Loading...</em></p>
+    </Authorizing>
+    <Authorized>
+        @if (_task.IsCompleted)
+        {
+            <p><input type="checkbox" checked="@isCrud" @oninput="CrudChanged"> <em>Crud - @isCrud</em></p>
+            <div class="font-italic small">
+                <div class="col-sm-12 table-sm">
+                    <GridComponent T="Titles" Grid="@_grid"></GridComponent>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p><em>Loading...</em></p>
+        }
+    </Authorized>
+</AuthorizeView>
 @code
 {
     [Parameter]
