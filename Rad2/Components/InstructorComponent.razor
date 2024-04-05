@@ -60,11 +60,11 @@
         {
             string rawHtml1 = null;
 
-            IEnumerable<Course> courses = courseService.GetForCourse(instructor.Id);
+            IEnumerable<CourseAssignment> courseAssignments = courseAssignmentService.GetForInstructorId(instructor.Id);
 
-            foreach (var course in courses)
+            foreach (var courseAssignment in courseAssignments)
             {
-                rawHtml1 = rawHtml1 + "<h3>" + course.Title + " - " + course.Credits + "</h3>";
+                rawHtml1 = rawHtml1 + "<h3>" + courseAssignment.Course.Title + " - " + courseAssignment.Course.Credits + "</h3>";
             }
 
             string hireDate = string.Format("{0:d}", instructor.HireDate);

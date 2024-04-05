@@ -67,6 +67,14 @@ namespace Rad2.Services
                 return repository.GetAll().Where(o => o.CourseId == id).ToList();
             }
         }
+        public IEnumerable<CourseAssignment> GetForInstructorId(int id)
+        {
+            using (var context = new dbContext(_options))
+            {
+                CourseAssignmentRepository repository = new CourseAssignmentRepository(context);
+                return repository.GetAll().Where(o => o.InstructorId == id).ToList();
+            }
+        }
 
         public async Task<CourseAssignment> Get(params object[] keys)
         {
@@ -139,5 +147,6 @@ namespace Rad2.Services
                                                                 QueryDictionary<StringValues> query,
                                                                 int courseId);
         IEnumerable<CourseAssignment> GetForCourseId(int id);
+        IEnumerable<CourseAssignment> GetForInstructorId(int id);
     }
 }
