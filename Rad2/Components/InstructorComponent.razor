@@ -64,7 +64,9 @@
 
             foreach (var courseAssignment in courseAssignments)
             {
-                rawHtml1 = rawHtml1 + "<h3>" + courseAssignment.Course.Title + " - " + courseAssignment.Course.Credits + "</h3>";
+                rawHtml1 = rawHtml1 + "<h3>" + courseAssignment.Course.Title + " / " + 
+                                      courseAssignment.Course.Department.Name + " (" +
+                                      courseAssignment.Course.Credits + ")</h3>";
             }
 
             string hireDate = string.Format("{0:d}", instructor.HireDate);
@@ -75,8 +77,9 @@
 
             string rawHtml = string.Join(
               Environment.NewLine,
-              "<h1>Instructor - " + instructor.FirstName + " " + instructor.LastName + " - Location: " + location + "</h1>",
-              "<h2>Start Date: " + hireDate + "</h2><hr>",
+              "<h1>Instructor - " + instructor.FirstName + " " + instructor.LastName + "</h1>",
+              "<h3>Start Date: " + hireDate + "</h3>",
+              "<h3>Location: " + location + "</h3><hr>",
               rawHtml1
             );
 

@@ -74,7 +74,9 @@
                 if (enrollment.Grade != null)
                     grade = enrollment.Grade.ToString();
 
-                rawHtml1 = rawHtml1 + "<h2>" + enrollment.Course.CourseId + " " + enrollment.Course.Title + " (" + enrollment.Course.Credits + ") - " + grade + "</h2>";
+                rawHtml1 = rawHtml1 + "<h2>" + enrollment.Course.CourseId + " " + enrollment.Course.Title + " / " +
+                                      enrollment.Course.Department.Name +
+                                      " (" + enrollment.Course.Credits + ") - " + grade + "</h2>";
 
                 IEnumerable<CourseAssignment> courseAssignments = courseAssignmentService.GetForCourseId(enrollment.Course.CourseId);
 
@@ -94,7 +96,8 @@
 
             string rawHtml = string.Join(
               Environment.NewLine,
-              "<h1>Student - " + student.FirstName + " " + student.LastName + " - Enrollment Date: " + enrollmentDate + "</h1><hr>",
+              "<h1>Student - " + student.FirstName + " " + student.LastName + "</h1>",
+              "<h3>Enrollment Date: " + enrollmentDate + "</h3><hr>",
               rawHtml1
             );
 
