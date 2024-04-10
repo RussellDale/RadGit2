@@ -1,4 +1,5 @@
 using Append.Blazor.Printing;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Rad2.Areas.Identity;
 using Rad2.Data;
 using Rad2.Models.Domian;
+using Rad2.Policy;
 using Rad2.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,11 +20,24 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddSingleton<IAuthorizationHandler, MinimumAgeHandler>();
+builder.Services.AddSingleton<IAuthorizationHandler, CertifiedMinimumHandler>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPolicy", policy => policy.RequireClaim("Admin"));
+    options.AddPolicy("HRPolicy", policy => policy.RequireClaim("HR"));
+    options.AddPolicy("AtLeast18", policy =>
+      policy.Requirements.Add(new MinimumAgeRequirement(18)));
+    options.AddPolicy("IsExpertCertifiedAnd18", policy =>
+     policy.Requirements.Add(new CertifiedMinimumRequirement(true, 5)));
+});
 
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<ICourseAssignmentService, CourseAssignmentService>();

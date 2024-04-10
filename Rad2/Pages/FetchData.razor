@@ -1,4 +1,5 @@
 ﻿@page "/fetchdata"
+@attribute [Authorize(Policy = "IsExpertCertifiedAnd18")]
 
 <PageTitle>Weather forecast</PageTitle>
 
