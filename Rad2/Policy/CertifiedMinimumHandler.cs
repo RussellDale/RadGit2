@@ -24,8 +24,10 @@ namespace Rad2.Policy
                     int yearsCertified = 0;
                     int.TryParse(certifiedNumberOfYears?.Value, out yearsCertified);
 
-                    if (isCertified && yearsCertified >= 5) 
+                    if (isCertified && yearsCertified >= 5)
                         context.Succeed(requirements);
+                    else
+                        context.Fail();
                 }
                 else if(requirements is MinimumAgeRequirement)
                 { 
@@ -34,12 +36,16 @@ namespace Rad2.Policy
 
                     if (dateOfBirthClaim is null)
                         context.Fail();
+                    else
+                    {
+                        var calculatedAge = int.Parse(dateOfBirthClaim?.Value ?? "0");
+                        calculatedAge *= 7;
 
-                    var calculatedAge = int.Parse(dateOfBirthClaim?.Value ?? "0");
-                    calculatedAge *= 7;
-
-                    if (calculatedAge >= minimumAgeRequirement?.MinimumAge)
-                        context.Succeed(requirements);
+                        if (calculatedAge >= minimumAgeRequirement?.MinimumAge)
+                            context.Succeed(requirements);
+                        else
+                            context.Fail();
+                    }
                 }
             }
             return Task.CompletedTask;

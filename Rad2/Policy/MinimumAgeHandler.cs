@@ -17,6 +17,8 @@ namespace Rad2.Policy
 
             if (calculatedAge >= requirement.MinimumAge)
                 context.Succeed(requirement);
+            else
+                context.Fail();
 
             return Task.CompletedTask;
         }
