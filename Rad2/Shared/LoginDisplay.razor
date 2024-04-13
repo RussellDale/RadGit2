@@ -1,7 +1,6 @@
 ﻿<AuthorizeView>
     <Authorized>
-        <a href="Identity/Account/Manage">Hello, @context.User.Identity?.Name!</a>
-        <a href="adminpage">Admin</a>
+        <a href="Identity/Account/Manage">Hello, @context.User.Identity?.Name</a><a href="adminpage">(@UserClaims(context).Id.ToString(claimValue))</a>
         <form method="post" action="Identity/Account/LogOut">
             <button type="submit" class="nav-link btn btn-link">Log out</button>
         </form>
@@ -11,3 +10,23 @@
         <a href="Identity/Account/Login">Log in</a>
     </NotAuthorized>
 </AuthorizeView>
+
+@code {
+    string claimValue = "n/a";
+
+    public async Task UserClaims(AuthenticationState context)
+    {
+        foreach(var claim in context.User.Claims)
+        {
+            if (claim.Type.Length >= 7)
+            {
+                bool claimStart = claim.Type.ToLower().StartsWith("http://");
+                bool claimEnd = claim.Type.ToLower().EndsWith("/role");
+
+                if (claimStart == true && claimEnd == true)
+                    claimValue = claim.Value;
+            }
+        }
+        await Task.CompletedTask;
+    }
+}
