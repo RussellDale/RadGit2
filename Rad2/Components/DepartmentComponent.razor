@@ -13,10 +13,6 @@
 @using Rad2.Models.Domian
 @using Rad2.Services
 
-@inject IDepartmentService  departmentService
-@inject ICourseService      courseService
-@inject IInstructorService  instructorService
-@inject IPrintingService    printingService
 <AuthorizeView>
     <NotAuthorized>
         <a href="Identity/Account/Login">Log in</a>
@@ -25,6 +21,11 @@
         <p><em>Loading...</em></p>
     </Authorizing>
     <Authorized>
+        @inject IDepartmentService departmentService
+        @inject ICourseService courseService
+        @inject IInstructorService instructorService
+        @inject IPrintingService printingService
+
         @if (_task.IsCompleted)
         {
             <div class="font-italic small">
