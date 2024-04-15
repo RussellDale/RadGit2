@@ -4,11 +4,13 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using System.Security.Claims
+@using System.Security.Policy
 @using Microsoft.AspNetCore.Components.Forms
 
 @inject IJSRuntime JsRuntime
 @inject UserManager<IdentityUser> _userManagers
 @inject SignInManager<IdentityUser> _signInManagers
+@inject RoleManager<IdentityRole> _roleManagers
 
 <AuthorizeView>
     <Authorized>
@@ -24,6 +26,14 @@
 <EditForm Model="newUser" OnValidSubmit="@AddUserWithRole">
     <DataAnnotationsValidator />
     <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
+    <div class="form-group row">
+        <label for="login" class="col-sm-2 col-form-label">
+            Add User
+        </label>
+        <div class="col-sm-10">
+            <InputText id="login" @bind-Value="newUser.LoginName"></InputText>
+        </div>
+    </div>
     <div class="form-group row">
         <label for="role-select" class="col-sm-2 col-form-label">
             Assign Role
@@ -41,25 +51,18 @@
 </EditForm>
 
 @code {
-    User newUser = new User();
-    List<Role> roleList = new List<Role>();
+    UserData newUser = new UserData();
+    List<RoleData> roleList = new List<RoleData>();
     List<SelectListItem> selectList = new List<SelectListItem>();
-
     ClaimsPrincipal cpUser = new ClaimsPrincipal();
     string claimValue = "\n";
 
     protected override async Task OnInitializedAsync()
     {
-        roleList = new List<Role>()
-        {
-            new Role() { RoleName = "Admin",   ID = "1" },
-            new Role() { RoleName = "HR",      ID = "2" },
-            new Role() { RoleName = "Manager", ID = "3" },
-            new Role() { RoleName = "User",    ID = "4" }
-        };
+        IQueryable<IdentityRole> lRoles = _roleManagers.Roles;
 
-        foreach (Role role in roleList)
-            selectList.Add(new SelectListItem() { Text = role.RoleName, Value = role.ID, Selected = false });
+        foreach(IdentityRole role in lRoles)
+            selectList.Add(new SelectListItem() { Text = role.Name, Value = role.Id, Selected = false });
 
         await base.OnInitializedAsync();
     }
@@ -73,21 +76,46 @@
 
     public async void AddUserWithRole(EditContext context)
     {
-        var usermodel = context.Model as User;
-//        var user = new IdentityUser { UserName = usermodel.LoginName, Email = usermodel.LoginName, EmailConfirmed = true };
+        var usermodel = context.Model as UserData;
+        //        var user = new IdentityUser { UserName = usermodel.LoginName, Email = usermodel.LoginName, EmailConfirmed = true };
         var messagePrompt = "Failed";
         //       var result = await _userManagers.CreateAsync(user, "Abc123456789!");
         var result = new IdentityResult();
- 
+/*
+        IdentityRole identityRole = new IdentityRole("Admin");
+        string rmRoleID = await _roleManagers.GetRoleIdAsync(identityRole);
+        string rmRoleName = await _roleManagers.GetRoleNameAsync(identityRole);
+
+
+        var rmIRole = await _roleManagers.DeleteAsync(identityRole);
+
+        Claim claim = new Claim("Age-x", "20");
+        result = await _roleManagers.AddClaimAsync(identityRole, claim);
+
+        IQueryable<IdentityRole> lRoles = _roleManagers.Roles;
+*/
         IdentityUser user = await _userManagers.GetUserAsync(cpUser);
+/*
         IList<string> roles = await _userManagers.GetRolesAsync(user);
         IList<Claim> claims = await _userManagers.GetClaimsAsync(user);
 
         var rRole = await _userManagers.RemoveFromRolesAsync(user, roles);
         var rClaim = await _userManagers.RemoveClaimsAsync(user, claims);
-       
+
         var aRole = await _userManagers.AddToRolesAsync(user, roles);
         var aClaims = await _userManagers.AddClaimsAsync(user, claims);
+*/
+        //        _roleManagers.Roles;
+
+//        IQueryable<TRole> Roles { get; }
+
+        //       IdentityResult > AddClaimAsync(TRole role, Claim claim);
+//        IdentityResult > DeleteAsync(TRole role);
+//Task<IList<Claim>> GetClaimsAsync(TRole role);
+//    public virtual Task<string> GetRoleIdAsync(TRole role);
+//    public virtual Task<string> GetRoleNameAsync(TRole role);
+//      IdentityResult> RemoveClaimAsync(TRole role, Claim claim);
+
 /*
         Admin 1
         Age 20

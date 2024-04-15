@@ -2,7 +2,7 @@
 
 namespace Rad2.Data
 {
-    public class User
+    public class UserData
     {
         [EmailAddress]
         [Required]
