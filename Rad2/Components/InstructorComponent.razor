@@ -1,4 +1,5 @@
 ﻿@page "/instructorcomponent"
+@attribute [Authorize(Roles = "Admin, Instructor")];
 
 @using GridMvc.Demo.Resources
 @using GridBlazor
