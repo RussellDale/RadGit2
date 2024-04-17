@@ -73,7 +73,7 @@
 
         foreach (IdentityRole role1 in roles)
         {
-            if (usermodel.UserRole == role1.Id)
+            if (usermodel?.UserRole == role1.Id)
             {
                 role = role1;
                 break;

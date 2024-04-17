@@ -1,4 +1,13 @@
-﻿<AuthorizeView>
+﻿@using Rad2.Data
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using System.Security.Claims
+@using System.Security.Policy
+@using Microsoft.AspNetCore.Components.Forms
+
+@inject UserManager<IdentityUser> _userManagers
+
+<AuthorizeView>
     <Authorized>
         <a href="Identity/Account/Manage">Hello, @context.User.Identity?.Name</a><a href="adminpage">@UserClaims(context).Id.ToString(claimValue)</a>
         <form method="post" action="Identity/Account/LogOut">
@@ -12,37 +21,30 @@
 </AuthorizeView>
 
 @code {
-
     @inject IJSRuntime JsRuntime
     string messagePrompt = "";
-
     string claimValue = "";
 
     public async Task UserClaims(AuthenticationState context)
     {
-        foreach(var claim in context.User.Claims)
+        IdentityUser user = await _userManagers.GetUserAsync(context.User);
+        IList<string> gRoles = await _userManagers.GetRolesAsync(user);
+
+        foreach(var role in gRoles)
         {
-            messagePrompt += claim.Type + " : " + claim.Value  + "\n";
+            if (claimValue.Length > 0)
+                claimValue += " - ";
 
-            if (claim.Type.Length >= 7)
-            {
-                bool claimStart = claim.Type.ToLower().StartsWith("http://");
-                bool claimEnd = claim.Type.ToLower().EndsWith("/role");
-
-                if (claimStart == true && claimEnd == true)
-                {
-                    if (claimValue.Length > 0)
-                        claimValue +=  " - ";
-
-                    claimValue += claim.Value;
-                }
-            }
+            claimValue += role;
         }
 
         if (claimValue.Length == 0)
             claimValue = "n/a";
 
-        await Task.CompletedTask;
+        foreach(var claim in context.User.Claims)
+            messagePrompt += claim.Type + " : " + claim.Value  + "\n";
+
+//        await Task.CompletedTask;
         await JsRuntime.InvokeVoidAsync("alert", messagePrompt);
     }
 }
