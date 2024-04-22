@@ -1,5 +1,5 @@
 ﻿@page "/departmentcomponent"
-@attribute [Authorize(Roles = "Admin, Department")];
+@attribute [Authorize(Roles = "SuperAdmin, Admin, ReadOnly, Department")];
 
 @using GridMvc.Demo.Resources
 @using GridBlazor
@@ -26,7 +26,7 @@
         @inject ICourseService courseService
         @inject IInstructorService instructorService
         @inject IPrintingService printingService
-
+ 
         @if (_task.IsCompleted)
         {
             <div class="font-italic small">
@@ -44,6 +44,12 @@
 </AuthorizeView>
 @code
 {
+    bool bCreate = false;
+    bool bRead = false;
+    bool bUpdate = false;
+    bool bDelete = false;
+    bool bPrint = false;
+
     private CGrid<Department> _grid;
     private Task _task;
     Timer timer;
@@ -127,7 +133,7 @@
                  .Selectable(true)
                  .Sortable(true)
                  .SetHeaderCrudButtons(true)
-                 .Crud(true, false, true, true, courseService)
+                 .Crud(bCreate, bRead, bUpdate, bDelete, courseService)
                  .SetStriped(true)
             ;
 
@@ -148,7 +154,7 @@
             .WithGridItemsCount()
             .ChangePageSize(true)
             .Selectable(true)
-            .Crud(true, false, true, true, departmentService)
+            .Crud(bCreate, bRead, bUpdate, bDelete, departmentService)
             .SetHeaderCrudButtons(true)
             .SubGrid(subGrids, ("DepartmentId", "DepartmentId"))
             .SetStriped(true)

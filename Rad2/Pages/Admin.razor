@@ -1,0 +1,97 @@
+﻿@page "/admin"
+
+@using Rad2.Data
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using System.Security.Claims
+@using System.Security.Policy
+@using Microsoft.AspNetCore.Components.Forms
+
+@inject IJSRuntime JsRuntime
+@inject UserManager<IdentityUser> _userManagers
+@inject SignInManager<IdentityUser> _signInManagers
+@inject RoleManager<IdentityRole> _roleManagers
+
+<AuthorizeView>
+    <Authorized>
+        @User(context).Id.ToString(claimValue)
+        <h3>Admin Page</h3>
+    </Authorized>
+    <NotAuthorized>
+        <a href="Identity/Account/Login">Log in</a>
+    </NotAuthorized>
+</AuthorizeView>
+
+<EditForm Model="newUser" OnValidSubmit="@AddUserWithRole">
+    <DataAnnotationsValidator />
+    <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
+    <div class="form-group row">
+        <label for="role-select" class="col-sm-2 col-form-label">
+            Assign Role
+        </label>
+        <div class="col-sm-10">
+            <InputSelect id="role-select" @bind-Value="newUser.UserRole">
+                @foreach (var role in selectList)
+                {
+                    <option value="@role.Value" selected=@role.Selected>@role.Text</option>
+                }
+            </InputSelect>
+        </div>
+    </div>
+    <input type="submit" class="btn btn-primary" value="Save" />
+</EditForm>
+
+@code {
+    UserData newUser = new UserData();
+    List<SelectListItem> selectList = new List<SelectListItem>();
+    ClaimsPrincipal cpUser = new ClaimsPrincipal();
+    string claimValue = "\n";
+
+    protected override async Task OnInitializedAsync()
+    {
+        IQueryable<IdentityRole> lRoles = _roleManagers.Roles;
+
+        foreach(IdentityRole role in lRoles)
+            selectList.Add(new SelectListItem() { Value = role.Id, Text = role.Name, Selected = false });
+
+        await base.OnInitializedAsync();
+    }
+
+    public async Task User(AuthenticationState context)
+    {
+        cpUser = context.User;
+
+        await Task.CompletedTask;
+    }
+
+    public async void AddUserWithRole(EditContext context)
+    {
+        var usermodel = context.Model as UserData;
+        var result = new IdentityResult();
+        IQueryable<IdentityRole> roles = _roleManagers.Roles;
+        IdentityRole role = new IdentityRole();
+
+        foreach (IdentityRole role1 in roles)
+        {
+            if (usermodel?.UserRole == role1.Id)
+            {
+                role = role1;
+                break;
+            }
+        }
+ 
+        IdentityUser user = await _userManagers.GetUserAsync(cpUser);
+        IList<Claim> gClaims = await _roleManagers.GetClaimsAsync(role);
+
+        IList<string> gRoles = await _userManagers.GetRolesAsync(user);
+        IList<Claim> gClaimsEx = await _userManagers.GetClaimsAsync(user);
+
+        var rRole = await _userManagers.RemoveFromRolesAsync(user, gRoles);
+        var rClaim = await _userManagers.RemoveClaimsAsync(user, gClaimsEx);
+
+        var aRole = await _userManagers.AddToRoleAsync(user, role.Name);
+        var aClaims = await _userManagers.AddClaimsAsync(user, gClaims);
+
+        await JsRuntime.InvokeVoidAsync("alert", "Succeeded");
+    }
+}
