@@ -28,6 +28,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuth
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddSingleton<IAuthorizationHandler, MinimumAgeHandler>();
 builder.Services.AddSingleton<IAuthorizationHandler, CertifiedMinimumHandler>();
+builder.Services.AddSingleton<IAuthorizationHandler, CrudpHandler>();
 
 builder.Services.AddAuthorization(options =>
 {
@@ -37,6 +38,8 @@ builder.Services.AddAuthorization(options =>
       policy.Requirements.Add(new MinimumAgeRequirement(18)));
     options.AddPolicy("IsExpertCertifiedAnd18", policy =>
      policy.Requirements.Add(new CertifiedMinimumRequirement(true, 5)));
+    options.AddPolicy("Crudp", policy =>
+     policy.Requirements.Add(new Crudp(true, true, true, true, true)));
 });
 
 builder.Services.AddScoped<ICourseService, CourseService>();

@@ -1,5 +1,6 @@
 ﻿@page "/departmentcomponent"
 @attribute [Authorize(Roles = "SuperAdmin, Admin, ReadOnly, Department")];
+@attribute [Authorize(Policy = "Crudp")]
 
 @using GridMvc.Demo.Resources
 @using GridBlazor
@@ -13,6 +14,15 @@
 @using System.Timers
 @using Rad2.Models.Domian
 @using Rad2.Services
+
+@using Rad2.Data
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using System.Security.Claims
+@using System.Security.Policy
+@using Microsoft.AspNetCore.Components.Forms
+
+
 
 <AuthorizeView>
     <NotAuthorized>
@@ -29,6 +39,7 @@
  
         @if (_task.IsCompleted)
         {
+            @User(context).Id.ToString(claimValue)
             <div class="font-italic small">
                 <div class="col-sm-12 table-sm">
                     <GridComponent T="Department" Grid="@_grid"></GridComponent>
@@ -44,7 +55,19 @@
 </AuthorizeView>
 @code
 {
-    bool bCreate = false;
+    ClaimsPrincipal cpUser = new ClaimsPrincipal();
+    string claimValue = "\n";
+
+    public async Task User(AuthenticationState context)
+    {
+        cpUser = context.User;
+
+        await Task.CompletedTask;
+    }
+
+
+
+    bool bDCreate = false;
     bool bRead = false;
     bool bUpdate = false;
     bool bDelete = false;
@@ -96,6 +119,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
+      
         Action<IGridColumnCollection<Course>> courseColumns = c =>
         {
             c.Add(o => o.CourseId, true).SetPrimaryKey(true, true).Titled(SharedResource.Number).SetWidth(50).SetCrudHidden(true);
@@ -133,13 +157,15 @@
                  .Selectable(true)
                  .Sortable(true)
                  .SetHeaderCrudButtons(true)
-                 .Crud(bCreate, bRead, bUpdate, bDelete, courseService)
+                 .Crud(bDCreate, bRead, bUpdate, bDelete, courseService)
                  .SetStriped(true)
             ;
 
             await subGridClient.UpdateGrid();
             return subGridClient.Grid;
         };
+
+
 
         var client = new GridClient<Department>(q => departmentService.GetDepartmentGridRow(departmentColumns, query), query, false,
             "departmentGrid", departmentColumns, locale)
@@ -154,7 +180,7 @@
             .WithGridItemsCount()
             .ChangePageSize(true)
             .Selectable(true)
-            .Crud(bCreate, bRead, bUpdate, bDelete, departmentService)
+            .Crud(bDCreate, bRead, bUpdate, bDelete, departmentService)
             .SetHeaderCrudButtons(true)
             .SubGrid(subGrids, ("DepartmentId", "DepartmentId"))
             .SetStriped(true)
