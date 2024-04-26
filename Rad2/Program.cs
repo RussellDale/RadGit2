@@ -39,7 +39,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("IsExpertCertifiedAnd18", policy =>
      policy.Requirements.Add(new CertifiedMinimumRequirement(true, 5)));
     options.AddPolicy("Crudp", policy =>
-     policy.Requirements.Add(new Crudp(true, true, true, true, true)));
+     policy.Requirements.Add(new CrudpRequirement(true, true, true, true, true)));
 });
 
 builder.Services.AddScoped<ICourseService, CourseService>();

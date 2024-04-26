@@ -92,6 +92,6 @@
         var aRole = await _userManagers.AddToRoleAsync(user, role.Name);
         var aClaims = await _userManagers.AddClaimsAsync(user, gClaims);
 
-        await JsRuntime.InvokeVoidAsync("alert", "Succeeded");
+        await JsRuntime.InvokeVoidAsync("alert", gRoles[0] + " => " + role.Name + "\nLog out, Log in - NOW!");
     }
 }
