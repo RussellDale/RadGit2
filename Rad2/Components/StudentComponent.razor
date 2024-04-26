@@ -1,5 +1,6 @@
 ﻿@page "/studentcomponent"
-@attribute [Authorize(Roles = "Admin, Student")];
+@attribute [Authorize(Roles = "SuperAdmin, Admin, ReadOnly, Student")]
+@attribute [Authorize(Policy = "Crudp")]
 
 @using GridMvc.Demo.Resources
 @using GridBlazor
@@ -13,8 +14,10 @@
 @using System.Globalization
 @using System.Threading.Tasks
 @using System.Timers
+@using System.Security.Claims
 @using Rad2.Models.Domian
 @using Rad2.Services
+@using Rad2.Policy
 
 @inject IStudentService studentService
 @inject IEnrollmentService enrollmentService
@@ -23,6 +26,8 @@
 @inject IDepartmentService departmentService
 @inject IInstructorService instructorService
 @inject IPrintingService printingService
+@inject AuthenticationStateProvider _authenticationStateProvider
+
 <AuthorizeView>
     <NotAuthorized>
         <a href="Identity/Account/Login">Log in</a>
@@ -38,7 +43,11 @@
                     <GridComponent T="Student" Grid="@_grid"></GridComponent>
                 </div>
             </div>
-            <button @onclick="Print">Print</button>
+
+            @if (crudp.Print == true)
+            {
+                <button @onclick="Print">Print</button>
+            }
         }
         else
         {
@@ -53,6 +62,7 @@
     Timer timer;
     private GridComponent<Student> _gridComponent;
     private CGrid<Enrollment> subGridClientEnrollment;
+    CrudpRequirement crudp = new CrudpRequirement(true, true, true, true, true);
 
     private void Print()
     {
@@ -108,6 +118,10 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        AuthenticationState context = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        CrudpHandler crudpHandler = new CrudpHandler();
+        await crudpHandler.HandleRequirementAsync2(context, crudp);
+
         Action<IGridColumnCollection<CourseAssignment>> courseAssignmentColumns = c =>
         {
             c.Add(o => o.Instructor.FirstName, false).Titled("First Name");
@@ -221,7 +235,7 @@
                 .Selectable(true)
                 .Sortable(true)
                 .SetHeaderCrudButtons(true)
-                .Crud(true, false, true, true, enrollmentService)
+                .Crud(crudp.Create, crudp.Read, crudp.Update, crudp.Delete, enrollmentService)
                 .SetStriped(true)
                 .SubGrid(subGrids2, ("CourseId", "CourseId"))
             ;
@@ -245,7 +259,7 @@
             .WithGridItemsCount()
             .ChangePageSize(true)
             .Selectable(true)
-            .Crud(true, false, true, true, studentService)
+            .Crud(crudp.Create, crudp.Read, crudp.Update, crudp.Delete, studentService)
             .SetHeaderCrudButtons(true)
             .SetStriped(true)
             .SubGrid(subGrids, ("Id", "StudentId"))

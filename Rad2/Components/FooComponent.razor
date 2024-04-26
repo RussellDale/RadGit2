@@ -1,5 +1,6 @@
 ﻿@page "/foocomponent"
-@attribute [Authorize(Roles = "Admin, Foo")];
+@attribute [Authorize(Roles = "SuperAdmin, Admin, ReadOnly, Foo")]
+@attribute [Authorize(Policy = "Crudp")]
 
 @using GridMvc.Demo.Resources
 @using GridBlazor
@@ -10,10 +11,14 @@
 @using Microsoft.Extensions.Primitives
 @using System.Globalization
 @using System.Threading.Tasks
+@using System.Security.Claims
 @using Rad2.Models.Domian
 @using Rad2.Services
+@using Rad2.Policy
 
 @inject IStudentService fooService
+@inject AuthenticationStateProvider _authenticationStateProvider
+
 <AuthorizeView>
     <NotAuthorized>
         <a href="Identity/Account/Login">Log in</a>
@@ -41,9 +46,14 @@
     private CGrid<Student> _grid;
     private Task _task;
     Func<object[], Task<ICGrid>> subEx;
+    CrudpRequirement crudp = new CrudpRequirement(true, true, true, true, true);
 
     protected override async Task OnParametersSetAsync()
     {
+        AuthenticationState context = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        CrudpHandler crudpHandler = new CrudpHandler();
+        await crudpHandler.HandleRequirementAsync2(context, crudp);
+
         Action<IGridColumnCollection<Student>> fooColumns = c =>
         {
             c.Add(o => o.Id, false).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);

@@ -1,5 +1,5 @@
 ﻿@page "/departmentcomponent"
-@attribute [Authorize(Roles = "SuperAdmin, Admin, ReadOnly, Department")];
+@attribute [Authorize(Roles = "SuperAdmin, Admin, ReadOnly, Department")]
 @attribute [Authorize(Policy = "Crudp")]
 
 @using GridMvc.Demo.Resources
@@ -38,7 +38,11 @@
                     <GridComponent T="Department" Grid="@_grid"></GridComponent>
                 </div>
             </div>
-            <button @onclick="Print">Print</button>
+
+            @if(crudp.Print == true)
+            {
+                <button @onclick="Print">Print</button>
+            }
         }
         else
         {
