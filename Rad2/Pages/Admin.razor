@@ -68,39 +68,42 @@
 
     public async void AddUserWithRole(EditContext context)
     {
-        var usermodel = context.Model as UserData;
-        var result = new IdentityResult();
+        UserData? usermodel = context.Model as UserData;
+        IdentityResult result = new IdentityResult();
         IQueryable<IdentityRole> roles = _roleManagers.Roles;
         IdentityRole role = new IdentityRole();
+        string sRoles1 = "n/a", sRoles2 = "n/a";
 
         foreach (IdentityRole role1 in roles)
         {
             if (usermodel?.UserRole == role1.Id)
             {
                 role = role1;
+                sRoles1 = role.Name;
                 break;
             }
         }
 
         IdentityUser user = await _userManagers.GetUserAsync(cpUser);
-        IList<Claim> gClaims = await _roleManagers.GetClaimsAsync(role);
-
         IList<string> gRoles = await _userManagers.GetRolesAsync(user);
-        IList<Claim> gClaimsEx = await _userManagers.GetClaimsAsync(user);
 
-        var rRole = await _userManagers.RemoveFromRolesAsync(user, gRoles);
-        var rClaim = await _userManagers.RemoveClaimsAsync(user, gClaimsEx);
-
-        var aRole = await _userManagers.AddToRoleAsync(user, role.Name);
-        var aClaims = await _userManagers.AddClaimsAsync(user, gClaims);
-
-        string sRoles;
-
-        if (gRoles.Count == 0)
-            sRoles = "n/a";
+        if (gRoles.Count == 0) { }
         else
-            sRoles = gRoles[0];
+        {
+            sRoles2 = gRoles[0];
+            IdentityResult rRole = await _userManagers.RemoveFromRolesAsync(user, gRoles);
+            IList<Claim> gClaimsEx = await _userManagers.GetClaimsAsync(user);
+            IdentityResult rClaim = await _userManagers.RemoveClaimsAsync(user, gClaimsEx);
+        }
 
-        await JsRuntime.InvokeVoidAsync("alert", sRoles + " => " + role.Name + "\nLog out, Log in - NOW!");
+        if (sRoles1 == "n/a") { }
+        else
+        {
+            IList<Claim> gClaims = await _roleManagers.GetClaimsAsync(role);
+            IdentityResult aRole = await _userManagers.AddToRoleAsync(user, role.Name);
+            IdentityResult aClaims = await _userManagers.AddClaimsAsync(user, gClaims);
+        }
+        
+        await JsRuntime.InvokeVoidAsync("alert", sRoles1 + " => " + sRoles2 + "\nLog out, Log in - NOW!");
     }
 }
