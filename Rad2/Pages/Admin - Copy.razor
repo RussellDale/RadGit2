@@ -1,4 +1,4 @@
-﻿@page "/admin"
+﻿@page "/admin2"
 
 @using Rad2.Data
 @using Microsoft.AspNetCore.Identity
@@ -31,7 +31,7 @@
         </label>
         <div class="col-sm-10">
             <InputSelect id="role-select" @bind-Value="newUser.UserRole">
-                @foreach (SelectListItem role in selectList)
+                @foreach (var role in selectList)
                 {
                     <option value="@role.Value" selected=@role.Selected>@role.Text</option>
                 }
@@ -39,23 +39,6 @@
         </div>
     </div>
     <input type="submit" class="btn btn-primary" value="Save" />
-
-    <div class="form-group row">
-        <table>
-            <tr><th>Check Box</th><th>Id</th><th>Roles</th><th>Create</th><th>Read</th><th>Update</th><th>Delete</th><th>Print</th><th>Name</th></tr>
-            @foreach (SelectListItem role in selectList)
-            {
-                <tr><td><input type="checkbox" name="cbRole_@role.Value" /></td><td> @role.Value </td><td> @role.Text </td>
-                    <td><input type="checkbox" name="cbCreate_@role.Value" /></td>
-                    <td><input type="checkbox" name="cbRead_@role.Value" /></td>
-                    <td><input type="checkbox" name="cbUpdate_@role.Value" /></td>
-                    <td><input type="checkbox" name="cbDelete_@role.Value" /></td>
-                    <td><input type="checkbox" name="cbPrint_@role.Value" /></td>
-                    <td><input type="text" name="textName_@role.Value" /></td>
-                </tr>
-            }
-        </table>
-    </div>
 </EditForm>
 
 @code {
