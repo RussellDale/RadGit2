@@ -79,7 +79,7 @@
                 break;
             }
         }
- 
+
         IdentityUser user = await _userManagers.GetUserAsync(cpUser);
         IList<Claim> gClaims = await _roleManagers.GetClaimsAsync(role);
 
@@ -92,6 +92,13 @@
         var aRole = await _userManagers.AddToRoleAsync(user, role.Name);
         var aClaims = await _userManagers.AddClaimsAsync(user, gClaims);
 
-        await JsRuntime.InvokeVoidAsync("alert", gRoles[0] + " => " + role.Name + "\nLog out, Log in - NOW!");
+        string sRoles;
+
+        if (gRoles.Count == 0)
+            sRoles = "n/a";
+        else
+            sRoles = gRoles[0];
+
+        await JsRuntime.InvokeVoidAsync("alert", sRoles + " => " + role.Name + "\nLog out, Log in - NOW!");
     }
 }
