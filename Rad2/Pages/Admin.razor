@@ -54,6 +54,8 @@
         foreach(IdentityRole role in lRoles)
             selectList.Add(new SelectListItem() { Value = role.Id, Text = role.Name, Selected = false });
 
+        selectList.Add(new SelectListItem() { Value = "0", Text = "n/a", Selected = false });
+
         await base.OnInitializedAsync();
     }
 
