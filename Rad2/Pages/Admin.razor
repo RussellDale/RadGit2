@@ -44,10 +44,10 @@
             <tr><th>Create</th><th>Read</th><th>Update</th><th>Delete</th><th>Print</th><th>Name</th></tr>
             <tr>
                 <td>@if (crudp.Create == true) { <input type="checkbox" checked="checked" name="cbCreate" /> } else { <input type="checkbox" name="cbCreate" /> }</td>
-                <td>@if (crudp.Read == true)   { <input type="checkbox" checked="checked" name="cbRead" /> }   else { <input type="checkbox" name="cbRead" /> }</td>
+                <td>@if (crudp.Read   == true) { <input type="checkbox" checked="checked" name="cbRead"   /> } else { <input type="checkbox" name="cbRead"   /> }</td>
                 <td>@if (crudp.Update == true) { <input type="checkbox" checked="checked" name="cbUpdate" /> } else { <input type="checkbox" name="cbUpdate" /> }</td>
                 <td>@if (crudp.Delete == true) { <input type="checkbox" checked="checked" name="cbDelete" /> } else { <input type="checkbox" name="cbDelete" /> }</td>
-                <td>@if (crudp.Print == true)  { <input type="checkbox" checked="checked" name="cbPrint" /> }  else { <input type="checkbox" name="cbPrint" /> }</td>
+                <td>@if (crudp.Print  == true) { <input type="checkbox" checked="checked" name="cbPrint"  /> } else { <input type="checkbox" name="cbPrint"  /> }</td>
                 <td><input type="text" name="textName" style="text-align: left;" /></td>
             </tr>
         </table>
