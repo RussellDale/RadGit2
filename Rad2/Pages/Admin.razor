@@ -39,7 +39,7 @@
         </div>
     </div>
     <input type="submit" class="btn btn-primary" value="Save" />
-
+    @messagePrompt
     <div class="form-group row">
         <table>
             <tr><th>Check Box</th><th>Id</th><th>Roles</th><th>Create</th><th>Read</th><th>Update</th><th>Delete</th><th>Print</th><th>Name</th></tr>
@@ -82,6 +82,7 @@
     IList<Claim> gClaims = null;
     ClaimsPrincipal cpUser = new ClaimsPrincipal();
     string claimValue = "\n";
+    string messagePrompt = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -105,6 +106,9 @@
 
         gRoles = roles;
         gClaims = claims;
+
+        foreach (var claim in context.User.Claims)
+            messagePrompt += claim.Type + " : " + claim.Value + "\n";
 
         await Task.CompletedTask;
     }
