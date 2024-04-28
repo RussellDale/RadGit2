@@ -45,13 +45,30 @@
             <tr><th>Check Box</th><th>Id</th><th>Roles</th><th>Create</th><th>Read</th><th>Update</th><th>Delete</th><th>Print</th><th>Name</th></tr>
             @foreach (SelectListItem role in selectList)
             {
-                <tr><td><input type="checkbox" name="cbRole_@role.Value" /></td><td> @role.Value </td><td> @role.Text </td>
+                bool bRole = false;
+                <tr>
+                    <td>
+                        @foreach (string sRole in gRoles)
+                        {
+                            if (sRole == role.Text)
+                            {
+                                bRole = true;
+                                <input type="checkbox" checked="checked" name="cbRole_@role.Value" />
+                            }
+                        }
+                        @if (bRole == false)
+                        {
+                            <input type="checkbox" name="cbRole_@role.Value" />
+                        }
+                    </td>
+                    <td>@role.Value</td>
+                    <td>@role.Text</td>
                     <td><input type="checkbox" name="cbCreate_@role.Value" /></td>
                     <td><input type="checkbox" name="cbRead_@role.Value" /></td>
                     <td><input type="checkbox" name="cbUpdate_@role.Value" /></td>
                     <td><input type="checkbox" name="cbDelete_@role.Value" /></td>
                     <td><input type="checkbox" name="cbPrint_@role.Value" /></td>
-                    <td><input type="text" name="textName_@role.Value" /></td>
+                    <td><input type="text" name="textName_@role.Value" style="text-align: left;" /></td>
                 </tr>
             }
         </table>
@@ -61,6 +78,8 @@
 @code {
     UserData newUser = new UserData();
     List<SelectListItem> selectList = new List<SelectListItem>();
+    IList<string> gRoles = null;
+    IList<Claim> gClaims = null;
     ClaimsPrincipal cpUser = new ClaimsPrincipal();
     string claimValue = "\n";
 
@@ -79,6 +98,13 @@
     public async Task User(AuthenticationState context)
     {
         cpUser = context.User;
+
+        IdentityUser user = await _userManagers.GetUserAsync(cpUser);
+        IList<string> roles = await _userManagers.GetRolesAsync(user);
+        IList<Claim> claims = await _userManagers.GetClaimsAsync(user);
+
+        gRoles = roles;
+        gClaims = claims;
 
         await Task.CompletedTask;
     }
