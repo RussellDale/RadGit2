@@ -1,6 +1,7 @@
 ﻿@page "/admin"
 
 @using Rad2.Data
+@using Rad2.Policy
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using System.Security.Claims
@@ -38,49 +39,29 @@
             </InputSelect>
         </div>
     </div>
-    <input type="submit" class="btn btn-primary" value="Save" />
-    @messagePrompt
     <div class="form-group row">
         <table>
-            <tr><th>Check Box</th><th>Id</th><th>Roles</th><th>Create</th><th>Read</th><th>Update</th><th>Delete</th><th>Print</th><th>Name</th></tr>
-            @foreach (SelectListItem role in selectList)
-            {
-                bool bRole = false;
-                <tr>
-                    <td>
-                        @foreach (string sRole in gRoles)
-                        {
-                            if (sRole == role.Text)
-                            {
-                                bRole = true;
-                                <input type="checkbox" checked="checked" name="cbRole_@role.Value" />
-                            }
-                        }
-                        @if (bRole == false)
-                        {
-                            <input type="checkbox" name="cbRole_@role.Value" />
-                        }
-                    </td>
-                    <td>@role.Value</td>
-                    <td>@role.Text</td>
-                    <td><input type="checkbox" name="cbCreate_@role.Value" /></td>
-                    <td><input type="checkbox" name="cbRead_@role.Value" /></td>
-                    <td><input type="checkbox" name="cbUpdate_@role.Value" /></td>
-                    <td><input type="checkbox" name="cbDelete_@role.Value" /></td>
-                    <td><input type="checkbox" name="cbPrint_@role.Value" /></td>
-                    <td><input type="text" name="textName_@role.Value" style="text-align: left;" /></td>
-                </tr>
-            }
+            <tr><th>Create</th><th>Read</th><th>Update</th><th>Delete</th><th>Print</th><th>Name</th></tr>
+            <tr>
+                <td>@if (crudp.Create == true) { <input type="checkbox" checked="checked" name="cbCreate" /> } else { <input type="checkbox" name="cbCreate" /> }</td>
+                <td>@if (crudp.Read == true)   { <input type="checkbox" checked="checked" name="cbRead" /> }   else { <input type="checkbox" name="cbRead" /> }</td>
+                <td>@if (crudp.Update == true) { <input type="checkbox" checked="checked" name="cbUpdate" /> } else { <input type="checkbox" name="cbUpdate" /> }</td>
+                <td>@if (crudp.Delete == true) { <input type="checkbox" checked="checked" name="cbDelete" /> } else { <input type="checkbox" name="cbDelete" /> }</td>
+                <td>@if (crudp.Print == true)  { <input type="checkbox" checked="checked" name="cbPrint" /> }  else { <input type="checkbox" name="cbPrint" /> }</td>
+                <td><input type="text" name="textName" style="text-align: left;" /></td>
+            </tr>
         </table>
     </div>
+    <input type="submit" class="btn btn-primary" value="Save" />
 </EditForm>
+
+@messagePrompt
 
 @code {
     UserData newUser = new UserData();
     List<SelectListItem> selectList = new List<SelectListItem>();
-    IList<string> gRoles = null;
-    IList<Claim> gClaims = null;
     ClaimsPrincipal cpUser = new ClaimsPrincipal();
+    CrudpRequirement crudp = new CrudpRequirement(true, true, true, true, true);
     string claimValue = "\n";
     string messagePrompt = "";
 
@@ -99,13 +80,8 @@
     public async Task User(AuthenticationState context)
     {
         cpUser = context.User;
-
-        IdentityUser user = await _userManagers.GetUserAsync(cpUser);
-        IList<string> roles = await _userManagers.GetRolesAsync(user);
-        IList<Claim> claims = await _userManagers.GetClaimsAsync(user);
-
-        gRoles = roles;
-        gClaims = claims;
+        CrudpHandler crudpHandler = new CrudpHandler();
+        await crudpHandler.HandleRequirementAsync2(context, crudp);
 
         foreach (var claim in context.User.Claims)
             messagePrompt += claim.Type + " : " + claim.Value + "\n";
