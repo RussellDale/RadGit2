@@ -51,6 +51,18 @@
                 <td><input type="text" name="textName" style="text-align: left;" /></td>
             </tr>
         </table>
+
+        <table>
+            <tr><th>Create</th><th>Read</th><th>Update</th><th>Delete</th><th>Print</th><th>Name</th></tr>
+            <tr>
+                <td><InputCheckbox id="cbCreateId"   @bind-Value="newUser.Create" /></td>
+                <td><InputCheckbox id="cbReadId"     @bind-Value="newUser.Read"   /></td>
+                <td><InputCheckbox id="cbUpdateId"   @bind-Value="newUser.Update" /></td>
+                <td><InputCheckbox id="cbDeleteId"   @bind-Value="newUser.Delete" /></td>
+                <td><InputCheckbox id="cbPrintId"    @bind-Value="newUser.Print"  /></td>
+                <td><input type="text" name="textName" style="text-align: left;"  /></td>
+            </tr>
+        </table>
     </div>
     <input type="submit" class="btn btn-primary" value="Save" />
 </EditForm>
