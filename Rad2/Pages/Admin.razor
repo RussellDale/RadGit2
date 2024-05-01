@@ -62,7 +62,8 @@
     UserData newUser = new UserData();
     List<SelectListItem> selectList = new List<SelectListItem>();
     ClaimsPrincipal cpUser = new ClaimsPrincipal();
-    CrudpRequirement crudp = new CrudpRequirement(true, true, true, true, true);
+    CrudpRequirement crudpGet = new CrudpRequirement(true, true, true, true, true);
+    CrudpRequirement crudpSet = new CrudpRequirement(true, true, true, true, true);
     string claimValue = "\n";
     string messagePrompt = "";
 
@@ -70,13 +71,13 @@
     {
         AuthenticationState context = await _authenticationStateProvider.GetAuthenticationStateAsync();
         CrudpHandler crudpHandler = new CrudpHandler();
-        await crudpHandler.HandleRequirementAsync2(context, crudp);
+        await crudpHandler.HandleRequirementAsync2(context, crudpGet);
 
-        if (crudp.Create == false) newUser.Create = false;
-        if (crudp.Read == false)   newUser.Read = false;
-        if (crudp.Update == false) newUser.Update = false;
-        if (crudp.Delete == false) newUser.Delete = false;
-        if (crudp.Print == false)  newUser.Print = false;
+        if (crudpGet.Create == false) newUser.Create = false;
+        if (crudpGet.Read   == false) newUser.Read   = false;
+        if (crudpGet.Update == false) newUser.Update = false;
+        if (crudpGet.Delete == false) newUser.Delete = false;
+        if (crudpGet.Print  == false) newUser.Print  = false;
 
         IQueryable<IdentityRole> lRoles = _roleManagers.Roles;
 
@@ -106,6 +107,12 @@
         IdentityRole role = new IdentityRole();
         string sRoles1 = "n/a", sRoles2 = "n/a";
 
+        if (newUser.Create == false) crudpSet.Create = false;
+        if (newUser.Read   == false) crudpSet.Read   = false;
+        if (newUser.Update == false) crudpSet.Update = false;
+        if (newUser.Delete == false) crudpSet.Delete = false;
+        if (newUser.Print  == false) crudpSet.Print  = false;
+
         foreach (IdentityRole role1 in roles)
         {
             if (usermodel?.UserRole == role1.Id)
@@ -134,8 +141,23 @@
             IList<Claim> gClaims = await _roleManagers.GetClaimsAsync(role);
             IdentityResult aRole = await _userManagers.AddToRoleAsync(user, role.Name);
             IdentityResult aClaims = await _userManagers.AddClaimsAsync(user, gClaims);
+
+            Claim? claim = cpUser.FindFirst(c => c.Type == "CRUDP");
+
+            if (claim is not null)
+            {
+                IdentityResult rCliam2 = await _userManagers.RemoveClaimAsync(user, claim);
+/*
+                if (crudpSet.Create == false) claim.Value.Substring(0, 1) = "0";
+                if (claim.Value.Substring(1, 1) == "0") crudpSet.Read = false;
+                if (claim.Value.Substring(2, 1) == "0") crudpSet.Update = false;
+                if (claim.Value.Substring(3, 1) == "0") crudpSet.Delete = false;
+                if (claim.Value.Substring(4, 1) == "0") crudpSet.Print = false;
+*/
+                IdentityResult aCliam2 = await _userManagers.AddClaimAsync(user, claim);
+            }
         }
         
-        await JsRuntime.InvokeVoidAsync("alert", sRoles1 + " => " + sRoles2 + "\nLog out, Log in - NOW!");
+        await JsRuntime.InvokeVoidAsync("alert", sRoles2 + " => " + sRoles1 + "\nLog out, Log in - NOW!");
     }
 }
