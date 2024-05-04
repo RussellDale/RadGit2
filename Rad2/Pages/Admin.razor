@@ -146,7 +146,7 @@
             result = await _userManagers.AddToRoleAsync(user, role.Name);
             result = await _userManagers.AddClaimsAsync(user, gClaims);
 
-            Claim? claim = cpUser.FindFirst(c => c.Type == "CRUDP");
+            Claim? claim = gClaims.First(c => c.Type == "CRUDP");
 
             if (claim is not null)
             {
