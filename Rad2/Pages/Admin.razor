@@ -78,10 +78,21 @@
         if (crudpGet.Delete == false) newUser.Delete = false;
         if (crudpGet.Print  == false) newUser.Print  = false;
 
+        bool bSelected = false;
+        string sRoles = string.Empty;
+        IdentityUser user = await _userManagers.GetUserAsync(context.User);
+        IList<string> gRoles = await _userManagers.GetRolesAsync(user);
+
+        if (gRoles.Count == 0) { } else sRoles = gRoles[0];
+
         IQueryable<IdentityRole> lRoles = _roleManagers.Roles;
 
         foreach(IdentityRole role in lRoles)
-            selectList.Add(new SelectListItem() { Value = role.Id, Text = role.Name, Selected = false });
+        {
+            if (sRoles == role.Name) bSelected = true;
+            selectList.Add(new SelectListItem() { Value = role.Id, Text = role.Name, Selected = bSelected });
+            bSelected = false;
+        }
 
         selectList.Add(new SelectListItem() { Value = "0", Text = "n/a", Selected = false });
 
