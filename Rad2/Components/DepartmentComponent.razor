@@ -1,6 +1,7 @@
 ﻿@page "/departmentcomponent"
 @attribute [Authorize(Roles = "SuperAdmin, Admin, ReadOnly, Department")]
 @attribute [Authorize(Policy = "Crudp")]
+@attribute [Authorize(Policy = "Name")]
 
 @using GridMvc.Demo.Resources
 @using GridBlazor

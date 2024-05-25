@@ -12,5 +12,6 @@ namespace Rad2.Data
         public bool Update { get; set; } = true;
         public bool Delete { get; set; } = true;
         public bool Print { get; set; } = true;
+        public string Name { get; set; } = string.Empty;
     }
 }

@@ -29,6 +29,7 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddSingleton<IAuthorizationHandler, MinimumAgeHandler>();
 builder.Services.AddSingleton<IAuthorizationHandler, CertifiedMinimumHandler>();
 builder.Services.AddSingleton<IAuthorizationHandler, CrudpHandler>();
+builder.Services.AddSingleton<IAuthorizationHandler, NameHandler>();
 
 builder.Services.AddAuthorization(options =>
 {
@@ -40,6 +41,8 @@ builder.Services.AddAuthorization(options =>
      policy.Requirements.Add(new CertifiedMinimumRequirement(true, 5)));
     options.AddPolicy("Crudp", policy =>
      policy.Requirements.Add(new CrudpRequirement(true, true, true, true, true)));
+    options.AddPolicy("Name", policy =>
+    policy.Requirements.Add(new NameRequirement("*")));
 });
 
 builder.Services.AddScoped<ICourseService, CourseService>();

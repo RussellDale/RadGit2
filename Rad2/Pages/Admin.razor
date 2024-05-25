@@ -49,7 +49,7 @@
                 <td><InputCheckbox id="cbUpdateId"   @bind-Value="newUser.Update" /></td>
                 <td><InputCheckbox id="cbDeleteId"   @bind-Value="newUser.Delete" /></td>
                 <td><InputCheckbox id="cbPrintId"    @bind-Value="newUser.Print"  /></td>
-                <td><input type="text" name="textName" style="text-align: left;"  /></td>
+                <td><InputText id="textName" @bind-Value="newUser.Name" style="text-align: left;"  /></td>
             </tr>
         </table>
     </div>
@@ -63,6 +63,7 @@
     List<SelectListItem> selectList = new List<SelectListItem>();
     ClaimsPrincipal cpUser = new ClaimsPrincipal();
     CrudpRequirement crudpGet = new CrudpRequirement(true, true, true, true, true);
+    NameRequirement nameGet = new NameRequirement("*");
     string claimValue = "\n";
     string messagePrompt = "";
 
@@ -71,6 +72,9 @@
         AuthenticationState context = await _authenticationStateProvider.GetAuthenticationStateAsync();
         CrudpHandler crudpHandler = new CrudpHandler();
         await crudpHandler.HandleRequirementAsync2(context, crudpGet);
+        
+        NameHandler nameHandler = new NameHandler();
+        await nameHandler.HandleRequirementAsync2(context, nameGet);
 
         if (crudpGet.Create == false) newUser.Create = false;
         if (crudpGet.Read   == false) newUser.Read   = false;
@@ -78,6 +82,8 @@
         if (crudpGet.Delete == false) newUser.Delete = false;
         if (crudpGet.Print  == false) newUser.Print  = false;
 
+        newUser.Name = nameGet.Name;
+        
         bool bSelected = false;
         string sRoles = string.Empty;
         IdentityUser user = await _userManagers.GetUserAsync(context.User);
@@ -162,6 +168,15 @@
 
                 result = await _userManagers.AddClaimAsync(user, claim);
             }
+            
+             claim = gClaims.First(c => c.Type == "Name");
+
+             if (claim is not null)
+             {
+                 result = await _userManagers.RemoveClaimAsync(user, claim);
+                 claim = new Claim("Name", newUser.Name);
+                 result = await _userManagers.AddClaimAsync(user, claim);
+             }
         }
         
         await JsRuntime.InvokeVoidAsync("alert", sRoles2 + " => " + sRoles1 + "\nLog out, Log in - NOW!");
