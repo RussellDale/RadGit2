@@ -1,4 +1,5 @@
 ﻿@using Rad2.Data
+@using Rad2.Policy
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using System.Security.Claims
@@ -29,13 +30,19 @@
     {
         IdentityUser user = await _userManagers.GetUserAsync(context.User);
         IList<string> gRoles = await _userManagers.GetRolesAsync(user);
-
+        
+        NameRequirement nameGet = new NameRequirement("*");
+        NameHandler nameHandler = new NameHandler();
+        await nameHandler.HandleRequirementAsync2(context, nameGet);
+        
         foreach(var role in gRoles)
         {
             if (rolesValue.Length > 0)
                 rolesValue += " - ";
 
             rolesValue += role;
+
+            if (nameGet.IsName() == true) rolesValue += "*";           
         }
 
         if (rolesValue.Length == 0)
