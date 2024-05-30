@@ -83,6 +83,8 @@
         if (crudpGet.Print  == false) newUser.Print  = false;
 
         newUser.Name = nameGet.Name;
+        bool isName = nameGet.IsName();
+        await JsRuntime.InvokeVoidAsync("alert", isName);
         
         bool bSelected = false;
         string sRoles = string.Empty;
