@@ -22,13 +22,15 @@ namespace Rad2.Services
             _options = options;
         }
         public ItemsDTO<Student> GetStudentGridRow(Action<IGridColumnCollection<Student>> columns,
-                                                   QueryDictionary<StringValues> query)
+                                                   QueryDictionary<StringValues> query, bool isName, string name)
         {
             using (var context = new dbContext(_options))
             {
                 var repository = new StudentRepository(context);
-
-                var server = new GridServer<Student>(repository.GetAll(), new QueryCollection(query),
+                
+                IQueryable<Student> student = isName == true ? repository.GetAll().Where(c => c.FirstName + " " + c.LastName == name) : repository.GetAll();
+                
+                var server = new GridServer<Student>(student, new QueryCollection(query),
                         false, "instructorGrid", columns)
                             .WithPaging(10)
                             .Sortable()
@@ -119,7 +121,7 @@ namespace Rad2.Services
     public interface IStudentService : ICrudDataService<Student>
     {
         ItemsDTO<Student> GetStudentGridRow(Action<IGridColumnCollection<Student>> columns,
-                                            QueryDictionary<StringValues> query);
+                                            QueryDictionary<StringValues> query,  bool isName, string name);
         IEnumerable<SelectItem> GetAllStudent();
     }
 }

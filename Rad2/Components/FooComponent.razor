@@ -69,7 +69,7 @@
         Func<object[], Task<ICGrid>> subGrids = async keys =>
          {
              int Id = Int32.Parse(keys[0].ToString());
-             var subGridClient = new GridClient<Student>(q => fooService.GetStudentGridRow(fooColumns, query),
+             var subGridClient = new GridClient<Student>(q => fooService.GetStudentGridRow(fooColumns, query, false, ""),
                  query, false, "fooGrid" + Id, fooColumns, locale)
                 .SubGrid(subEx, ("Id", "Id"))
              ;
@@ -80,7 +80,7 @@
 
         subEx = subGrids;
 
-        var client = new GridClient<Student>(q => fooService.GetStudentGridRow(fooColumns, query), 
+        var client = new GridClient<Student>(q => fooService.GetStudentGridRow(fooColumns, query, false, ""), 
             query, false, "fooGrid", fooColumns, locale)
             .SubGrid(subGrids, ("Id", "Id"))
             ;
