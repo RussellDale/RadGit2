@@ -28,8 +28,10 @@ namespace Rad2.Services
             {
                 var repository = new StudentRepository(context);
                 
-                IQueryable<Student> student = isName == true ? repository.GetAll().Where(c => c.FirstName + " " + c.LastName == name) : repository.GetAll();
-                
+                IQueryable<Student> student = isName == true ? 
+                     repository.GetAll().Where(c => c.FirstName + " " + c.LastName == name ) : 
+                     repository.GetAll();
+                    
                 var server = new GridServer<Student>(student, new QueryCollection(query),
                         false, "instructorGrid", columns)
                             .WithPaging(10)
