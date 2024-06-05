@@ -58,7 +58,8 @@
     Timer timer;
     private GridComponent<Department> _gridComponent;
     CrudpRequirement crudp = new CrudpRequirement(true, true, true, true, true);
-
+    NameRequirement name = new NameRequirement("*");
+    
     private void Print()
     {
         string err = "You must select the row you want to print";
@@ -103,6 +104,10 @@
         AuthenticationState context = await _authenticationStateProvider.GetAuthenticationStateAsync();
         CrudpHandler crudpHandler = new CrudpHandler();
         await crudpHandler.HandleRequirementAsync2(context, crudp);
+        
+        NameHandler nameHandler = new NameHandler();
+        await nameHandler.HandleRequirementAsync2(context, name);
+        bool isName = name.IsName();
 
         Action<IGridColumnCollection<Course>> courseColumns = c =>
         {
@@ -151,7 +156,7 @@
 
 
 
-        var client = new GridClient<Department>(q => departmentService.GetDepartmentGridRow(departmentColumns, query), query, false,
+        var client = new GridClient<Department>(q => departmentService.GetDepartmentGridRow(departmentColumns, query, isName, name.Name), query, false,
             "departmentGrid", departmentColumns, locale)
             .Sortable()
             .Filterable()

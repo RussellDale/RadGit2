@@ -22,13 +22,17 @@ namespace Rad2.Services
             _options = options;
         }
         public ItemsDTO<Department> GetDepartmentGridRow(Action<IGridColumnCollection<Department>> columns,
-                                                         QueryDictionary<StringValues> query)
+                                                         QueryDictionary<StringValues> query, bool isName, string name)
         {
             using (var context = new dbContext(_options))
             {
                 var repository = new DepartmentRepository(context);
-
-                var server = new GridServer<Department>(repository.GetAll(), new QueryCollection(query),
+                
+                IQueryable<Department> department = isName == true ? 
+                 repository.GetAll().Where(c => c.Name == name ) : 
+                 repository.GetAll();
+                
+                var server = new GridServer<Department>(department, new QueryCollection(query),
                         false, "departmentGrid", columns)
                             .WithPaging(10)
                             .Sortable()
@@ -118,7 +122,7 @@ namespace Rad2.Services
     public interface IDepartmentService : ICrudDataService<Department>
     {
         ItemsDTO<Department> GetDepartmentGridRow(Action<IGridColumnCollection<Department>> columns,
-                                                  QueryDictionary<StringValues> query);
+                                                  QueryDictionary<StringValues> query, bool isName, string name);
         IEnumerable<SelectItem> GetAllDepartment();
     }
 }
