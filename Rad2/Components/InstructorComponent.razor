@@ -1,6 +1,7 @@
 ﻿@page "/instructorcomponent"
 @attribute [Authorize(Roles = "SuperAdmin, Admin, ReadOnly, Instructor, OfficeAssignment")]
 @attribute [Authorize(Policy = "Crudp")]
+@attribute [Authorize(Policy = "Name")]
 
 @using GridMvc.Demo.Resources
 @using GridBlazor
@@ -58,6 +59,7 @@
     Timer timer;
     private GridComponent<Instructor> _gridComponent;
     CrudpRequirement crudp = new CrudpRequirement(true, true, true, true, true);
+NameRequirement name = new NameRequirement("*");
 
     private void Print()
     {
@@ -104,7 +106,10 @@
         CrudpHandler crudpHandler = new CrudpHandler();
         await crudpHandler.HandleRequirementAsync2(context, crudp);
 
-        Action<IGridColumnCollection<CourseAssignment>> courseAssignmentColumns = c =>
+         NameHandler nameHandler = new NameHandler();
+        await nameHandler.HandleRequirementAsync2(context, name);
+        bool isName = name.IsName();
+       Action<IGridColumnCollection<CourseAssignment>> courseAssignmentColumns = c =>
         {
                                         /*
                                         c.Add(o => o.Course.DepartmentId, false).Titled("Department")
@@ -155,7 +160,7 @@
              return subGridClient.Grid;
          };
 
-        var client = new GridClient<Instructor>(q => instructorService.GetInstructorGridRow(instructorColumns, query), query, false,
+        var client = new GridClient<Instructor>(q => instructorService.GetInstructorGridRow(instructorColumns, query, isName, name.Name), query, false,
             "instructorGrid", instructorColumns, locale)
             .Sortable()
             .Filterable()
