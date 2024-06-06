@@ -23,13 +23,17 @@ namespace Rad2.Services
             _options = options;
         }
         public ItemsDTO<OfficeAssignment> GetOfficeAssignmentGridRow(Action<IGridColumnCollection<OfficeAssignment>> columns,
-                                                                     QueryDictionary<StringValues> query)
+                                                                     QueryDictionary<StringValues> query, bool isName, string name)
         {
             using (var context = new dbContext(_options))
             {
                 var repository = new OfficeAssignmentRepository(context);
-
-                var server = new GridServer<OfficeAssignment>(repository.GetAll(), new QueryCollection(query),
+                
+                IQueryable<OfficeAssignment> officeAssignment = isName == true ? 
+                 repository.GetAll().Where(c => c.Instructor.FirstName + " " + c.Instructor.LastName == name ) : 
+                 repository.GetAll();
+                
+                var server = new GridServer<OfficeAssignment>(officeAssignment, new QueryCollection(query),
                         false, "OfficeAssignmentGrid", columns)
                             .WithPaging(10)
                             .Sortable()
@@ -120,7 +124,7 @@ namespace Rad2.Services
     public interface IOfficeAssignmentService : ICrudDataService<OfficeAssignment>
     {
         ItemsDTO<OfficeAssignment> GetOfficeAssignmentGridRow(Action<IGridColumnCollection<OfficeAssignment>> columns,
-                                                              QueryDictionary<StringValues> query);
+                                                              QueryDictionary<StringValues> query, bool isName, string name);
         IEnumerable<SelectItem> GetAllOfficeAssignment();
     }
 }

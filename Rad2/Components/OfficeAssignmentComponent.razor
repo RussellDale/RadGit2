@@ -1,6 +1,7 @@
 ﻿@page "/OfficeAssignmentcomponent"
 @attribute [Authorize(Roles = "SuperAdmin, Admin, ReadOnly, OfficeAssignment, Instructor")]
 @attribute [Authorize(Policy = "Crudp")]
+@attribute [Authorize(Policy = "Name")]
 
 @using GridMvc.Demo.Resources
 @using GridBlazor
@@ -46,13 +47,18 @@
     private CGrid<OfficeAssignment> _grid;
     private Task _task;
     CrudpRequirement crudp = new CrudpRequirement(true, true, true, true, true);
+    NameRequirement name = new NameRequirement("*");
 
     protected override async Task OnParametersSetAsync()
     {
         AuthenticationState context = await _authenticationStateProvider.GetAuthenticationStateAsync();
         CrudpHandler crudpHandler = new CrudpHandler();
         await crudpHandler.HandleRequirementAsync2(context, crudp);
-
+        
+        NameHandler nameHandler = new NameHandler();
+        await nameHandler.HandleRequirementAsync2(context, name);
+        bool isName = name.IsName();
+        
         Action<IGridColumnCollection<OfficeAssignment>> officeAssignmentColumns = c =>
         {
             c.Add(o => o.InstructorId, false).SetPrimaryKey(true).Titled("Instructor").SetWidth(50)
@@ -69,7 +75,7 @@
         SharedResource.Culture = locale;
         var query = new QueryDictionary<StringValues>();
 
-        var client = new GridClient<OfficeAssignment>(q => officeAssignmentService.GetOfficeAssignmentGridRow(officeAssignmentColumns, query), query, false,
+        var client = new GridClient<OfficeAssignment>(q => officeAssignmentService.GetOfficeAssignmentGridRow(officeAssignmentColumns, query, isName, name.Name), query, false,
             "OfficeAssignmentGrid", officeAssignmentColumns, locale)
             .Sortable()
             .Filterable()
