@@ -59,6 +59,7 @@
         NameHandler nameHandler = new NameHandler();
         await nameHandler.HandleRequirementAsync2(context, name);
         bool isName = name.IsName();
+
         Action<IGridColumnCollection<Student>> fooColumns = c =>
         {
             c.Add(o => o.Id, false).SetPrimaryKey(true).SetWidth(50).SetCrudHidden(true);

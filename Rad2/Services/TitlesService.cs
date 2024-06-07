@@ -23,13 +23,17 @@ namespace Rad2.Services
         }
         public ItemsDTO<Titles> GetTitlesGridRow(Action<IGridColumnCollection<Titles>> columns,
                                                  QueryDictionary<StringValues> query, 
-                                                 int Id)
+                                                 int Id, bool isName, string name)
         {
             using (var context = new dbContext(_options))
             {
                 var repository = new TitlesRepository(context);
 
-                var server = new GridServer<Titles>(repository.GetForTitles2(Id), new QueryCollection(query),
+                IEnumerable<Titles> titles = isName == true ?
+                     repository.GetForTitles2(Id).Where(c => c.Title == name) :
+                     repository.GetForTitles2(Id);
+
+                var server = new GridServer<Titles>(titles, new QueryCollection(query),
                         false, "titlesGrid" + Id, columns)
                             .WithPaging(10)
                             .Sortable()
@@ -130,7 +134,7 @@ namespace Rad2.Services
     {
         ItemsDTO<Titles> GetTitlesGridRow(Action<IGridColumnCollection<Titles>> columns,
                                           QueryDictionary<StringValues> query,
-                                          int Id2);
+                                          int Id2, bool isName, string name);
         IEnumerable<SelectItem> GetAllTitles();
     }
 }

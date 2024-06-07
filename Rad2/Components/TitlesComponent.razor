@@ -1,6 +1,7 @@
 @page "/titlescomponent"
 @attribute [Authorize(Roles = "SuperAdmin, Admin, ReadOnly, Titles")]
 @attribute [Authorize(Policy = "Crudp")]
+@attribute [Authorize(Policy = "Name")]
 
 @using GridMvc.Demo.Resources
 @using GridBlazor
@@ -48,12 +49,17 @@
     private Task _task;
     Func<object[], Task<ICGrid>> subEx;
     CrudpRequirement crudp = new CrudpRequirement(true, true, true, true, true);
+    NameRequirement name = new NameRequirement("*");
 
     protected override async Task OnParametersSetAsync()
     {
         AuthenticationState context = await _authenticationStateProvider.GetAuthenticationStateAsync();
         CrudpHandler crudpHandler = new CrudpHandler();
         await crudpHandler.HandleRequirementAsync2(context, crudp);
+
+        NameHandler nameHandler = new NameHandler();
+        await nameHandler.HandleRequirementAsync2(context, name);
+        bool isName = name.IsName();
 
         Action<IGridColumnCollection<Titles>> titlesColumns = c =>
         {
@@ -69,18 +75,18 @@
         var query = new QueryDictionary<StringValues>();
 
         Func<object[], Task<ICGrid>> subGrids = async keys =>
-         {
+        {
              int Id = Int32.Parse(keys[0].ToString());
        
-             var subGridClient = GridClient(Id, titlesColumns, query, locale);
+             var subGridClient = GridClient(Id, titlesColumns, query, locale, isName, name.Name);
        
              await subGridClient.UpdateGrid();
              return subGridClient.Grid;
-         };
+        };
 
         subEx = subGrids;
 
-        var client = GridClient(0, titlesColumns, query, locale);
+        var client = GridClient(0, titlesColumns, query, locale, isName, name.Name);
 
         _grid = client.Grid;
         _task = client.UpdateGrid();
@@ -89,10 +95,10 @@
 
     IGridClient<Titles> GridClient(int Id, Action<IGridColumnCollection<Titles>> titlesColumns,
                                            QueryDictionary<StringValues> query,
-                                           CultureInfo locale)
+                                           CultureInfo locale, bool isName, string name)
     {
-        IGridClient<Titles> subGridClient = new GridClient<Titles>(q => titlesService.GetTitlesGridRow(titlesColumns, query, Id),
-        query, false, "titlesGrid" + Id, titlesColumns, locale)
+        IGridClient<Titles> subGridClient = new GridClient<Titles>(q => titlesService.GetTitlesGridRow(titlesColumns, query, Id, isName, name),
+                query, false, "titlesGrid" + Id, titlesColumns, locale)
            .Sortable()
            .SetStriped(true)
            .ChangePageSize(true)
