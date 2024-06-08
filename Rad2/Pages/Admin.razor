@@ -72,7 +72,7 @@
         AuthenticationState context = await _authenticationStateProvider.GetAuthenticationStateAsync();
         CrudpHandler crudpHandler = new CrudpHandler();
         await crudpHandler.HandleRequirementAsync2(context, crudpGet);
-        
+
         NameHandler nameHandler = new NameHandler();
         await nameHandler.HandleRequirementAsync2(context, nameGet);
 
@@ -85,7 +85,7 @@
         newUser.Name = nameGet.Name;
         bool isName = nameGet.IsName();
         await JsRuntime.InvokeVoidAsync("alert", isName);
-        
+
         bool bSelected = false;
         string sRoles = string.Empty;
         IdentityUser user = await _userManagers.GetUserAsync(context.User);
@@ -103,6 +103,8 @@
         }
 
         selectList.Add(new SelectListItem() { Value = "0", Text = "n/a", Selected = false });
+
+        newUser.UserRole = sRoles;
 
         await base.OnInitializedAsync();
     }
@@ -127,7 +129,7 @@
 
         foreach (IdentityRole role1 in roles)
         {
-            if (usermodel?.UserRole == role1.Id)
+            if (usermodel?.UserRole == role1.Id || usermodel?.UserRole == role1.Name)
             {
                 role = role1;
                 sRoles1 = role.Name;
