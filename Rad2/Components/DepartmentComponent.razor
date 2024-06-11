@@ -123,7 +123,7 @@
             c.Add().Titled("Budget").RenderValueAs(o => string.Format("{0:C}", o.Budget));
             c.Add(o => o.Budget, true);
             c.Add(o => o.StartDate, false).Titled("Start Date").Format("{0:yyyy-MM-dd}");
-            c.Add(o => o.InstructorId, false).Titled("Instrutor")
+            c.Add(o => o.InstructorId, false).Titled("Instructor")
                   .SetWidth(250).RenderValueAs(o => o.Instructor == null ? "" : o.Instructor.FirstName + " " + o.Instructor.LastName)
                   .SetSelectField(true, o => o.Instructor == null ? "" : o.Instructor.Id.ToString() + " - " +
                                    o.Instructor.FirstName + " " + o.Instructor.LastName,
