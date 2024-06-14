@@ -42,13 +42,14 @@
     </div>
     <div class="form-group row">
         <table>
-            <tr><th>Create</th><th>Read</th><th>Update</th><th>Delete</th><th>Print</th><th>Name</th></tr>
+            <tr><th>Create</th><th>Read</th><th>Update</th><th>Delete</th><th>Print</th><th>Admin</th><th>Name</th></tr>
             <tr>
                 <td><InputCheckbox id="cbCreateId"   @bind-Value="newUser.Create" /></td>
                 <td><InputCheckbox id="cbReadId"     @bind-Value="newUser.Read"   /></td>
                 <td><InputCheckbox id="cbUpdateId"   @bind-Value="newUser.Update" /></td>
                 <td><InputCheckbox id="cbDeleteId"   @bind-Value="newUser.Delete" /></td>
                 <td><InputCheckbox id="cbPrintId"    @bind-Value="newUser.Print"  /></td>
+                <td><InputCheckbox id="cbAdminId"    @bind-Value="newUser.Admin"  /></td>
                 <td><InputText id="textName" @bind-Value="newUser.Name" style="text-align: left;"  /></td>
             </tr>
         </table>
@@ -81,6 +82,7 @@
         if (crudpGet.Update == false) newUser.Update = false;
         if (crudpGet.Delete == false) newUser.Delete = false;
         if (crudpGet.Print  == false) newUser.Print  = false;
+        if (crudpGet.Admin  == false) newUser.Admin  = false;
 
         newUser.Name = nameGet.Name;
         bool isName = nameGet.IsName();
@@ -169,8 +171,10 @@
                 string sUpdate = newUser.Update == false ? "0" : "1";
                 string sDelete = newUser.Delete == false ? "0" : "1";
                 string sPrint  = newUser.Print  == false ? "0" : "1";
+                string sAdmin  = newUser.Admin  == false ? "0" : "1";
 
-                claim = new Claim("CRUDP", sCreate + sRead + sUpdate + sDelete + sPrint);
+
+                claim = new Claim("CRUDP", sCreate + sRead + sUpdate + sDelete + sPrint + sAdmin);
 
                 result = await _userManagers.AddClaimAsync(user, claim);
             }
