@@ -7,10 +7,19 @@
 @using Microsoft.AspNetCore.Components.Forms
 
 @inject UserManager<IdentityUser> _userManagers
+@inject AuthenticationStateProvider _authenticationStateProvider
 
 <AuthorizeView>
     <Authorized>
-        <a href="Identity/Account/Manage">Hello, @context.User.Identity?.Name</a><a href="admin">@UserRoles(context).Id.ToString(rolesValue)</a>
+        <a href="Identity/Account/Manage">Hello, @context.User.Identity?.Name</a>
+        @if (crudpGet.Admin == true)
+        {
+            <a href="admin">@UserRoles(context).Id.ToString(rolesValue)</a>
+        }
+        else
+        {
+            <a href="/">@UserRoles(context).Id.ToString(rolesValue)</a>
+        }    
         <form method="post" action="Identity/Account/LogOut">
             <button type="submit" class="nav-link btn btn-link">Log out</button>
         </form>
@@ -25,6 +34,16 @@
 //    @inject IJSRuntime JsRuntime
 //    string messagePrompt = "";
     string rolesValue = "";
+    CrudpRequirement crudpGet = new CrudpRequirement(true, true, true, true, true, true);
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState context = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        CrudpHandler crudpHandler = new CrudpHandler();
+        await crudpHandler.HandleRequirementAsync2(context, crudpGet);
+
+        await base.OnInitializedAsync();
+    }
 
     public async Task UserRoles(AuthenticationState context)
     {
