@@ -40,6 +40,7 @@ namespace Rad2.Policy
                 if (crudp.Value.Substring(2, 1) == "0") requirement.Update = false;
                 if (crudp.Value.Substring(3, 1) == "0") requirement.Delete = false;
                 if (crudp.Value.Substring(4, 1) == "0") requirement.Print = false;
+                if (crudp.Value.Substring(5, 1) == "0") requirement.Admin = false;
             }
 
             return crudp;

@@ -58,12 +58,12 @@
     private Task _task;
     Timer timer;
     private GridComponent<Instructor> _gridComponent;
-    CrudpRequirement crudp = new CrudpRequirement(true, true, true, true, true);
+    CrudpRequirement crudp = new CrudpRequirement(true, true, true, true, true, true);
     NameRequirement name = new NameRequirement("*");
 
     private void Print()
     {
-        string err = "You must select the row you want to print";
+//        string err = "You must select the row you want to print";
 
         if (instructor.Id == 0)
         {

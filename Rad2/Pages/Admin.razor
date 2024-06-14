@@ -62,7 +62,7 @@
     UserData newUser = new UserData();
     List<SelectListItem> selectList = new List<SelectListItem>();
     ClaimsPrincipal cpUser = new ClaimsPrincipal();
-    CrudpRequirement crudpGet = new CrudpRequirement(true, true, true, true, true);
+    CrudpRequirement crudpGet = new CrudpRequirement(true, true, true, true, true, true);
     NameRequirement nameGet = new NameRequirement("*");
     string claimValue = "\n";
     string messagePrompt = "";
@@ -90,6 +90,8 @@
         string sRoles = string.Empty;
         IdentityUser user = await _userManagers.GetUserAsync(context.User);
         IList<string> gRoles = await _userManagers.GetRolesAsync(user);
+
+        var users = _userManagers.Users;
 
         if (gRoles.Count == 0) { } else sRoles = gRoles[0];
 
