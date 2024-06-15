@@ -31,8 +31,6 @@
 </AuthorizeView>
 
 @code {
-//    @inject IJSRuntime JsRuntime
-//    string messagePrompt = "";
     string rolesValue = "";
     CrudpRequirement crudpGet = new CrudpRequirement(true, true, true, true, true, true);
 
@@ -66,13 +64,6 @@
 
         if (rolesValue.Length == 0)
             rolesValue = "n/a";
-//        else
-//        {
-//            foreach (var claim in context.User.Claims)
-//                messagePrompt += claim.Type + " : " + claim.Value + "\n";
-//
-//            await JsRuntime.InvokeVoidAsync("alert", messagePrompt);
-//        }
 
         await Task.CompletedTask;
     }
