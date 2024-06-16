@@ -16,8 +16,11 @@
 
 <AuthorizeView>
     <Authorized>
-        @User(context).Id.ToString(claimValue)
-        <h3>Admin Page</h3>
+        @if (crudpGet.Admin == true)
+        {
+            @User(context).Id.ToString(claimValue)
+            <h3>Admin Page</h3>
+        }
     </Authorized>
     <NotAuthorized>
         <a href="Identity/Account/Login">Log in</a>
