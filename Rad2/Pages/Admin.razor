@@ -114,6 +114,8 @@
         newUser.UserRole = sRoles;
 
         await base.OnInitializedAsync();
+  
+        await Task.CompletedTask;
     }
 
     public async Task User(AuthenticationState context)
