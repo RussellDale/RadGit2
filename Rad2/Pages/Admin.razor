@@ -47,7 +47,7 @@
                         </div>
                     </td>
                     <td>
-                        <InputSelect id="user-select" @bind-Value="newUserText">
+                        <InputSelect TValue="int" Value="newUserText" ValueChanged="UserCrudp1" ValueExpression="@(() => newUserText)">
                             @foreach (SelectListItem user in selectUsers)
                             {
                                 <option value="@user.Value">@user.Text</option>
@@ -73,9 +73,43 @@
             </table>
         </div>
         <input type="submit" class="btn btn-primary" value="Save" />
+
+        <InputSelect class="form-select"
+                     style="width:200px" 
+                     TValue="int" 
+                     Value="rotar1" 
+                     ValueChanged="HandleRotar1Change" 
+                     ValueExpression="@(() => rotar1)">
+            @foreach (SelectListItem user in selectUsers)
+            {
+                <option value="@user.Value">@user.Text</option>
+            }
+        </InputSelect>
+
+<InputSelect class="form-select"
+             style="width:200px"
+             TValue="int"
+             Value="rotar1"
+             ValueChanged="HandleRotar1Change"
+             ValueExpression="@(() => rotar1)">
+
+    <option value="0">RotarI</option>
+    <option value="1">RotarII</option>
+    <option value="2">RotarIII</option>
+    <option value="3">RotarIV</option>
+    <option value="4">RotarV</option>
+</InputSelect>
+
     </EditForm>
 }
+@code {
+    int rotar1 = 3;
 
+    private void HandleRotar1Change(int selectedValue)
+    {
+        rotar1 = selectedValue;
+    }
+}
 @messagePrompt
 
 @code {
@@ -87,9 +121,16 @@
     NameRequirement nameGet = new NameRequirement("*");
     string claimValue = "\n";
     string messagePrompt = "";
-    string newUserText = "";
+    int newUserText = 0;
 
-    protected override async Task OnInitializedAsync()
+    private void UserCrudp1(int selectedValue)
+    {
+        newUserText = selectedValue;
+        Console.WriteLine(selectedValue);
+
+    }
+
+    public async Task UserCrudp()
     {
         AuthenticationState context = await _authenticationStateProvider.GetAuthenticationStateAsync();
         CrudpHandler crudpHandler = new CrudpHandler();
@@ -106,11 +147,21 @@
         if (crudpGet.Admin  == false) newUser.Admin  = false;
 
         newUser.Name = nameGet.Name;
+
+        await Task.CompletedTask;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UserCrudp();
+
         bool isName = nameGet.IsName();
         await JsRuntime.InvokeVoidAsync("alert", isName);
 
         bool bSelected = false;
         string sRoles = string.Empty;
+
+        AuthenticationState context = await _authenticationStateProvider.GetAuthenticationStateAsync();
         IdentityUser gUser = await _userManagers.GetUserAsync(context.User);
         IList<string> gRoles = await _userManagers.GetRolesAsync(gUser);
 
