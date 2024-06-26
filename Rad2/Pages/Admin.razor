@@ -47,12 +47,21 @@
                         </div>
                     </td>
                     <td>
-                        <InputSelect TValue="int" Value="newUserText" ValueChanged="UserCrudp1" ValueExpression="@(() => newUserText)">
+                        <InputSelect id="user-select" 
+                                     TValue="int" Value="newUser.Text" ValueChanged="UserCrudp1" 
+                                     ValueExpression="@(() => newUser.Text)">
                             @foreach (SelectListItem user in selectUsers)
                             {
                                 <option value="@user.Value">@user.Text</option>
                             }
                         </InputSelect>
+                        <InputSelect id="user-select"
+                                     TValue="int" Value="newUser.Text" ValueChanged="UserCrudp1"
+                                     ValueExpression="@(() => newUser.Text)">
+                               <option value="0">abc</option>
+                               <option value="1">d</option>
+                        </InputSelect>
+
                     </td>
                 </tr>
             </table>
@@ -72,19 +81,8 @@
                 </tr>
             </table>
         </div>
-        <input type="submit" class="btn btn-primary" value="Save" />
 
-        <InputSelect class="form-select"
-                     style="width:200px" 
-                     TValue="int" 
-                     Value="rotar1" 
-                     ValueChanged="HandleRotar1Change" 
-                     ValueExpression="@(() => rotar1)">
-            @foreach (SelectListItem user in selectUsers)
-            {
-                <option value="@user.Value">@user.Text</option>
-            }
-        </InputSelect>
+        <input type="submit" class="btn btn-primary" value="Save" />
 
 <InputSelect class="form-select"
              style="width:200px"
@@ -121,11 +119,10 @@
     NameRequirement nameGet = new NameRequirement("*");
     string claimValue = "\n";
     string messagePrompt = "";
-    int newUserText = 0;
 
     private void UserCrudp1(int selectedValue)
     {
-        newUserText = selectedValue;
+        newUser.Text = selectedValue;
         Console.WriteLine(selectedValue);
 
     }

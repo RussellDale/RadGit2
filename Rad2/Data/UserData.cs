@@ -14,5 +14,6 @@ namespace Rad2.Data
         public bool Print { get; set; } = true;
         public bool Admin { get; set; } = true;
         public string Name { get; set; } = string.Empty;
+        public int Text { get; set; } = 0;
     }
 }
