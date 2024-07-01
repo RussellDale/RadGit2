@@ -47,21 +47,24 @@
                         </div>
                     </td>
                     <td>
-                        <InputSelect id="user-select" 
-                                     TValue="int" Value="newUser.Text" ValueChanged="UserCrudp1" 
-                                     ValueExpression="@(() => newUser.Text)">
-                            @foreach (SelectListItem user in selectUsers)
-                            {
-                                <option value="@user.Value">@user.Text</option>
-                            }
-                        </InputSelect>
-                        <InputSelect id="user-select"
-                                     TValue="int" Value="newUser.Text" ValueChanged="UserCrudp1"
-                                     ValueExpression="@(() => newUser.Text)">
-                               <option value="0">abc</option>
-                               <option value="1">d</option>
-                        </InputSelect>
+                        <div class="col-sm-10">
+                            <InputSelect id="user-select" @bind-Value="newUser.Text">
+                                @foreach (SelectListItem user in selectUsers)
+                                {
+                                    <option value="@user.Value">@user.Text</option>
+                                }
+                            </InputSelect>
 
+                            <InputSelect TValue="string"
+                                         Value="newUser.Text"
+                                         ValueChanged="UserCrudp1"
+                                         ValueExpression="@(() => newUser.Text)">
+                                @foreach (SelectListItem user in selectUsers)
+                                {
+                                    <option value="@user.Value">@user.Text</option>
+                                }
+                            </InputSelect>
+                        </div>
                     </td>
                 </tr>
             </table>
@@ -120,11 +123,9 @@
     string claimValue = "\n";
     string messagePrompt = "";
 
-    private void UserCrudp1(int selectedValue)
+    private void UserCrudp1(string selectedValue)
     {
         newUser.Text = selectedValue;
-        Console.WriteLine(selectedValue);
-
     }
 
     public async Task UserCrudp()
@@ -160,6 +161,8 @@
 
         AuthenticationState context = await _authenticationStateProvider.GetAuthenticationStateAsync();
         IdentityUser gUser = await _userManagers.GetUserAsync(context.User);
+        newUser.Text = gUser.Email;
+
         IList<string> gRoles = await _userManagers.GetRolesAsync(gUser);
 
         if (gRoles.Count == 0) { } else sRoles = gRoles[0];
