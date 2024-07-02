@@ -96,7 +96,7 @@
     string claimValue = "\n";
     string messagePrompt = "";
 
-    private void UserCrudp1(string selectedValue)
+    private async void UserCrudp1(string selectedValue)
     {
         string newUserValue = string.Empty;
 
@@ -104,7 +104,10 @@
         {
             if(user.Id == selectedValue)
             {
-                newUserValue = user.UserName;
+                newUserValue = user.Email;
+
+                IList<string> gRoles = await _userManagers.GetRolesAsync(user);
+
                 break;
             }
         }
