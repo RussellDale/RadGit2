@@ -48,14 +48,7 @@
                     </td>
                     <td>
                         <div class="col-sm-10">
-                            <InputSelect id="user-select" @bind-Value="newUser.Text">
-                                @foreach (SelectListItem user in selectUsers)
-                                {
-                                    <option value="@user.Value">@user.Text</option>
-                                }
-                            </InputSelect>
-
-                            <InputSelect TValue="string"
+                            <InputSelect id="user-select" TValue="string"
                                          Value="newUser.Text"
                                          ValueChanged="UserCrudp1"
                                          ValueExpression="@(() => newUser.Text)">
@@ -87,34 +80,14 @@
 
         <input type="submit" class="btn btn-primary" value="Save" />
 
-<InputSelect class="form-select"
-             style="width:200px"
-             TValue="int"
-             Value="rotar1"
-             ValueChanged="HandleRotar1Change"
-             ValueExpression="@(() => rotar1)">
-
-    <option value="0">RotarI</option>
-    <option value="1">RotarII</option>
-    <option value="2">RotarIII</option>
-    <option value="3">RotarIV</option>
-    <option value="4">RotarV</option>
-</InputSelect>
-
     </EditForm>
 }
-@code {
-    int rotar1 = 3;
 
-    private void HandleRotar1Change(int selectedValue)
-    {
-        rotar1 = selectedValue;
-    }
-}
 @messagePrompt
 
 @code {
     UserData newUser = new UserData();
+    IQueryable<IdentityUser> users = null;
     List<SelectListItem> selectList = new List<SelectListItem>();
     List<SelectListItem> selectUsers = new List<SelectListItem>();
     ClaimsPrincipal cpUser = new ClaimsPrincipal();
@@ -125,6 +98,17 @@
 
     private void UserCrudp1(string selectedValue)
     {
+        string newUserValue = string.Empty;
+
+        foreach (IdentityUser user in users)
+        {
+            if(user.Id == selectedValue)
+            {
+                newUserValue = user.UserName;
+                break;
+            }
+        }
+
         newUser.Text = selectedValue;
     }
 
@@ -180,7 +164,7 @@
 
         newUser.UserRole = sRoles;
 
-        IQueryable<IdentityUser> users = _userManagers.Users;
+        users = _userManagers.Users;
 
         foreach (IdentityUser user in users)
             selectUsers.Add(new SelectListItem() { Value = user.Id, Text = user.UserName });
