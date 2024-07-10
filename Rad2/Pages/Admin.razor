@@ -106,24 +106,32 @@
             {
                 newUserValue = user.Email;
 
-                IList<string> gRoles = await _userManagers.GetRolesAsync(user);
+                IList<Claim> claims = await _userManagers.GetClaimsAsync(user);
+
+//                CrudpHandler crudpHandler = new CrudpHandler();
+//                await crudpHandler.HandleRequirementAsync3(claims, crudpGet);
 
                 break;
             }
         }
+
+//        await UserCrudp();
+
+        if (crudpGet.Create == false) newUser.Create = false;
+        if (crudpGet.Read == false) newUser.Read = false;
+        if (crudpGet.Update == false) newUser.Update = false;
+        if (crudpGet.Delete == false) newUser.Delete = false;
+        if (crudpGet.Print == false) newUser.Print = false;
+        if (crudpGet.Admin == false) newUser.Admin = false;
+
+        newUser.Name = nameGet.Name;
+
 
         newUser.Text = selectedValue;
     }
 
     public async Task UserCrudp()
     {
-        AuthenticationState context = await _authenticationStateProvider.GetAuthenticationStateAsync();
-        CrudpHandler crudpHandler = new CrudpHandler();
-        await crudpHandler.HandleRequirementAsync2(context, crudpGet);
-
-        NameHandler nameHandler = new NameHandler();
-        await nameHandler.HandleRequirementAsync2(context, nameGet);
-
         if (crudpGet.Create == false) newUser.Create = false;
         if (crudpGet.Read   == false) newUser.Read   = false;
         if (crudpGet.Update == false) newUser.Update = false;
@@ -133,20 +141,11 @@
 
         newUser.Name = nameGet.Name;
 
-        await Task.CompletedTask;
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await UserCrudp();
-
-        bool isName = nameGet.IsName();
-        await JsRuntime.InvokeVoidAsync("alert", isName);
-
         bool bSelected = false;
         string sRoles = string.Empty;
 
-        AuthenticationState context = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        AuthenticationState context = await _authenticationStateProvider.GetAuthenticationStateAsync(); 
+
         IdentityUser gUser = await _userManagers.GetUserAsync(context.User);
         newUser.Text = gUser.Email;
 
@@ -155,8 +154,9 @@
         if (gRoles.Count == 0) { } else sRoles = gRoles[0];
 
         IQueryable<IdentityRole> lRoles = _roleManagers.Roles;
+        selectList = new List<SelectListItem>();
 
-        foreach(IdentityRole role in lRoles)
+        foreach (IdentityRole role in lRoles)
         {
             if (sRoles == role.Name) bSelected = true;
             selectList.Add(new SelectListItem() { Value = role.Id, Text = role.Name, Selected = bSelected });
@@ -166,6 +166,23 @@
         selectList.Add(new SelectListItem() { Value = "0", Text = "n/a", Selected = false });
 
         newUser.UserRole = sRoles;
+
+        await Task.CompletedTask;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        bool isName = nameGet.IsName();
+        await JsRuntime.InvokeVoidAsync("alert", isName);
+
+        AuthenticationState context = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        CrudpHandler crudpHandler = new CrudpHandler();
+        await crudpHandler.HandleRequirementAsync2(context, crudpGet);
+
+        NameHandler nameHandler = new NameHandler();
+        await nameHandler.HandleRequirementAsync2(context, nameGet);
+
+        await UserCrudp();
 
         users = _userManagers.Users;
 
