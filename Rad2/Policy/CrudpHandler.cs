@@ -49,7 +49,8 @@ namespace Rad2.Policy
         }
         private Claim? Handle2(IList<Claim> claims, CrudpRequirement requirement, Claim? crudp)
         {
-            crudp = claims.First(c => c.Type == "CRUDP");
+            if(claims.Count == 0) { } else
+                crudp = claims.First(c => c.Type == "CRUDP");
 
             return Claim(crudp, requirement);
         }
