@@ -108,6 +108,7 @@
     {
         string newUserValue = string.Empty;
         CrudpRequirement crudpGet2 = new CrudpRequirement(true, true, true, true, true, true);
+        NameRequirement nameGet2 = new NameRequirement("*");
 
         foreach (IdentityUser user in users)
         {
@@ -120,30 +121,33 @@
                 CrudpHandler crudpHandler = new CrudpHandler();
                 await crudpHandler.HandleRequirementAsync3(claims, crudpGet2);
 
+                NameHandler nameHandler = new NameHandler();
+                await nameHandler.HandleRequirementAsync3(claims, nameGet2);
+
                 break;
             }
         }
 
-        if (crudpGet2.Create == false) newUser.Create = false;
-        if (crudpGet2.Read == false) newUser.Read = false;
-        if (crudpGet2.Update == false) newUser.Update = false;
-        if (crudpGet2.Delete == false) newUser.Delete = false;
-        if (crudpGet2.Print == false) newUser.Print = false;
-        if (crudpGet2.Admin == false) newUser.Admin = false;
+        if (crudpGet2.Create == false) newUser.Create = false; else newUser.Create = true;
+        if (crudpGet2.Read   == false) newUser.Read   = false; else newUser.Read   = true;
+        if (crudpGet2.Update == false) newUser.Update = false; else newUser.Update = true;
+        if (crudpGet2.Delete == false) newUser.Delete = false; else newUser.Delete = true;
+        if (crudpGet2.Print  == false) newUser.Print  = false; else newUser.Print  = true;
+        if (crudpGet2.Admin  == false) newUser.Admin  = false; else newUser.Admin  = true;
 
-        newUser.Name = nameGet.Name;
+        newUser.Name = nameGet2.Name;
         newUser.Text = selectedValue;
 
     }
 
     public async Task UserCrudp()
     {
-        if (crudpGet.Create == false) newUser.Create = false;
-        if (crudpGet.Read   == false) newUser.Read   = false;
-        if (crudpGet.Update == false) newUser.Update = false;
-        if (crudpGet.Delete == false) newUser.Delete = false;
-        if (crudpGet.Print  == false) newUser.Print  = false;
-        if (crudpGet.Admin  == false) newUser.Admin  = false;
+        if (crudpGet.Create == false) newUser.Create = false; else newUser.Admin = true;
+        if (crudpGet.Read   == false) newUser.Read   = false; else newUser.Admin = true;
+        if (crudpGet.Update == false) newUser.Update = false; else newUser.Admin = true;
+        if (crudpGet.Delete == false) newUser.Delete = false; else newUser.Admin = true;
+        if (crudpGet.Print  == false) newUser.Print  = false; else newUser.Admin = true;
+        if (crudpGet.Admin  == false) newUser.Admin  = false; else newUser.Admin = true;
 
         newUser.Name = nameGet.Name;
 
