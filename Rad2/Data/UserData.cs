@@ -15,5 +15,6 @@ namespace Rad2.Data
         public bool Admin { get; set; } = true;
         public string Name { get; set; } = string.Empty;
         public string Text { get; set; } = string.Empty;
+        public string User { get; set; } = string.Empty;
     }
 }

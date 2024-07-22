@@ -34,7 +34,7 @@
         <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
         <div class="form-group row">
             <table>
-                <tr><th>Assign Role</th><th>User</th></tr>
+                <tr><th>Assign Role</th><th>User</th><th></th></tr>
                 <tr>
                     <td>
                         <div class="col-sm-10">
@@ -59,6 +59,9 @@
                             </InputSelect>
                         </div>
                     </td>
+                <td>
+                    <InputText id="itUser" @bind-Value="newUser.User" />
+                </td>
                 </tr>
             </table>
         </div>
@@ -90,6 +93,7 @@
     IQueryable<IdentityUser> users = null;
     List<SelectListItem> selectList = new List<SelectListItem>();
     List<SelectListItem> selectUsers = new List<SelectListItem>();
+    IdentityUser iUser = null;
     ClaimsPrincipal cpUser = new ClaimsPrincipal();
     CrudpRequirement crudpGet = new CrudpRequirement(true, true, true, true, true, true);
     NameRequirement nameGet = new NameRequirement("*");
@@ -110,10 +114,15 @@
         CrudpRequirement crudpGet2 = new CrudpRequirement(true, true, true, true, true, true);
         NameRequirement nameGet2 = new NameRequirement("*");
 
+        AuthenticationState context = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        IdentityUser gUser = await _userManagers.GetUserAsync(context.User);
+
         foreach (IdentityUser user in users)
         {
             if (user.Id == selectedValue)
             {
+                iUser = user;
+                if (iUser == gUser) { newUser.User = ""; } else { newUser.User = iUser.Email; }
                 newUserValue = user.Email;
 
                 IList<Claim> claims = await _userManagers.GetClaimsAsync(user);
@@ -158,6 +167,7 @@
 
         IdentityUser gUser = await _userManagers.GetUserAsync(context.User);
         newUser.Text = gUser.Email;
+        iUser = gUser;
 
         IList<string> gRoles = await _userManagers.GetRolesAsync(gUser);
 
